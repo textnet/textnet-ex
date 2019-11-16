@@ -1,8 +1,8 @@
 {
-  "name": "excalibur-webpack",
+  "name": "textnet-excalibur",
   "version": "1.0.0",
   "private": true,
-  "description": "a webpack starter for excaliburjs projects",
+  "description": "TXT NET EXC",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,7 +13,7 @@
     "build:dev": "npm run webpack -- --env.mode development",
     "build:prod": "npm run webpack -- --env.mode production"
   },
-  "author": "Excalibur.js Team",
+  "author": "Textnet Team",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "clean-webpack-plugin": "3.0.0",
