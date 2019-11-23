@@ -10,31 +10,18 @@ Proper distro will be done in Electron later.
 
 # TODO
 
-### DEFINE WORLD
 
-[ ] Player
-[ ] Avatar
-[ ] Plane
-[ ] Artifact
-[ ] Proxy
-[ ] Floor
+### 1. ExcaliburJS engine
+--------------------------
+- Resources
+- PlaneScene
+- ArtifactActor
+- simple bindings
 
+### 2. Hooking up world
+--------------------------
+- tempBiuld
+- hook Artifacts, Avatar
+- figure out event hooking for Avatar?
+- first pushable objects
 
-### BUILD WORLD
-
-[ ] Player with avatar and a plane
-[ ] Plane(s) with floors and avatars
-
-
-### STAGE WORK
-
-[ ] Setup player plane
-[ ] Player moves
-
-
-### NEXT STEPS
-
-[ ] Spoken text
-[ ] Written text
-[ ] Hidden text
-[ ] More Artifacts

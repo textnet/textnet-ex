@@ -18,6 +18,7 @@
   "devDependencies": {
     "clean-webpack-plugin": "3.0.0",
     "compression-webpack-plugin": "3.0.0",
+    "copy-webpack-plugin": "^5.0.5",
     "file-loader": "4.2.0",
     "html-webpack-plugin": "3.2.0",
     "source-map-loader": "0.2.4",
@@ -30,6 +31,9 @@
     "webpack-merge": "4.2.2"
   },
   "dependencies": {
-    "excalibur": "0.23.0"
+    "excalibur": "0.23.0",
+    "ste-events": "^1.6.3",
+    "ste-simple-events": "^1.6.3",
+    "strongly-typed-events": "^1.6.3"
   }
 }
