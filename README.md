@@ -10,6 +10,11 @@ Proper distro will be done in Electron later.
 
 # TODO
 
+[ ] Document everything
+[ ] Update artifact positions if changed
+[ ] Emit events? Pushable/non-pushable
+
+-------------------------
 
 ### 1. ExcaliburJS engine
 --------------------------

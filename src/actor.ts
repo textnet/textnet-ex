@@ -1,5 +1,6 @@
 import * as ex from "excalibur";
-import { Dir, Direction, Position, planeWidth } from "./world";
+import { DIR, worldWidth } from "./world/const";
+import { Dir, Position, Artifact, Avatar, AvatarKind } from "./world/interfaces"
 import { SpriteType, getSprite, Sprite, spriteSpeed } from "./resources";
 import { visualBounds } from "./plane"
 
@@ -8,9 +9,11 @@ export class ArtifactActor extends ex.Actor {
     sprite: Sprite;
     dir: Dir;
     speed: number;
-    avatar: boolean; // TBD
+    artifact: Artifact;
 
-    constructor(pos: Position, spriteName:string) {
+    constructor(artifact: Artifact) {
+        let pos:Position = artifact.coords.position;
+        let spriteName:string = artifact.spriteName;
         let sprite:Sprite = getSprite(spriteName);
         super({
             pos: new ex.Vector(pos.x+visualBounds.left, pos.y+visualBounds.top),
@@ -22,10 +25,11 @@ export class ArtifactActor extends ex.Actor {
                 })
             })
         });
+        this.artifact = artifact;
         this.spriteName = spriteName;
         this.sprite = sprite;
         if (this.sprite.type == SpriteType.STATIC)
-            this.dir = Direction.UP;
+            this.dir = DIR.UP;
         else
             this.dir = pos.dir;
     }
@@ -48,42 +52,47 @@ export class ArtifactActor extends ex.Actor {
             this.to = setTimeout(function(){ console.log(that) },100)
         }
 
+        let speedMod = 50; // TBD get speed from avatar/artifact
         // Player input for direction and speed
-        this.speed = 0;
-        if (engine.input.keyboard.isHeld(ex.Input.Keys.Left)) {
-            this.dir=Direction.LEFT; this.speed=1; }
-        if (engine.input.keyboard.isHeld(ex.Input.Keys.Right)) {
-            this.dir=Direction.RIGHT; this.speed=1; }
-        if (engine.input.keyboard.isHeld(ex.Input.Keys.Up)) {
-            this.dir=Direction.UP; this.speed=1; }
-        if (engine.input.keyboard.isHeld(ex.Input.Keys.Down)) {
-            this.dir=Direction.DOWN; this.speed=1; }
-        // 
-        let speedMod = 100; 
-        if (engine.input.keyboard.isHeld(ex.Input.Keys.Shift))
-            speedMod = 500;
+        if (this.artifact.avatar.kind == AvatarKind.PLAYER) {
+            this.speed = 0;
+            if (engine.input.keyboard.isHeld(ex.Input.Keys.Left)) {
+                this.dir=DIR.LEFT; this.speed=1; }
+            if (engine.input.keyboard.isHeld(ex.Input.Keys.Right)) {
+                this.dir=DIR.RIGHT; this.speed=1; }
+            if (engine.input.keyboard.isHeld(ex.Input.Keys.Up)) {
+                this.dir=DIR.UP; this.speed=1; }
+            if (engine.input.keyboard.isHeld(ex.Input.Keys.Down)) {
+                this.dir=DIR.DOWN; this.speed=1; }
+            // 
+            if (engine.input.keyboard.isHeld(ex.Input.Keys.Shift))
+                speedMod = 500;            
+        }
 
         // Adjust velocity
         this.vel.x = this.dir.x * this.speed * speedMod;
         this.vel.y = this.dir.y * this.speed * speedMod;
-        if (this.vel.x+this.vel.y == 0 && this.oldVel.x + this.oldVel.y != 0) {
-            console.log(this.pos)
-        }
+
         // Stay in bounds 
         if (this.pos.x < visualBounds.left) {
             this.pos.x = visualBounds.left;
             this.vel.x = 0;
         }
-        if (this.pos.x > visualBounds.right+planeWidth) {
-            this.pos.x = visualBounds.right+planeWidth;
+        if (this.pos.x > visualBounds.right+worldWidth) {
+            this.pos.x = visualBounds.right+worldWidth;
             this.vel.x = 0;
+        }
+
+        // temp: Report position as we stop.
+        if (this.vel.x+this.vel.y == 0 && this.oldVel.x + this.oldVel.y != 0) {
+            console.log(this.pos)
         }
     }
 
     // After main update, once per frame execute this code
     onPostUpdate(engine: ex.Engine, delta: number) {
         // 
-        if (this.avatar) {
+        if (this.artifact.avatar) {
             this.updateFromAvatar(engine)
         }
         // Update animations
@@ -95,6 +104,7 @@ export class ArtifactActor extends ex.Actor {
             }
         }
         this.setZIndex(10000+this.pos.y)
+        // 
     }
 
 }
