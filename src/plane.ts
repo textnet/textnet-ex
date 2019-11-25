@@ -1,6 +1,6 @@
 import * as ex from "excalibur";
 import { ArtifactActor } from "./actor";
-import { DIR, spawnPosition } from "./world/const";
+import { DIR, spawnPosition } from "./universe/const";
 import {
     Position,
     Account,
@@ -8,14 +8,17 @@ import {
     World,
     Artifact,
     AvatarKind
-} from "./world/interfaces";
-import { getWorld } from "./world/getters";
+} from "./universe/interfaces";
+import { getWorld } from "./universe/getters";
+import { adjustEditor } from "./editor"
+import { Game } from "./index"
 
 export const visualBounds = {
     left: 40,
     right: 40,
-    top: 40,
-    height: 300
+    top: 0,
+    height: 300,
+    margin: 50,
 };
 
 export class PlaneScene extends ex.Scene {
@@ -56,14 +59,15 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
         _delta: number
     ) {
         const position = target.center;
-        const focus = cam.getFocus();
+        let focus = cam.getFocus();
         const diff = position.y - focus.y;
         if (diff > this.radius) {
-            return focus.add(new ex.Vector(0, diff - this.radius));
+            focus = focus.add(new ex.Vector(0, diff - this.radius));
         }
         if (diff < -this.radius) {
-            return focus.add(new ex.Vector(0, diff + this.radius));
+            focus = focus.add(new ex.Vector(0, diff + this.radius));
         }
+        adjustEditor((_eng as Game).$editor, focus)
         return focus;
     }
 }

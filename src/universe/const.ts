@@ -7,5 +7,11 @@ export const DIR = {
     RIGHT: { name: "right", angle: 0, x: 1, y: 0 }
 };
 export const worldWidth = 1000; // add some visual bounds
-export const spawnPosition: Position = { x: 50, y: 50, dir: DIR.DOWN };
+export const spawnPosition: Position = { x: 0, y: 0, dir: DIR.DOWN };
+
+// event registry
+export const universeUpdateFrequency = 100; // ms
+export const EVENT = {
+    MOVE: { action: "move", },
+}
 

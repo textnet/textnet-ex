@@ -1,8 +1,10 @@
 import * as ex from "excalibur";
-import { DIR, worldWidth } from "./world/const";
-import { Dir, Position, Artifact, Avatar, AvatarKind } from "./world/interfaces"
+import { DIR, worldWidth, universeUpdateFrequency } from "./universe/const";
+import { Dir, Position, Artifact, Avatar, AvatarKind } from "./universe/interfaces"
 import { SpriteType, getSprite, Sprite, spriteSpeed } from "./resources";
+import { updateArtifactPosition } from "./universe/manipulations"
 import { visualBounds } from "./plane"
+import { Game } from "./index"
 
 export class ArtifactActor extends ex.Actor {
     spriteName: string;
@@ -35,12 +37,17 @@ export class ArtifactActor extends ex.Actor {
     }
 
     // OnInitialize is called before the 1st actor update
-    onInitialize(engine: ex.Engine) {
+    onInitialize(engine: Game) {
+        this.artifact.dispatcher = engine.syncDispatcher;
         if (!this.sprite.animations)
             this.sprite.makeAnimations(engine)
         for (let a in this.sprite.animations) {
             this.addDrawing(a, this.sprite.animations[a]);
         }
+        let that = this;
+        setInterval(function(){
+            that.updateUniverse(engine);
+        }, universeUpdateFrequency);
     }
 
     to: any;
@@ -52,7 +59,7 @@ export class ArtifactActor extends ex.Actor {
             this.to = setTimeout(function(){ console.log(that) },100)
         }
 
-        let speedMod = 50; // TBD get speed from avatar/artifact
+        let speedMod = 100; // TBD get speed from avatar/artifact
         // Player input for direction and speed
         if (this.artifact.avatar.kind == AvatarKind.PLAYER) {
             this.speed = 0;
@@ -82,11 +89,6 @@ export class ArtifactActor extends ex.Actor {
             this.pos.x = visualBounds.right+worldWidth;
             this.vel.x = 0;
         }
-
-        // temp: Report position as we stop.
-        if (this.vel.x+this.vel.y == 0 && this.oldVel.x + this.oldVel.y != 0) {
-            console.log(this.pos)
-        }
     }
 
     // After main update, once per frame execute this code
@@ -104,7 +106,16 @@ export class ArtifactActor extends ex.Actor {
             }
         }
         this.setZIndex(10000+this.pos.y)
-        // 
     }
+
+    updateUniverse(engine: Game) {
+        let newPosition: Position = {
+            x: this.pos.x,
+            y: this.pos.y,
+            dir: this.dir
+        }
+        updateArtifactPosition(this.artifact, newPosition)        
+    }
+
 
 }

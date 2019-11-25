@@ -8,11 +8,32 @@ This is an Excalibur-based prototype of the TXT NET
 
 Proper distro will be done in Electron later.
 
-# TODO
+# WRITTEN WORD
+
+[ ] start editing
+[ ] stop editing
+[ ] proper prepending of rows (+ world row shift)
+[ ] ghost text cursor
+
+# INTERACTION
+
+[ ] Enter / Leave
+[ ] Push objects
+[ ] Ghost if blocked
+
+# MIND PROGRAMMING
+
+[ ] in-artifact properties
+[ ] in-artifact events
+[ ] in-world properties
+[ ] in-world events
+
+# L8R
 
 [ ] Document everything
-[ ] Update artifact positions if changed
 [ ] Emit events? Pushable/non-pushable
+[ ] Smart placement (no-collision shift)
+
 
 -------------------------
 
@@ -25,7 +46,7 @@ Proper distro will be done in Electron later.
 
 ### 2. Hooking up world
 --------------------------
-- tempBiuld
+- create Account from scratch with tem stuff
 - hook Artifacts, Avatar
 - figure out event hooking for Avatar?
 - first pushable objects

@@ -53,7 +53,7 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
     plugins: [
       new CleanWebpackPlugin({}),
       new HtmlWebPackPlugin({
-        title: 'TXT NET EXC'
+        title: 'TXT NET EXC',
       })
     ]
   },

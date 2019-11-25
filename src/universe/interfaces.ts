@@ -1,3 +1,5 @@
+import * as ex from 'excalibur';
+
 export enum AvatarKind {
     PLAYER, LOCAL, PROXY
 }
@@ -30,6 +32,7 @@ export interface Avatar {
     body: Artifact;
     kind: AvatarKind;
     visits: Record<string,Coordinates>;
+    visitsStack: string[];
 }
 
 export interface World {
@@ -45,6 +48,7 @@ export interface Artifact {
     avatar?: Avatar;
     worlds: World[];
     coords?: Coordinates;
+    dispatcher?: ex.EventDispatcher;
 }
 
 
