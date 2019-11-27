@@ -107,6 +107,7 @@ const sprites : Sprite[] = [
 
 let spritesMap : Record<string, Sprite> = {}
 const loader = new ex.Loader();
+loader.suppressPlayButton = true;
 for (let s of sprites) {
 	s.load(loader);
 	spritesMap[s.file] = s;
