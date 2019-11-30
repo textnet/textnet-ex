@@ -17,6 +17,7 @@ export class Game extends ex.Engine {
             height: visualBounds.height + 2*visualBounds.margin,
         });
     }
+
 }
 
 const game = new Game();
@@ -28,15 +29,6 @@ const scene = new PlaneScene(game, account);
 game.add("plane", scene);
 game.goToScene("plane");
 
-// Game events to handle
-game.on("hidden", () => {
-    console.log("pause");
-    game.stop();
-});
-game.on("visible", () => {
-    console.log("start");
-    game.start();
-});
 
 game.start(loader).then(() => {
     game.$editor = initEditor()

@@ -21,6 +21,8 @@ export const visualBounds = {
     margin: 50,
 };
 
+
+
 export class PlaneScene extends ex.Scene {
     account: Account;
 
@@ -48,6 +50,7 @@ export class PlaneScene extends ex.Scene {
     }
     public onActivate() {}
     public onDeactivate() {}
+
 }
 
 export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {

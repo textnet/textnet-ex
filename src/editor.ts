@@ -3,6 +3,7 @@ import * as ex from "excalibur"
 import { worldWidth } from "./universe/const"
 import { visualBounds } from "./plane"
 import { Game } from "./index"
+import { ArtifactActor } from "./actor"
 
 
 
@@ -31,7 +32,6 @@ export function initEditor() {
     let $wrapper = jquery("#editor-wrapper");
     let $canvas = jquery("canvas");
     $wrapper.offset({ top: $canvas.offset().top, left: $canvas.offset().left })
-    console.log(visualBounds.top)
     $wrapper.css({
         paddingTop:   0,
         paddingLeft:  visualBounds.left,
@@ -53,6 +53,7 @@ export function initEditor() {
         line+="\n";
     }
     $textarea.val(line)
+    $textarea.data("prepend", prependRows)
     return $textarea;
 }
 
@@ -61,9 +62,35 @@ export function adjustEditor($textarea, focus: ex.Vector) {
     let home = visualBounds.height / 2 + visualBounds.margin;
     let camera = focus.y;
     let distance = camera-home;
-    let prependHeight = rowHeight*prependRows;
-    distance += prependHeight;
+    distance += calculatePrepend($textarea);
     if (distance - $textarea.scrollTop() != 0) {
         $textarea.scrollTop(distance)
     }
+}
+
+function calculatePrepend($textarea) {
+    let rows = $textarea.data('prepend');
+    return rowHeight*rows;
+}
+
+
+
+export function editUnder(actor: ArtifactActor, game: Game) {
+    actor.isUnder = true;
+    actor.visible = false;
+    let $textarea = jquery(game.$editor);
+    let distance  = calculatePrepend($textarea);
+    $textarea.focus();
+    $textarea.scrollTop(distance + actor.pos.y);
+    // 2. Surface textarea
+    // 3. Move cursor
+    // 4. Remember to surface back
+    game.input.keyboard.on("release", function(event) {
+        if (event.key == ex.Input.Keys.Esc) {
+            // teleport actor!
+            $textarea.blur();
+            actor.visible = true;
+            actor.isUnder = false;
+        }
+    })
 }

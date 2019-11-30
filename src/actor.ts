@@ -5,6 +5,7 @@ import { SpriteType, getSprite, Sprite, spriteSpeed } from "./resources";
 import { updateArtifactPosition } from "./universe/manipulations"
 import { visualBounds } from "./plane"
 import { Game } from "./index"
+import { editUnder } from "./editor"
 
 export class ArtifactActor extends ex.Actor {
     spriteName: string;
@@ -12,6 +13,7 @@ export class ArtifactActor extends ex.Actor {
     dir: Dir;
     speed: number;
     artifact: Artifact;
+    isUnder: boolean;
 
     constructor(artifact: Artifact) {
         let pos:Position = artifact.coords.position;
@@ -27,6 +29,7 @@ export class ArtifactActor extends ex.Actor {
                 })
             })
         });
+        this.isUnder = false;
         this.artifact = artifact;
         this.spriteName = spriteName;
         this.sprite = sprite;
@@ -51,12 +54,11 @@ export class ArtifactActor extends ex.Actor {
     }
 
     to: any;
-    updateFromAvatar(engine: ex.Engine) {
-        // debug
-        var that = this;
-        if (engine.input.keyboard.isHeld(ex.Input.Keys.Space)) {
-            clearTimeout(this.to)
-            this.to = setTimeout(function(){ console.log(that) },100)
+    updateFromAvatar(engine: Game) {
+        if (this.isUnder) {
+            this.vel.x = 0;
+            this.vel.y = 0;
+            return; // if it is under, no control.
         }
 
         let speedMod = 100; // TBD get speed from avatar/artifact
@@ -74,6 +76,10 @@ export class ArtifactActor extends ex.Actor {
             // 
             if (engine.input.keyboard.isHeld(ex.Input.Keys.Shift))
                 speedMod = 500;            
+            // 
+            if (engine.input.keyboard.wasReleased(13)) {
+                editUnder(this, engine)
+            }
         }
 
         // Adjust velocity
@@ -92,7 +98,7 @@ export class ArtifactActor extends ex.Actor {
     }
 
     // After main update, once per frame execute this code
-    onPostUpdate(engine: ex.Engine, delta: number) {
+    onPostUpdate(engine: Game, delta: number) {
         // 
         if (this.artifact.avatar) {
             this.updateFromAvatar(engine)

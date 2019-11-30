@@ -5,49 +5,61 @@ This is an Excalibur-based prototype of the TXT NET
     npm install
     npm run dev
 
-
 Proper distro will be done in Electron later.
 
-# WRITTEN WORD
+# CONTROLS
 
-[ ] start editing
-[ ] stop editing
-[ ] proper prepending of rows (+ world row shift)
-[ ] ghost text cursor
-
-# INTERACTION
-
-[ ] Enter / Leave
-[ ] Push objects
-[ ] Ghost if blocked
-
-# MIND PROGRAMMING
-
-[ ] in-artifact properties
-[ ] in-artifact events
-[ ] in-world properties
-[ ] in-world events
-
-# L8R
-
-[ ] Document everything
-[ ] Emit events? Pushable/non-pushable
-[ ] Smart placement (no-collision shift)
+- Movement: UP, DOWN, LEFT, RIGHT
+- Artifacts:
+    - Push:  (move towards artifact)
+    - Pickup: SHIFT + (push)
+    - Put down: SHIFT
+    - Enter: CTRL + (push)
+    - Leave: ESC 
+- Written Word:
+    - Enter: CTRL+ENTER
+    - Leave: CTRL+ENTER
+- Spoken Word:
+    - Say: ENTER
 
 
--------------------------
+# PROJECT STRUCTURE
 
-### 1. ExcaliburJS engine
---------------------------
-- Resources
-- PlaneScene
-- ArtifactActor
-- simple bindings
+* [ ] Local Universe
+* [ ] Basic written word (coding)
+* [ ] Persistence / network game
+* [ ] Spoken word / gods (commands)
+* [ ] Hosted universes and proper multiplayer
+* [ ] Integrated editor with text flow
+* [ ] Advanced objects like images etc.
 
-### 2. Hooking up world
---------------------------
-- create Account from scratch with tem stuff
-- hook Artifacts, Avatar
-- figure out event hooking for Avatar?
-- first pushable objects
+
+# Local Universe
+
+* [x] Local account with planes and avatars
+* [x] Player avatar
+* [x] Artifacts
+* [ ] Enter/leave artifacts
+* [ ] Pickup/put down artifacts
+* [ ] Touch artifacts
+
+# Basic Written Word
+
+* [ ] Separate editor
+* [ ] Properties
+    - movable
+    - pickable
+    - passable
+    - data
+* [ ] Event handlers
+    - touch
+    - enter
+    - leave
+    - pickup
+    - putdown
+    - move
+* [ ] Actions
+    - log
+    - move
+* [ ] Control structures
 
