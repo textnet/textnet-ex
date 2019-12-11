@@ -1,15 +1,15 @@
 import * as ex from "excalibur";
 import { DIR, worldWidth, universeUpdateFrequency } from "./universe/const";
 import { Dir, Position, Artifact, Avatar, AvatarKind } from "./universe/interfaces"
-import { SpriteType, getSprite, Sprite, spriteSpeed } from "./resources";
 import { updateArtifactPosition } from "./universe/manipulations"
 import { visualBounds } from "./plane"
 import { Game } from "./index"
 import { editUnder } from "./editor"
+import { ArtifactSprite } from "./sprite"
 
 export class ArtifactActor extends ex.Actor {
     spriteName: string;
-    sprite: Sprite;
+    sprite: ArtifactSprite;
     dir: Dir;
     speed: number;
     artifact: Artifact;
@@ -18,14 +18,14 @@ export class ArtifactActor extends ex.Actor {
     constructor(artifact: Artifact) {
         let pos:Position = artifact.coords.position;
         let spriteName:string = artifact.spriteName;
-        let sprite:Sprite = getSprite(spriteName);
+        let sprite:ArtifactSprite = new ArtifactSprite(artifact);
         super({
             pos: new ex.Vector(pos.x+visualBounds.left, pos.y+visualBounds.top),
             body: new ex.Body({
                 collider: new ex.Collider({
                     type:   ex.CollisionType.Active,
-                    shape:  ex.Shape.Box(sprite.body.size[0], sprite.body.size[1]),
-                    offset: new ex.Vector(-sprite.body.offset[0], -sprite.body.offset[1])
+                    shape:  ex.Shape.Box(artifact.body.size[0], artifact.body.size[1]),
+                    offset: new ex.Vector(-artifact.body.offset[0], -artifact.body.offset[1])
                 })
             })
         });
@@ -33,10 +33,12 @@ export class ArtifactActor extends ex.Actor {
         this.artifact = artifact;
         this.spriteName = spriteName;
         this.sprite = sprite;
-        if (this.sprite.type == SpriteType.STATIC)
-            this.dir = DIR.UP;
-        else
+        if (artifact.sprite.moving || artifact.sprite.turning)
+        {
             this.dir = pos.dir;
+        } else {
+            this.dir = DIR.UP;
+        }
     }
 
     // OnInitialize is called before the 1st actor update
@@ -104,7 +106,7 @@ export class ArtifactActor extends ex.Actor {
             this.updateFromAvatar(engine)
         }
         // Update animations
-        if (this.sprite.type != SpriteType.STATIC) {
+        if (this.artifact.sprite.turning) {
             if (this.speed > 0) {
                 this.setDrawing("move:"+this.dir.name)
             } else {

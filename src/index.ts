@@ -1,6 +1,5 @@
 import * as ex from "excalibur";
 import { PlaneScene } from "./plane";
-import { loader } from "./resources";
 import { worldWidth } from "./universe/const";
 import { visualBounds } from "./plane";
 import { Account } from "./universe/interfaces";
@@ -29,6 +28,8 @@ const scene = new PlaneScene(game, account);
 game.add("plane", scene);
 game.goToScene("plane");
 
+const loader = new ex.Loader();
+loader.suppressPlayButton = true;
 
 game.start(loader).then(() => {
     game.$editor = initEditor()

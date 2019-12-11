@@ -44,7 +44,20 @@ export interface World {
 export interface Artifact {
     id: string;
     name: string;
-    spriteName: string;
+
+    spriteName: string; // TODO: obsolete
+    sprite: { // TODO
+        base64: string;
+        idleBase64: string;
+        size:   number[]; // [32,32]
+        turning:  boolean;
+        moving:   boolean;
+    }
+    body: { // TODO
+        offset: number[]; // [0,0]
+        size:   number[]; // [30,20]
+    }
+
     avatar?: Avatar;
     worlds: World[];
     coords?: Coordinates;
