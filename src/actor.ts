@@ -6,6 +6,8 @@ import { visualBounds } from "./plane"
 import { Game } from "./index"
 import { editUnder } from "./editor"
 import { ArtifactSprite } from "./sprite"
+import { getArtifact_NextTo } from "./universe/getters"
+import { enterArtifact } from "./universe/manipulations"
 
 export class ArtifactActor extends ex.Actor {
     spriteName: string;
@@ -25,7 +27,7 @@ export class ArtifactActor extends ex.Actor {
                 collider: new ex.Collider({
                     type:   ex.CollisionType.Active,
                     shape:  ex.Shape.Box(artifact.body.size[0], artifact.body.size[1]),
-                    offset: new ex.Vector(-artifact.body.offset[0], -artifact.body.offset[1])
+                    offset: new ex.Vector(artifact.body.offset[0], artifact.body.offset[1])
                 })
             })
         });
@@ -75,12 +77,20 @@ export class ArtifactActor extends ex.Actor {
                 this.dir=DIR.UP; this.speed=1; }
             if (engine.input.keyboard.isHeld(ex.Input.Keys.Down)) {
                 this.dir=DIR.DOWN; this.speed=1; }
-            // 
-            if (engine.input.keyboard.isHeld(ex.Input.Keys.Shift))
-                speedMod = 500;            
-            // 
             if (engine.input.keyboard.wasReleased(13)) {
                 editUnder(this, engine)
+            }
+            // PICKUP
+            if (engine.input.keyboard.isHeld(ex.Input.Keys.Shift))
+                speedMod = 500;            
+            // ENTER
+            if (engine.input.keyboard.isHeld(17)) { // 17 = CTRL, 18 = ALT
+                let item = getArtifact_NextTo(this.artifact, this.dir);
+                if (item) {
+                    // enter the world in the universe
+                    enterArtifact(this.artifact.avatar, item)
+                    // switch scene!
+                }
             }
         }
 

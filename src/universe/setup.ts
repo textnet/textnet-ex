@@ -68,7 +68,7 @@ const artifactPlayer: Artifact = {
     },
     body: { 
         size:   [ 30,  20],
-        offset: [ -5, -15],
+        offset: [  5,  15],
     },
     worlds: []
 }
@@ -84,8 +84,8 @@ const artifactDefault: Artifact = {
         moving:   false
     },
     body: {
-        size:   [ 32,  22],
-        offset: [  8,  -8],        
+        size:   [ 32,  32],
+        offset: [ -8,   8],        
     },
     worlds: []    
 }
@@ -102,13 +102,13 @@ const artifactChair: Artifact = {
     },
     body: {
         size:   [ 25,  21],
-        offset: [  0, -12],
+        offset: [  0,  12],
     },
     worlds: []    
 }
 
 const artifacts = {
     _: artifactDefault,
-    human_professor: artifactPlayer,
-    chair: artifactChair
+    human_professor: artifactDefault, //artifactPlayer,
+    chair: artifactDefault, //artifactChair
 }

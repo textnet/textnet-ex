@@ -17,6 +17,10 @@ export class Game extends ex.Engine {
         });
     }
 
+    switchScene() {
+        
+    }
+
 }
 
 const game = new Game();

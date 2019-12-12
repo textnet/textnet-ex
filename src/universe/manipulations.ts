@@ -10,8 +10,13 @@ import {
 } from "./events"
 
 
+export function enterArtifact(avatar:Avatar, artifact:Artifact) {
+    return enterWorld(avatar, artifact.worlds[0]);
+}
+
 export function enterWorld(avatar:Avatar, world:World) {
     // EVENT: avatar:enter
+    console.log("avatar:enter", world.owner)
     if (avatar.body.coords) {
         avatar.visits[avatar.body.coords.world.id] = cpCoords(avatar.body.coords);
     }
