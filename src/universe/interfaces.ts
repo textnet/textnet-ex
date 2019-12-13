@@ -45,17 +45,20 @@ export interface Artifact {
     id: string;
     name: string;
 
-    spriteName: string; // TODO: obsolete
-    sprite: { // TODO
+    sprite: { 
         base64: string;
         idleBase64: string;
         size:   number[]; // [32,32]
         turning:  boolean;
         moving:   boolean;
     }
-    body: { // TODO
+    body: { 
         offset: number[]; // [0,0]
         size:   number[]; // [30,20]
+    }
+    colors: {
+        world: { fg: string, bg: string };
+        title: { fg: string, bg: string };
     }
 
     avatar?: Avatar;

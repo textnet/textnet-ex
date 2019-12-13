@@ -22,6 +22,20 @@ Proper distro will be done in Electron later.
 - Spoken Word:
     - Say: ENTER
 
+# PLAN FOR TODAY
+
+- migrate to only one scene
+- scene change is a separate cycle
+- networking updates — separate cycle = stop using timeouts
+- check why do we have glitches
+- diagonal movements
+- move utils to utils
+
+
+// SOMEHOW WHEN SWITCHING SCENE OBJECTS ARE MOVED.
+    - use only one scene (preferred)
+    - ALSO: check for avatar teleportation in a separate cycle
+    - ALSO: send networking updates in a separate cycle?
 
 # PROJECT STRUCTURE
 

@@ -4,6 +4,7 @@ import { worldWidth } from "./universe/const"
 import { visualBounds } from "./plane"
 import { Game } from "./index"
 import { ArtifactActor } from "./actor"
+import { PlaneScene } from "./plane"
 
 
 
@@ -11,24 +12,27 @@ const prependRows   = 1000;
 const rowHeight     = 16;
 
 export function initEditor() {
-    jquery("head").append('<link href="https://fonts.googleapis.com/css?family=Nanum Gothic Coding&display=swap" rel="stylesheet">');
-    jquery("body").append([
-        "<style>",
-        "body {padding:0; margin:0; background:#444444}",
-        "#editor-wrapper { position:absolute; left:0; top:0 } ",
-        "textarea { display: none} ",
-        "textarea#editor { border:0; padding: 0;",
-            "resize:none; outline:none; margin:0; display:block; ",
-            "font-family: Nanum Gothic Coding, monospace; ",
-            "line-height: "+rowHeight+"px; ",
-            "font-size: "+rowHeight+"px;   ",
-            "letter-spacing: 0; ",
-            "overflow: hidden;  ",
-            "background: rgba(0,0,0,0); color:#ffffff }",
-        "</style>",
-        "<div id=editor-wrapper><textarea id=editor>There is TXT code!</textarea></div>"
-        ].join(""));
     let $textarea = jquery("textarea#editor");
+    if ($textarea.length == 0) {
+        jquery("head").append('<link href="https://fonts.googleapis.com/css?family=Nanum Gothic Coding&display=swap" rel="stylesheet">');
+        jquery("body").append([
+            "<style>",
+            "body {padding:0; margin:0; background:#888888}",
+            "#editor-wrapper { position:absolute; left:0; top:0 } ",
+            "textarea { display: none} ",
+            "textarea#editor { border:0; padding: 0;",
+                "resize:none; outline:none; margin:0; display:block; ",
+                "font-family: Nanum Gothic Coding, monospace; ",
+                "line-height: "+rowHeight+"px; ",
+                "font-size: "+rowHeight+"px;   ",
+                "letter-spacing: 0; ",
+                "overflow: hidden;  ",
+                "background: rgba(0,0,0,0); color:#ffffff }",
+            "</style>",
+            "<div id=editor-wrapper><textarea id=editor>There is TXT code!</textarea></div>"
+            ].join(""));
+        $textarea = jquery("textarea#editor");
+    }
     let $wrapper = jquery("#editor-wrapper");
     let $canvas = jquery("canvas");
     $wrapper.offset({ top: $canvas.offset().top, left: $canvas.offset().left })
@@ -73,24 +77,3 @@ function calculatePrepend($textarea) {
     return rowHeight*rows;
 }
 
-
-
-export function editUnder(actor: ArtifactActor, game: Game) {
-    actor.isUnder = true;
-    actor.visible = false;
-    let $textarea = jquery(game.$editor);
-    let distance  = calculatePrepend($textarea);
-    $textarea.focus();
-    $textarea.scrollTop(distance + actor.pos.y);
-    // 2. Surface textarea
-    // 3. Move cursor
-    // 4. Remember to surface back
-    game.input.keyboard.on("release", function(event) {
-        if (event.key == ex.Input.Keys.Esc) {
-            // teleport actor!
-            $textarea.blur();
-            actor.visible = true;
-            actor.isUnder = false;
-        }
-    })
-}

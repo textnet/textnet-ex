@@ -7,11 +7,11 @@ import {
 } from "./const"
 
 
-export function getWorld(account: Account) {
+export function getAccountWorld(account: Account) {
     return account.avatar.body.coords.world;
 }
 
-const PROXIMITY = 5; // how far is 'NEXT'
+const PROXIMITY = 0; // how far is 'NEXT'
 
 // get an artifact which is directly next to another
 export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
@@ -38,16 +38,18 @@ export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
 export function isNext(a: Artifact, b: Artifact, dir: Dir) {
     let aBox = [0,0,0,0]; // L-U-R-D
     let bBox = [0,0,0,0];
-    aBox[0] = a.coords.position.x - a.body.offset[0];
-    aBox[1] = a.coords.position.y - a.body.offset[1];
+    aBox[0] = a.coords.position.x - a.body.size[0]/2 + a.body.offset[0];
+    aBox[1] = a.coords.position.y - a.body.size[1]/2 + a.body.offset[1];
     aBox[2] = aBox[0] + a.body.size[0];
     aBox[3] = aBox[1] + a.body.size[1];
-    bBox[0] = b.coords.position.x - b.body.offset[0];
-    bBox[1] = b.coords.position.y - b.body.offset[1];
+    bBox[0] = b.coords.position.x - b.body.size[0]/2 + b.body.offset[0];
+    bBox[1] = b.coords.position.y - b.body.size[1]/2 + b.body.offset[1];
     bBox[2] = bBox[0] + b.body.size[0];
     bBox[3] = bBox[1] + b.body.size[1];
-    // console.log("Box A:", aBox[0], aBox[1], aBox[2], aBox[3])
-    // console.log("Box B:", bBox[0], bBox[1], bBox[2], bBox[3])
+    console.log("Box A:", a.name, aBox[0], aBox[1], aBox[2], aBox[3], 
+        "pos:", a.coords.position.x )
+    console.log("Box B:", b.name, bBox[0], bBox[1], bBox[2], bBox[3],
+        "pos:", b.coords.position.x, b.body.offset[0] )
     // check the overlap
     let overlapX = false, overlapY = false;
     if ((aBox[0] > bBox[0] && aBox[0] < bBox[2]) ||
@@ -61,10 +63,12 @@ export function isNext(a: Artifact, b: Artifact, dir: Dir) {
     if (overlapY) {
         if (dir == DIR.LEFT)  distance = aBox[0]-bBox[2];
         if (dir == DIR.RIGHT) distance = bBox[0]-aBox[2];
+        console.log("overlapY", distance)
     }
     if (overlapX) {
         if (dir == DIR.UP)   distance = aBox[1]-bBox[3];
         if (dir == DIR.DOWN) distance = bBox[1]-aBox[3];
+        console.log("overlapX", distance)
     }
     return (distance >= 0 && distance < PROXIMITY);
 }

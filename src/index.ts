@@ -2,14 +2,14 @@ import * as ex from "excalibur";
 import { PlaneScene } from "./plane";
 import { worldWidth } from "./universe/const";
 import { visualBounds } from "./plane";
-import { Account } from "./universe/interfaces";
+import { Account, World } from "./universe/interfaces";
 import { createAccount } from "./universe/setup";
 import { initSync } from "./networking";
 import { initEditor } from "./editor"
+import { getAccountWorld } from "./universe/getters"
 
 export class Game extends ex.Engine {
     syncDispatcher: ex.EventDispatcher;
-    $editor:object;
     constructor() {
         super({
             width: worldWidth + visualBounds.left + visualBounds.right,
@@ -17,28 +17,26 @@ export class Game extends ex.Engine {
         });
     }
 
-    switchScene() {
-        
+    switchScene(world: World) {
+        this.removeScene("world");
+        const scene = new PlaneScene(this, world);
+        this.addScene("world", scene);
+        this.goToScene("world");
     }
+
+
 
 }
 
 const game = new Game();
+const loader = new ex.Loader();
+loader.suppressPlayButton = true;
 game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
 
 const account = createAccount("Ni", "human_professor");
-const scene = new PlaneScene(game, account);
-
-game.add("plane", scene);
-game.goToScene("plane");
-
-const loader = new ex.Loader();
-loader.suppressPlayButton = true;
+game.switchScene(getAccountWorld(account))
 
 game.start(loader).then(() => {
-    game.$editor = initEditor()
     initSync(game);
-    var input = document.createElement('TEXTAREA');
-    document.body.appendChild(input)
     console.log("----------------------- :) --------------------");
 });

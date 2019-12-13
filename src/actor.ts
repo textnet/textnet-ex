@@ -4,36 +4,33 @@ import { Dir, Position, Artifact, Avatar, AvatarKind } from "./universe/interfac
 import { updateArtifactPosition } from "./universe/manipulations"
 import { visualBounds } from "./plane"
 import { Game } from "./index"
-import { editUnder } from "./editor"
 import { ArtifactSprite } from "./sprite"
 import { getArtifact_NextTo } from "./universe/getters"
-import { enterArtifact } from "./universe/manipulations"
+import { enterArtifact, leaveWorld } from "./universe/manipulations"
 
 export class ArtifactActor extends ex.Actor {
-    spriteName: string;
     sprite: ArtifactSprite;
     dir: Dir;
     speed: number;
     artifact: Artifact;
-    isUnder: boolean;
+    needRelease: boolean;
+    interval: object;
 
     constructor(artifact: Artifact) {
         let pos:Position = artifact.coords.position;
-        let spriteName:string = artifact.spriteName;
         let sprite:ArtifactSprite = new ArtifactSprite(artifact);
         super({
             pos: new ex.Vector(pos.x+visualBounds.left, pos.y+visualBounds.top),
             body: new ex.Body({
                 collider: new ex.Collider({
-                    type:   ex.CollisionType.Active,
+                    type:   ex.CollisionType.Active, 
                     shape:  ex.Shape.Box(artifact.body.size[0], artifact.body.size[1]),
                     offset: new ex.Vector(artifact.body.offset[0], artifact.body.offset[1])
                 })
             })
         });
-        this.isUnder = false;
+        this.needRelease = true;
         this.artifact = artifact;
-        this.spriteName = spriteName;
         this.sprite = sprite;
         if (artifact.sprite.moving || artifact.sprite.turning)
         {
@@ -43,6 +40,7 @@ export class ArtifactActor extends ex.Actor {
         }
     }
 
+    
     // OnInitialize is called before the 1st actor update
     onInitialize(engine: Game) {
         this.artifact.dispatcher = engine.syncDispatcher;
@@ -51,45 +49,48 @@ export class ArtifactActor extends ex.Actor {
         for (let a in this.sprite.animations) {
             this.addDrawing(a, this.sprite.animations[a]);
         }
-        let that = this;
-        setInterval(function(){
-            that.updateUniverse(engine);
-        }, universeUpdateFrequency);
+        this.updateUniverse(engine);
     }
 
     to: any;
     updateFromAvatar(engine: Game) {
-        if (this.isUnder) {
-            this.vel.x = 0;
-            this.vel.y = 0;
-            return; // if it is under, no control.
-        }
-
+        this.speed = 0;
         let speedMod = 100; // TBD get speed from avatar/artifact
         // Player input for direction and speed
         if (this.artifact.avatar.kind == AvatarKind.PLAYER) {
-            this.speed = 0;
-            if (engine.input.keyboard.isHeld(ex.Input.Keys.Left)) {
-                this.dir=DIR.LEFT; this.speed=1; }
-            if (engine.input.keyboard.isHeld(ex.Input.Keys.Right)) {
-                this.dir=DIR.RIGHT; this.speed=1; }
-            if (engine.input.keyboard.isHeld(ex.Input.Keys.Up)) {
-                this.dir=DIR.UP; this.speed=1; }
-            if (engine.input.keyboard.isHeld(ex.Input.Keys.Down)) {
-                this.dir=DIR.DOWN; this.speed=1; }
-            if (engine.input.keyboard.wasReleased(13)) {
-                editUnder(this, engine)
+            if (this.needRelease && engine.input.keyboard.getKeys().length == 0) {
+                this.needRelease = false;
             }
-            // PICKUP
-            if (engine.input.keyboard.isHeld(ex.Input.Keys.Shift))
-                speedMod = 500;            
-            // ENTER
-            if (engine.input.keyboard.isHeld(17)) { // 17 = CTRL, 18 = ALT
-                let item = getArtifact_NextTo(this.artifact, this.dir);
-                if (item) {
-                    // enter the world in the universe
-                    enterArtifact(this.artifact.avatar, item)
-                    // switch scene!
+            if (!this.needRelease) {
+                if (engine.input.keyboard.isHeld(ex.Input.Keys.Left)) {
+                    this.dir=DIR.LEFT; this.speed=1; }
+                if (engine.input.keyboard.isHeld(ex.Input.Keys.Right)) {
+                    this.dir=DIR.RIGHT; this.speed=1; }
+                if (engine.input.keyboard.isHeld(ex.Input.Keys.Up)) {
+                    this.dir=DIR.UP; this.speed=1; }
+                if (engine.input.keyboard.isHeld(ex.Input.Keys.Down)) {
+                    this.dir=DIR.DOWN; this.speed=1; }
+                if (engine.input.keyboard.wasReleased(13)) {
+                    // TODO real editor
+                }
+                // PICKUP
+                if (engine.input.keyboard.isHeld(ex.Input.Keys.Shift))
+                    speedMod = 500;            
+                // ENTER
+                if (engine.input.keyboard.isHeld(17) && this.speed > 0) { 
+                    // 17 = CTRL, 18 = ALT
+                    let item = getArtifact_NextTo(this.artifact, this.dir);
+                    // if (item) {
+                    //     enterArtifact(this.artifact.avatar, item)
+                    //     engine.switchScene(this.artifact.coords.world)
+                    // }
+                }
+                // ESCAPE
+                if (engine.input.keyboard.wasReleased(ex.Input.Keys.Esc)) { 
+                    leaveWorld(this.artifact.avatar);
+                    engine.switchScene(this.artifact.coords.world)
+                    // SOMEHOW WHEN SWITCHING SCENE OBJECTS ARE MOVED.
+                    return;
                 }
             }
         }
@@ -132,7 +133,11 @@ export class ArtifactActor extends ex.Actor {
             y: this.pos.y,
             dir: this.dir
         }
-        updateArtifactPosition(this.artifact, newPosition)        
+        updateArtifactPosition(this.artifact, newPosition)
+        let that = this;
+        setTimeout(function() {
+            that.updateUniverse(engine);
+        }, universeUpdateFrequency)
     }
 
 
