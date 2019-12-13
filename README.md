@@ -24,12 +24,10 @@ Proper distro will be done in Electron later.
 
 # PLAN FOR TODAY
 
-- migrate to only one scene
-- scene change is a separate cycle
-- networking updates — separate cycle = stop using timeouts
-- check why do we have glitches
-- diagonal movements
-- move utils to utils
+- document
+- animate entering the artifact
+- animate leaving the artifact
+
 
 
 // SOMEHOW WHEN SWITCHING SCENE OBJECTS ARE MOVED.
@@ -53,7 +51,7 @@ Proper distro will be done in Electron later.
 * [x] Local account with planes and avatars
 * [x] Player avatar
 * [x] Artifacts
-* [ ] Enter/leave artifacts
+* [x] Enter/leave artifacts
 * [ ] Pickup/put down artifacts
 * [ ] Touch artifacts
 

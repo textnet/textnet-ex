@@ -6,7 +6,6 @@ export enum AvatarKind {
 
 export interface Dir {
     name: string;
-    angle: number;
     x: number;
     y: number;
 }

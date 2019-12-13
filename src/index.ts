@@ -1,5 +1,5 @@
 import * as ex from "excalibur";
-import { PlaneScene } from "./plane";
+import { PlaneScene, setupScene, purgeScene } from "./plane";
 import { worldWidth } from "./universe/const";
 import { visualBounds } from "./plane";
 import { Account, World } from "./universe/interfaces";
@@ -18,13 +18,9 @@ export class Game extends ex.Engine {
     }
 
     switchScene(world: World) {
-        this.removeScene("world");
-        const scene = new PlaneScene(this, world);
-        this.addScene("world", scene);
-        this.goToScene("world");
+        purgeScene(this.currentScene as PlaneScene, this);
+        setupScene(this.currentScene as PlaneScene, world, this);
     }
-
-
 
 }
 
@@ -34,9 +30,12 @@ loader.suppressPlayButton = true;
 game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
 
 const account = createAccount("Ni", "human_professor");
-game.switchScene(getAccountWorld(account))
+const scene = new PlaneScene(game);
+setupScene(scene, getAccountWorld(account), game)
+initSync(game);
+game.addScene("world", scene);
+game.goToScene("world");
 
 game.start(loader).then(() => {
-    initSync(game);
     console.log("----------------------- :) --------------------");
 });
