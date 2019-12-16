@@ -39,7 +39,6 @@ export function leaveWorld(avatar:Avatar) {
 
 export function pickupArtifact(avatar: Avatar, artifact: Artifact) {
     // EVENT: avatar:pickup
-    console.log("PICKUP", artifact)
     removeArtifact(artifact);
     avatar.inventory.push(artifact);
 }
@@ -49,7 +48,6 @@ export function putdownArtifact(avatar: Avatar) {
         // TODO: closest position;
         let coords: Coordinates = cpCoords(avatar.body.coords);
         let artifact: Artifact = avatar.inventory.pop();
-        console.log("PUTDOWN", artifact)
         placeArtifact(artifact, coords)
         return artifact;
     }

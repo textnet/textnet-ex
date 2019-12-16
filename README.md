@@ -26,14 +26,18 @@ Proper distro will be done in Electron later.
 
 # PLAN FOR TODAY
 
-- pickup
-- putdown
+- pickup/putdown
+    + show the smaller version next to its holder
+    - find space in the right direction
+    - don't put down if there is no space
+
 
 
 # SMALL THINGS TO PLAY WITH
 - document
 - animate entering the artifact
 - animate leaving the artifact
+- animate holding the artifact
 - explore using 'touching' for colliders
 - find the closes empty spot on "re-enter" 
 

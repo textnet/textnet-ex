@@ -19,50 +19,56 @@ import { PlaneScene } from "./plane"
 import { getPlayerDirection, getPlayerCommand } from "./command"
 import { deepCopy, addDir } from "./universe/utils"
 import { cpCoords } from "./universe/utils"
+import { InventoryActor } from "./inventoryActor"
 
-export class ArtifactActor extends ex.Actor {
-    sprite: ArtifactSprite;
-    dir: Dir;
+export class ArtifactActor extends InventoryActor {
     speed: { x:number, y: number };
-    artifact: Artifact;
     needRelease: boolean;
-    interval: object;
+    inventory?: InventoryActor;
 
     constructor(artifact: Artifact) {
         let pos:Position = artifact.coords.position;
         let sprite:ArtifactSprite = new ArtifactSprite(artifact);
-        super({
-            pos: new ex.Vector(pos.x, pos.y),
-            body: new ex.Body({
-                collider: new ex.Collider({
-                    type:   ex.CollisionType.Fixed, 
-                    shape:  ex.Shape.Box(artifact.body.size[0], artifact.body.size[1]),
-                    offset: new ex.Vector(artifact.body.offset[0], artifact.body.offset[1])
-                })
-            })
-        });
+        super(artifact);
+        this.scale = new ex.Vector(1,1);
+        this.opacity = 1;
+        this.rotation = 0;
+        this.body.pos = new ex.Vector(pos.x, pos.y);
+        if (artifact.avatar && artifact.avatar.kind == AvatarKind.PLAYER) {
+            this.body.collider.type = ex.CollisionType.Active;
+        } else {
+            this.body.collider.type = ex.CollisionType.Fixed;
+        }
         this.needRelease = true;
-        this.artifact = artifact;
         this.artifact.actor = this;
         this.sprite = sprite;
         if (artifact.sprite.moving || artifact.sprite.turning)
         {
             this.dir = pos.dir;
-        } else {
-            this.dir = DIR.UP;
-        }
-        if (artifact.avatar && artifact.avatar.kind == AvatarKind.PLAYER) {
-            this.body.collider.type = ex.CollisionType.Active;
         }
     }
 
     // onInitialize is called before the 1st actor update
     onInitialize(engine: Game) {
         this.artifact.dispatcher = engine.syncDispatcher;
-        if (!this.sprite.animations)
-            this.sprite.makeAnimations(engine)
-        for (let a in this.sprite.animations) {
-            this.addDrawing(a, this.sprite.animations[a]);
+        super.onInitialize(engine);
+        this.visualiseInventory(engine);
+    }
+
+    visualiseInventory(engine: Game) {
+        if (this.inventory) {
+            this.remove(this.inventory);
+            delete this.inventory;
+        }
+        if (this.artifact.avatar && this.artifact.avatar.inventory.length > 0) {
+            // create a new artifact
+            this.inventory = new InventoryActor(this.artifact.avatar.inventory[0]);
+            this.inventory.pos = new ex.Vector(
+                this.artifact.body.size[0]/2+ 
+                this.inventory.artifact.body.size[0]/2*this.inventory.scale.x,
+                -this.inventory.artifact.body.size[1]/2*this.inventory.scale.y
+                )
+            this.add(this.inventory);
         }
     }
 
@@ -100,18 +106,19 @@ export class ArtifactActor extends ex.Actor {
                     let item:Artifact = getArtifact_NextTo(this.artifact, straightDir);
                     if (item) {
                         pickupArtifact(this.artifact.avatar, item);
-                        console.log('===')
                         if (item.actor) {
-                            console.log(item.actor)
+                            this.scene.remove(item.actor)
                         }
-                        // TODO: visualise
                     } else {
-                        let a: Artifact = putdownArtifact(this.artifact.avatar);
-                        if (a) {
-                            console.log(a.coords)
-                            updateArtifactOnScene(this.scene as PlaneScene, a);
+                        let item: Artifact = putdownArtifact(this.artifact.avatar);
+                        if (item) {
+                            if (item.actor) {
+                                this.scene.add(item.actor)
+                            }
+                            updateArtifactOnScene(this.scene as PlaneScene, item);
                         }
                     }
+                    this.visualiseInventory(engine)
                     this.needRelease = true;
                 }
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
@@ -148,6 +155,7 @@ export class ArtifactActor extends ex.Actor {
             this.pos.x = visualBounds.right+worldWidth;
             this.vel.x = 0;
         }
+
     }
 
     // After main update, once per frame execute this code
