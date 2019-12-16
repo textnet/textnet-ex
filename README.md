@@ -14,10 +14,7 @@ Proper distro will be done in Electron later.
     + Enter: CTRL + (move)
     + Leave: ESC 
     + Push:  SHIFT + (move)
-    - Pickup/putdown: ALT + (move)
-        do I need an alternate putdown to 
-        enable inventory stack instead of 
-        inventory item?
+    + Pickup/putdown: ALT + (move)
 - Written Word:
     - Enter: CTRL+ENTER (???)
     - Leave: CTRL+ENTER (???)
@@ -26,10 +23,10 @@ Proper distro will be done in Electron later.
 
 # PLAN FOR TODAY
 
-- pickup/putdown
++ pickup/putdown
     + show the smaller version next to its holder
-    - find space in the right direction
-    - don't put down if there is no space
+    + find space in the right direction
+    + don't put down if there is no space
 
 
 

@@ -12,7 +12,7 @@ export function getAccountWorld(account: Account) {
     return account.avatar.body.coords.world;
 }
 
-const PROXIMITY = 2; // how far is 'NEXT'
+const PROXIMITY = 3; // how far is 'NEXT'
 
 // get an artifact which is directly next to another
 export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
@@ -36,34 +36,32 @@ export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
 }
 
 // 
-export function artifactBox(a: Artifact) {
+export function artifactBox(a: Artifact, coords?: Coordinates) {
+    if (!coords) coords = a.coords;
     let aBox = [0,0,0,0]; // L-U-R-D
-    aBox[0] = a.coords.position.x - a.body.size[0]/2 + a.body.offset[0];
-    aBox[1] = a.coords.position.y - a.body.size[1]/2 + a.body.offset[1];
+    aBox[0] = coords.position.x - a.body.size[0]/2 + a.body.offset[0];
+    aBox[1] = coords.position.y - a.body.size[1]/2 + a.body.offset[1];
     aBox[2] = aBox[0] + a.body.size[0];
     aBox[3] = aBox[1] + a.body.size[1];
     return aBox    
 }
 //
 export function isOverlap(a: Artifact, b: Artifact, coords?: Coordinates) {
-    if (!coords) coords = a.coords;
-    if (!a.coords || !b.coords) return false;
-    let aBox = artifactBox(a);
+    if (!b.coords || (!a.coords && !coords)) return false;
+    let aBox = artifactBox(a, coords);
     let bBox = artifactBox(b);
-    aBox[0] = aBox[0] + coords.position.x - a.coords.position.x;
-    aBox[1] = aBox[1] + coords.position.y - a.coords.position.y;
-    aBox[2] = aBox[2] + coords.position.x - a.coords.position.x;
-    aBox[3] = aBox[3] + coords.position.y - a.coords.position.y;
     if (aBox[0] > bBox[0]) {
         let cBox = deepCopy(bBox);
         bBox = deepCopy(aBox);
-        aBox = deepCopy(cBox);
+        aBox = cBox;
     }
-    if (aBox[2] < bBox[0]) return false;
-    if (aBox[1] < bBox[1] && aBox[3] < bBox[3]) return false;
-    if (aBox[1] > bBox[1] && aBox[3] > bBox[3]) return false;
+    if (aBox[2] <= bBox[0]) return false;
+    if (aBox[1] <= bBox[1] && aBox[3] <= bBox[1]) return false;
+    if (aBox[1] >= bBox[3] && aBox[3] >= bBox[3]) return false;
     return true;
 }
+
+
 
 // check if B is next to A in direction of DIR
 export function isNext(a: Artifact, b: Artifact, dir: Dir) {

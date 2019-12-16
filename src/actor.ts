@@ -111,7 +111,7 @@ export class ArtifactActor extends InventoryActor {
                         }
                         this.needRelease = true;
                         this.visualiseInventory(engine)
-                    } else {
+                    } else if (this.artifact.avatar.inventory.length > 0) {
                         let straightDir: Dir = DIRfrom(playerDir);
                         let item: Artifact = putdownArtifact(this.artifact.avatar, playerDir);
                         if (item) {

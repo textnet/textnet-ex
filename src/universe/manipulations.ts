@@ -62,6 +62,8 @@ export function putdownArtifact(avatar: Avatar, dir: Dir) {
         if (isArtifactPlaceable(artifact, coords)) {
             placeArtifact(artifact, coords);
             return artifact;
+        } else {
+            avatar.inventory.push(artifact)
         }
     }
 }
@@ -83,11 +85,10 @@ export function placeArtifact(artifact: Artifact, coords: Coordinates) {
 export function isArtifactPlaceable(artifact: Artifact, coords: Coordinates) {
     for (let i in coords.world.artifacts) {
         let another:Artifact = coords.world.artifacts[i];
-        console.log("test", artifact.name, another.name)
         if (another.id != artifact.id && isOverlap(artifact, another, coords)) {
-            console.log("STUCK", artifact.id, another.id)
-            console.log(artifact.id, artifactBox(artifact))
-            console.log(another.id, artifactBox(another))
+            console.log("STUCK", artifact.name, another.name)
+            console.log(artifact.name, artifactBox(artifact, coords))
+            console.log(another.name, artifactBox(another))
             return false;
         }
     }
