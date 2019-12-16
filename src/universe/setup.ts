@@ -13,7 +13,9 @@ import { deepCopy } from "./utils"
 
 
 export function createArtifact(name:string, setupSpriteName:string, coords?:Coordinates) {
-    const artifact: Artifact = Object.create(artifacts[setupSpriteName])
+    let d = deepCopy(artifacts[setupSpriteName]);
+    d.colors = { world: rnd(worldColors), title: rnd(titleColors), };
+    const artifact: Artifact = Object.create(d)
     artifact.id     = numerate("artifact");
     artifact.name   = name;
     artifact.coords = coords;

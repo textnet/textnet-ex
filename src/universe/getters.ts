@@ -5,6 +5,7 @@ import {
 import {
     DIR 
 } from "./const"
+import { deepCopy } from "./utils"
 
 
 export function getAccountWorld(account: Account) {
@@ -44,11 +45,20 @@ export function artifactBox(a: Artifact) {
     return aBox    
 }
 //
-export function isOverlap(a: Artifact, b: Artifact) {
+export function isOverlap(a: Artifact, b: Artifact, coords?: Coordinates) {
+    if (!coords) coords = a.coords;
     if (!a.coords || !b.coords) return false;
     let aBox = artifactBox(a);
     let bBox = artifactBox(b);
-    if (aBox[0] > bBox[0]) return isOverlap(b, a);
+    aBox[0] = aBox[0] + coords.position.x - a.coords.position.x;
+    aBox[1] = aBox[1] + coords.position.y - a.coords.position.y;
+    aBox[2] = aBox[2] + coords.position.x - a.coords.position.x;
+    aBox[3] = aBox[3] + coords.position.y - a.coords.position.y;
+    if (aBox[0] > bBox[0]) {
+        let cBox = deepCopy(bBox);
+        bBox = deepCopy(aBox);
+        aBox = deepCopy(cBox);
+    }
     if (aBox[2] < bBox[0]) return false;
     if (aBox[1] < bBox[1] && aBox[3] < bBox[3]) return false;
     if (aBox[1] > bBox[1] && aBox[3] > bBox[3]) return false;

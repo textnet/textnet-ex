@@ -95,8 +95,8 @@ export class ArtifactActor extends InventoryActor {
                         if (isArtifactPlaceable(item, newCoords)) {
                             placeArtifact(item, newCoords);
                             updateArtifactOnScene(this.scene as PlaneScene, item);
-                        }
-                        dir = addDir(dir, playerDir);
+                            dir = addDir(dir, playerDir);
+                        } 
                     } else {
                         command = COMMAND.NONE;
                     }
