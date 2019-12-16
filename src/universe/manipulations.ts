@@ -37,11 +37,29 @@ export function leaveWorld(avatar:Avatar) {
     }
 }
 
+export function pickupArtifact(avatar: Avatar, artifact: Artifact) {
+    // EVENT: avatar:pickup
+    console.log("PICKUP", artifact)
+    removeArtifact(artifact);
+    avatar.inventory.push(artifact);
+}
+export function putdownArtifact(avatar: Avatar) {
+    if (avatar.inventory.length > 0) {
+        // EVENT: avatar:putdown;
+        // TODO: closest position;
+        let coords: Coordinates = cpCoords(avatar.body.coords);
+        let artifact: Artifact = avatar.inventory.pop();
+        console.log("PUTDOWN", artifact)
+        placeArtifact(artifact, coords)
+        return artifact;
+    }
+}
+
 export function removeArtifact(artifact: Artifact) {
     if (!artifact.coords) return;
     // EVENT: world:remove_artifact / artifact: remove
-    artifact.coords.world.artifacts[artifact.id] = null;
-    artifact.coords = null;
+    delete artifact.coords.world.artifacts[artifact.id];
+    delete artifact.coords;
 }
 
 export function placeArtifact(artifact: Artifact, coords: Coordinates) {

@@ -35,6 +35,7 @@ export function getPlayerDirection(game: Game) {
 
 const KEY = {
     ENTER:   17, // CTRL=17 (alt=18)
+    PICKUP:  18, // 
     LEAVE:   ex.Input.Keys.Esc,
     PUSH:    ex.Input.Keys.Shift,
 }
@@ -49,8 +50,9 @@ export function getPlayerCommand(game: Game) {
     // PUSH
     if (game.input.keyboard.isHeld(KEY.PUSH) && dir.name != DIR.NONE.name) 
         return COMMAND.PUSH;
-    // TODO: PICKUP
-    // TODO: PUTDOWN
+    // PICKUP/PUTDOWN
+    if (game.input.keyboard.isHeld(KEY.PICKUP) && dir.name != DIR.NONE.name) 
+        return COMMAND.PICKUP;
     // TODO: KNEEL
     // TODO: STAND
     // ----

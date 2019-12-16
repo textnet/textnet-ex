@@ -23,8 +23,7 @@ export const COMMAND = {
     LEAVE:   { description: "Leave the world, return to previous visited" },
     KNEEL:   { description: "Kneel into written text to alter it" },
     STAND:   { description: "Finish editing written text and get back" },
-    PICKUP:  { description: "Attempt to pick an artifact up" },
-    PUTDOWN: { description: "Attempt to put the holded artifact down" },
+    PICKUP:  { description: "Attempt to pick an artifact up, or to put it down" },
     PUSH:    { description: "Attempt to push an artifact in the direction of movement" },
 }
 

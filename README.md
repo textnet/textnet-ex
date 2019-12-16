@@ -9,20 +9,25 @@ Proper distro will be done in Electron later.
 
 # CONTROLS
 
-- Movement: UP, DOWN, LEFT, RIGHT
++ Movement: UP, DOWN, LEFT, RIGHT
 - Artifacts:
-    - Push:  (move towards artifact)
-    - Pickup: SHIFT + (push)
-    - Put down: SHIFT
-    - Enter: CTRL + (push)
-    - Leave: ESC 
+    + Enter: CTRL + (move)
+    + Leave: ESC 
+    + Push:  SHIFT + (move)
+    - Pickup/putdown: ALT + (move)
+        do I need an alternate putdown to 
+        enable inventory stack instead of 
+        inventory item?
 - Written Word:
-    - Enter: CTRL+ENTER
-    - Leave: CTRL+ENTER
+    - Enter: CTRL+ENTER (???)
+    - Leave: CTRL+ENTER (???)
 - Spoken Word:
     - Say: ENTER
 
 # PLAN FOR TODAY
+
+- pickup
+- putdown
 
 
 # SMALL THINGS TO PLAY WITH

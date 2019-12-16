@@ -64,7 +64,9 @@ export interface Artifact {
     avatar?: Avatar;
     worlds: World[];
     coords?: Coordinates;
+
     dispatcher?: ex.EventDispatcher;
+    actor?: ex.Actor;
 }
 
 

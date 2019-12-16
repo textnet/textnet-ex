@@ -12,7 +12,8 @@ import { ArtifactSprite } from "./sprite"
 import { getArtifact_NextTo } from "./universe/getters"
 import { 
     enterArtifact, leaveWorld, 
-    isArtifactPlaceable, placeArtifact 
+    isArtifactPlaceable, placeArtifact,
+    pickupArtifact, putdownArtifact,
     } from "./universe/manipulations"
 import { PlaneScene } from "./plane"
 import { getPlayerDirection, getPlayerCommand } from "./command"
@@ -42,6 +43,7 @@ export class ArtifactActor extends ex.Actor {
         });
         this.needRelease = true;
         this.artifact = artifact;
+        this.artifact.actor = this;
         this.sprite = sprite;
         if (artifact.sprite.moving || artifact.sprite.turning)
         {
@@ -88,15 +90,32 @@ export class ArtifactActor extends ex.Actor {
                             placeArtifact(item, newCoords);
                             updateArtifactOnScene(this.scene as PlaneScene, item);
                         }
-                        // not sure if I must start moving, probably not;
                         dir = addDir(dir, playerDir);
                     } else {
                         command = COMMAND.NONE;
                     }
                 }
+                if (command == COMMAND.PICKUP) {
+                    let straightDir: Dir = DIRfrom(addDir(dir, playerDir));
+                    let item:Artifact = getArtifact_NextTo(this.artifact, straightDir);
+                    if (item) {
+                        pickupArtifact(this.artifact.avatar, item);
+                        console.log('===')
+                        if (item.actor) {
+                            console.log(item.actor)
+                        }
+                        // TODO: visualise
+                    } else {
+                        let a: Artifact = putdownArtifact(this.artifact.avatar);
+                        if (a) {
+                            console.log(a.coords)
+                            updateArtifactOnScene(this.scene as PlaneScene, a);
+                        }
+                    }
+                    this.needRelease = true;
+                }
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
                     dir = addDir(dir, playerDir);
-                    // don't push?
                 }
                 if (command == COMMAND.LEAVE) {
                     leaveWorld(this.artifact.avatar);
@@ -154,6 +173,7 @@ export class ArtifactActor extends ex.Actor {
     }
 
     updatePositionInUniverse(engine: Game) {
+        if (!this.artifact.coords) return;
         let newPosition: Position = {
             x: this.pos.x,
             y: this.pos.y,
