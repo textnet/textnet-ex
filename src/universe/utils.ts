@@ -14,7 +14,7 @@ export function cpCoords(coords: Coordinates) {
     return {
         world: coords.world,
         position: cpPosition(coords.position)
-    }
+    } as Coordinates;
 }
 
 

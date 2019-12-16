@@ -24,9 +24,13 @@ Proper distro will be done in Electron later.
 
 # PLAN FOR TODAY
 
+
+# SMALL THINGS TO PLAY WITH
 - document
 - animate entering the artifact
 - animate leaving the artifact
+- explore using 'touching' for colliders
+- find the closes empty spot on "re-enter" 
 
 
 

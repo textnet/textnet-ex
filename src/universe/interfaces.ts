@@ -29,6 +29,7 @@ export interface Account {
 export interface Avatar {
     id: string;
     body: Artifact;
+    inventory: Artifact[];
     kind: AvatarKind;
     visits: Record<string,Coordinates>;
     visitsStack: string[];

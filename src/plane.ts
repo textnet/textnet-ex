@@ -61,6 +61,31 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
 }
 
 
+function shiftArtifactActor(actor: ArtifactActor, artifact: Artifact, 
+        stepNo: number, stepTotal: number) {
+    if (stepNo < stepTotal) {
+        console.log(stepNo, actor.pos.x, artifact.coords.position.x)
+        actor.pos.x += stepNo/stepTotal*(artifact.coords.position.x-actor.pos.x);
+        actor.pos.y += stepNo/stepTotal*(artifact.coords.position.y-actor.pos.y);
+        setTimeout(function(){ shiftArtifactActor(actor, artifact, stepNo+1, stepTotal) },
+            SHIFT_SPEED);
+    } else {
+    }
+}
+const SHIFT_STEPS = 10;
+const SHIFT_SPEED = 100;
+
+export function updateArtifactOnScene(scene: PlaneScene, artifact: Artifact) {
+    for (let a of scene.actors) {
+        const actor: ArtifactActor = a as ArtifactActor;
+        if (actor.artifact.id == artifact.id) {
+            actor.dir   = artifact.coords.position.dir;
+            actor.pos.x = artifact.coords.position.x;
+            actor.pos.y = artifact.coords.position.y;
+        }
+    }
+}
+
 export function purgeScene(scene: PlaneScene, engine: Game) {
     for (let a of scene.actors) {
         scene.remove(a);

@@ -1,4 +1,4 @@
-import { Position } from "./interfaces"
+import { Dir, Position } from "./interfaces"
 
 export const DIR = {
     NONE:  { name: "none",  x:  0, y:  0 },
@@ -7,6 +7,12 @@ export const DIR = {
     LEFT:  { name: "left",  x: -1, y:  0 },
     RIGHT: { name: "right", x:  1, y:  0 },
 };
+export function DIRfrom(name: Dir) {
+    for (let i in DIR) {
+        if (DIR[i].name == name.name) return DIR[i] as Dir;
+    }
+    return DIR.NONE;
+}
 export const worldWidth = 1000; // add some visual bounds
 export const spawnPosition: Position = { x: 0, y: 0, dir: DIR.DOWN };
 

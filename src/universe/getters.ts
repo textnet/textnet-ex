@@ -34,18 +34,30 @@ export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
     return false;
 }
 
-// check if B is next to A in direction of DIR
-export function isNext(a: Artifact, b: Artifact, dir: Dir) {
+// 
+export function artifactBox(a: Artifact) {
     let aBox = [0,0,0,0]; // L-U-R-D
-    let bBox = [0,0,0,0];
     aBox[0] = a.coords.position.x - a.body.size[0]/2 + a.body.offset[0];
     aBox[1] = a.coords.position.y - a.body.size[1]/2 + a.body.offset[1];
     aBox[2] = aBox[0] + a.body.size[0];
     aBox[3] = aBox[1] + a.body.size[1];
-    bBox[0] = b.coords.position.x - b.body.size[0]/2 + b.body.offset[0];
-    bBox[1] = b.coords.position.y - b.body.size[1]/2 + b.body.offset[1];
-    bBox[2] = bBox[0] + b.body.size[0];
-    bBox[3] = bBox[1] + b.body.size[1];
+    return aBox    
+}
+//
+export function isOverlap(a: Artifact, b: Artifact) {
+    let aBox = artifactBox(a);
+    let bBox = artifactBox(b);
+    if (aBox[0] > bBox[0]) return isOverlap(b, a);
+    if (aBox[2] < bBox[0]) return false;
+    if (aBox[1] < bBox[1] && aBox[3] < bBox[3]) return false;
+    if (aBox[1] > bBox[1] && aBox[3] > bBox[3]) return false;
+    return true;
+}
+
+// check if B is next to A in direction of DIR
+export function isNext(a: Artifact, b: Artifact, dir: Dir) {
+    let aBox = artifactBox(a);
+    let bBox = artifactBox(b);
     // console.log("Box A:", a.name, aBox[0], aBox[1], aBox[2], aBox[3], 
     //     "pos:", a.coords.position.x )
     // console.log("Box B:", b.name, bBox[0], bBox[1], bBox[2], bBox[3],

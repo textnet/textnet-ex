@@ -8,6 +8,7 @@ import { spawnPosition } from "./const"
 import {
     ScriptMoveEvent
 } from "./events"
+import { isOverlap } from "./getters"
 
 
 export function enterArtifact(avatar:Avatar, artifact:Artifact) {
@@ -47,6 +48,17 @@ export function placeArtifact(artifact: Artifact, coords: Coordinates) {
     // EVENT: world:place_artifact / artifact: place
     artifact.coords = coords;
     artifact.coords.world.artifacts[artifact.id] = artifact;
+}
+
+// check if it is possible to place artifact here
+export function isArtifactPlaceable(artifact: Artifact, coords: Coordinates) {
+    for (let i in coords.world.artifacts) {
+        let another:Artifact = coords.world.artifacts[i];
+        if (another.id != artifact.id && isOverlap(artifact, another)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 export function updateArtifactPosition(artifact: Artifact, newPosition: Position) {

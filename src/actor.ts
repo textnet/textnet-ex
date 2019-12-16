@@ -1,16 +1,23 @@
 import * as ex from "excalibur";
-import { DIR, COMMAND, 
+import { DIR, DIRfrom, COMMAND, 
          worldWidth, universeUpdateFrequency } from "./universe/const";
 import { Dir, Position, Artifact, Avatar, AvatarKind } from "./universe/interfaces"
 import { updateArtifactPosition } from "./universe/manipulations"
-import { visualBounds } from "./plane"
+import { 
+    visualBounds,
+    updateArtifactOnScene
+    } from "./plane"
 import { Game } from "./index"
 import { ArtifactSprite } from "./sprite"
 import { getArtifact_NextTo } from "./universe/getters"
-import { enterArtifact, leaveWorld } from "./universe/manipulations"
+import { 
+    enterArtifact, leaveWorld, 
+    isArtifactPlaceable, placeArtifact 
+    } from "./universe/manipulations"
 import { PlaneScene } from "./plane"
 import { getPlayerDirection, getPlayerCommand } from "./command"
 import { deepCopy, addDir } from "./universe/utils"
+import { cpCoords } from "./universe/utils"
 
 export class ArtifactActor extends ex.Actor {
     sprite: ArtifactSprite;
@@ -27,7 +34,7 @@ export class ArtifactActor extends ex.Actor {
             pos: new ex.Vector(pos.x, pos.y),
             body: new ex.Body({
                 collider: new ex.Collider({
-                    type:   ex.CollisionType.Active, 
+                    type:   ex.CollisionType.Fixed, 
                     shape:  ex.Shape.Box(artifact.body.size[0], artifact.body.size[1]),
                     offset: new ex.Vector(artifact.body.offset[0], artifact.body.offset[1])
                 })
@@ -41,6 +48,9 @@ export class ArtifactActor extends ex.Actor {
             this.dir = pos.dir;
         } else {
             this.dir = DIR.UP;
+        }
+        if (artifact.avatar && artifact.avatar.kind == AvatarKind.PLAYER) {
+            this.body.collider.type = ex.CollisionType.Active;
         }
     }
 
@@ -57,6 +67,7 @@ export class ArtifactActor extends ex.Actor {
     updateFromAvatar(engine: Game) {
         this.speed = { x:0, y:0 };
         let speedMod = 100; // TBD get speed from avatar/artifact
+        let pushStrength = 3; // TBD get strength from avatar/artifact
         let dir: Dir = deepCopy(DIR.NONE);
         // Player input for direction and speed
         if (this.artifact.avatar.kind == AvatarKind.PLAYER) {
@@ -66,15 +77,32 @@ export class ArtifactActor extends ex.Actor {
             if (!this.needRelease) {
                 let playerDir = getPlayerDirection(engine);
                 let command = getPlayerCommand(engine);
+                if (command == COMMAND.PUSH && playerDir.name != DIR.NONE.name) {
+                    let item: Artifact = getArtifact_NextTo(this.artifact, playerDir);
+                    if (item) {
+                        let straightDir: Dir = DIRfrom(playerDir);
+                        let newCoords = cpCoords(item.coords);
+                        newCoords.position.x += straightDir.x*pushStrength;
+                        newCoords.position.y += straightDir.y*pushStrength;
+                        if (isArtifactPlaceable(item, newCoords)) {
+                            placeArtifact(item, newCoords);
+                            updateArtifactOnScene(this.scene as PlaneScene, item);
+                        }
+                        // not sure if I must start moving, probably not;
+                        dir = addDir(dir, playerDir);
+                    } else {
+                        command = COMMAND.NONE;
+                    }
+                }
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
                     dir = addDir(dir, playerDir);
+                    // don't push?
                 }
                 if (command == COMMAND.LEAVE) {
                     leaveWorld(this.artifact.avatar);
                     engine.switchScene(this.artifact.coords.world)                   
                 }
                 if (command == COMMAND.ENTER) {
-                    console.log("ENTER!", playerDir)
                     let item = getArtifact_NextTo(this.artifact, playerDir);
                     if (item) {
                         enterArtifact(this.artifact.avatar, item)

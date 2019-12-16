@@ -30,6 +30,7 @@ export function createPlayerAvatar(name:string, setupSpriteName:string) {
     let avatar: Avatar = {
         id: numerate("avatar"),
         body: createArtifact(name, setupSpriteName),
+        inventory: [],
         kind: AvatarKind.PLAYER,
         visits: {},
         visitsStack: []
