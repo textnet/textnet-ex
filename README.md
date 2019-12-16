@@ -10,62 +10,43 @@ Proper distro will be done in Electron later.
 # CONTROLS
 
 + Movement: UP, DOWN, LEFT, RIGHT
-- Artifacts:
-    + Enter: CTRL + (move)
-    + Leave: ESC 
-    + Push:  SHIFT + (move)
-    + Pickup/putdown: ALT + (move)
++ Artifacts:
+    + Enter:  CTRL + (move)
+    + Leave:  ESC 
+    + Push:   SHIFT + (move)
+    + Pickup: ALT + (move)
 - Written Word:
-    - Enter: CTRL+ENTER (???)
-    - Leave: CTRL+ENTER (???)
+    - Enter: CTRL+ENTER 
+    - Leave: CTRL+ENTER / ESC
 - Spoken Word:
     - Say: ENTER
-
-# PLAN FOR TODAY
-
-+ pickup/putdown
-    + show the smaller version next to its holder
-    + find space in the right direction
-    + don't put down if there is no space
+- Self:
+    - Enter yourself: CTRL+ESCAPE
 
 
 
-# SMALL THINGS TO PLAY WITH
+# SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
 - document
+- make better utilities
+- reactor positions, coords, and vector stuff
 - animate entering the artifact
 - animate leaving the artifact
 - animate holding the artifact
-- explore using 'touching' for colliders
 - find the closes empty spot on "re-enter" 
 
 
-
-// SOMEHOW WHEN SWITCHING SCENE OBJECTS ARE MOVED.
-    - use only one scene (preferred)
-    - ALSO: check for avatar teleportation in a separate cycle
-    - ALSO: send networking updates in a separate cycle?
-
 # PROJECT STRUCTURE
 
-* [ ] Local Universe
-* [ ] Basic written word (coding)
-* [ ] Persistence / network game
-* [ ] Spoken word / gods (commands)
-* [ ] Hosted universes and proper multiplayer
-* [ ] Integrated editor with text flow
-* [ ] Advanced objects like images etc.
+1. [x] Local Universe
+2. [ ] Basic written word (coding)
+3. [ ] Persistence / network game
+4. [ ] Spoken word / gods (commands)
+5. [ ] Hosted universes and proper multiplayer
+6. [ ] Integrated editor with text flow
+7. [ ] Advanced objects like images etc.
 
 
-# Local Universe
-
-* [x] Local account with planes and avatars
-* [x] Player avatar
-* [x] Artifacts
-* [x] Enter/leave artifacts
-* [ ] Pickup/put down artifacts
-* [ ] Touch artifacts
-
-# Basic Written Word
+# 2. Basic Written Word
 
 * [ ] Separate editor
 * [ ] Properties
