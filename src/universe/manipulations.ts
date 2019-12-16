@@ -42,14 +42,27 @@ export function pickupArtifact(avatar: Avatar, artifact: Artifact) {
     removeArtifact(artifact);
     avatar.inventory.push(artifact);
 }
-export function putdownArtifact(avatar: Avatar) {
+export function putdownArtifact(avatar: Avatar, dir: Dir) {
     if (avatar.inventory.length > 0) {
         // EVENT: avatar:putdown;
-        // TODO: closest position;
         let coords: Coordinates = cpCoords(avatar.body.coords);
         let artifact: Artifact = avatar.inventory.pop();
-        placeArtifact(artifact, coords)
-        return artifact;
+        coords.position.x += dir.x*(
+            avatar.body.body.size[0]
+            + artifact.body.size[0]
+            )/2
+            -artifact.body.offset[0]
+            +avatar.body.body.offset[0];
+        coords.position.y += dir.y*(
+            avatar.body.body.size[1] 
+            + artifact.body.size[1]
+            )/2
+            -artifact.body.offset[1]
+            +avatar.body.body.offset[1];
+        if (isArtifactPlaceable(artifact, coords)) {
+            placeArtifact(artifact, coords);
+            return artifact;
+        }
     }
 }
 

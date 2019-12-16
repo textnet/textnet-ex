@@ -11,7 +11,7 @@ export function getAccountWorld(account: Account) {
     return account.avatar.body.coords.world;
 }
 
-const PROXIMITY = 0; // how far is 'NEXT'
+const PROXIMITY = 2; // how far is 'NEXT'
 
 // get an artifact which is directly next to another
 export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
@@ -45,6 +45,7 @@ export function artifactBox(a: Artifact) {
 }
 //
 export function isOverlap(a: Artifact, b: Artifact) {
+    if (!a.coords || !b.coords) return false;
     let aBox = artifactBox(a);
     let bBox = artifactBox(b);
     if (aBox[0] > bBox[0]) return isOverlap(b, a);
@@ -64,23 +65,23 @@ export function isNext(a: Artifact, b: Artifact, dir: Dir) {
     //     "pos:", b.coords.position.x, b.body.offset[0] )
     // check the overlap
     let overlapX = false, overlapY = false;
-    if ((aBox[0] > bBox[0] && aBox[0] < bBox[2]) ||
-        (aBox[0] < bBox[0] && aBox[2] > bBox[0]))
+    if ((aBox[0] >= bBox[0] && aBox[0] < bBox[2]) ||
+        (aBox[0] < bBox[0] && aBox[2] >= bBox[0]))
         overlapX = true;
-    if ((aBox[1] > bBox[1] && aBox[1] < bBox[3]) ||
-        (aBox[1] < bBox[1] && aBox[3] > bBox[1]))
+    if ((aBox[1] >= bBox[1] && aBox[1] < bBox[3]) ||
+        (aBox[1] < bBox[1] && aBox[3] >= bBox[1]))
         overlapY = true;
     // check the distance
     let distance = -66666666666;
     if (overlapY) {
         if (dir.name == DIR.LEFT.name)  distance = aBox[0]-bBox[2];
         if (dir.name == DIR.RIGHT.name) distance = bBox[0]-aBox[2];
-        // console.log("overlapY", distance)
+        // console.log("overlapY", distance, dir.name)
     }
     if (overlapX) {
         if (dir.name == DIR.UP.name)   distance = aBox[1]-bBox[3];
         if (dir.name == DIR.DOWN.name) distance = bBox[1]-aBox[3];
-        // console.log("overlapX", distance)
+        // console.log("overlapX", distance, dir.name)
     }
-    return (distance >= 0 && distance <= PROXIMITY);
+    return (distance >= -PROXIMITY && distance <= PROXIMITY);
 }

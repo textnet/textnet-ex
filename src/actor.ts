@@ -109,17 +109,20 @@ export class ArtifactActor extends InventoryActor {
                         if (item.actor) {
                             this.scene.remove(item.actor)
                         }
+                        this.needRelease = true;
+                        this.visualiseInventory(engine)
                     } else {
-                        let item: Artifact = putdownArtifact(this.artifact.avatar);
+                        let straightDir: Dir = DIRfrom(playerDir);
+                        let item: Artifact = putdownArtifact(this.artifact.avatar, playerDir);
                         if (item) {
                             if (item.actor) {
                                 this.scene.add(item.actor)
                             }
                             updateArtifactOnScene(this.scene as PlaneScene, item);
+                            this.needRelease = true;
+                            this.visualiseInventory(engine)
                         }
                     }
-                    this.visualiseInventory(engine)
-                    this.needRelease = true;
                 }
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
                     dir = addDir(dir, playerDir);

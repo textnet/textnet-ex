@@ -45,9 +45,14 @@ export function createAccount(name, setupSpriteName) {
         id: numerate("account"),
         avatar: createPlayerAvatar(name, setupSpriteName),
     }
-    let chair: Artifact = createArtifact('Chair', 'chair');
+    let chair: Artifact = createArtifact('Chair 1', 'chair');
     placeArtifact(chair, {
         position: { x:100, y:100, dir: DIR.DOWN },
+        world:    world.avatar.body.worlds[0]
+    })
+    let chair2: Artifact = createArtifact('Chair 2', 'chair');
+    placeArtifact(chair2, {
+        position: { x:150, y:100, dir: DIR.DOWN },
         world:    world.avatar.body.worlds[0]
     })
     return world;
@@ -113,6 +118,10 @@ const artifactChair: Artifact = {
         offset: [  0,  12],
     },
 }
+
+let a2 = deepCopy(artifactDefault)
+a2.body.size = [64,64];
+a2.body.offset = [0,0];
 
 
 
