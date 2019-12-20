@@ -8,6 +8,13 @@ import { initSync } from "./networking";
 import { initEditor } from "./editor"
 import { getAccountWorld } from "./universe/getters"
 
+/**
+ * Main module. 
+ * Also contains overrides for the Excalibur engine.
+ * Currently creates everything anew on each restart.
+ * To be rewritten as we reach 'persistence' stage.
+ */
+
 export class Game extends ex.Engine {
     syncDispatcher: ex.EventDispatcher;
     constructor() {

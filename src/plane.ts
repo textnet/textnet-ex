@@ -10,19 +10,32 @@ import {
     Artifact,
     AvatarKind
 } from "./universe/interfaces";
-import { adjustEditor } from "./editor"
+import { adjustEditor, initEditor } from "./editor"
 import { Game } from "./index"
-import { initEditor } from "./editor"
 
+
+/**
+ * Excalibur engine operates with Scenes.
+ * We use only one scene to represent worlds that a player is visiting.
+ * When a player switches world, we clean and repopulate same stage.
+ *
+ * It is possible that we'll need to put some loaders in multiplayer stage.
+ * But now we can get away with this very simple solution.
+ */
+
+/**
+ * When we draw a scene, we use some visual padding around the actual world.
+ */
 export const visualBounds = {
-    left: 40,
-    right: 40,
-    top: 0,
-    height: 300,
+    left: 40, right: 40,
+    top: 0,   height: 300,
     margin: 65,
 };
 
 
+/**
+ * Scene object we use to draw everything related to the game content.
+ */
 export class PlaneScene extends ex.Scene {
     $editor: object;
     world:   World;
@@ -38,8 +51,17 @@ export class PlaneScene extends ex.Scene {
 
 }
 
+/** 
+ * Strategy to move camera in a way that it always follows the player actor.
+ */
 export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
     constructor(public target: ex.Actor, public radius: number) {}
+
+    /** 
+     * Called regularly in the draw/update cycle.
+     * As the player's actor nears screen boundary, we start to move camera,
+     * so the player will alwyas stay in the visible area.
+     */
     public action(
         target: ex.Actor,
         cam: ex.Camera,
@@ -61,20 +83,12 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
 }
 
 
-function shiftArtifactActor(actor: ArtifactActor, artifact: Artifact, 
-        stepNo: number, stepTotal: number) {
-    if (stepNo < stepTotal) {
-        console.log(stepNo, actor.pos.x, artifact.coords.position.x)
-        actor.pos.x += stepNo/stepTotal*(artifact.coords.position.x-actor.pos.x);
-        actor.pos.y += stepNo/stepTotal*(artifact.coords.position.y-actor.pos.y);
-        setTimeout(function(){ shiftArtifactActor(actor, artifact, stepNo+1, stepTotal) },
-            SHIFT_SPEED);
-    } else {
-    }
-}
-const SHIFT_STEPS = 10;
-const SHIFT_SPEED = 100;
-
+/**
+ * Update the artifact position on the scene when the change is not 
+ * coming through an Actor.
+ * Used to sync visual state with the universe state.
+ * Universe state is the source of truth.
+ */
 export function updateArtifactOnScene(scene: PlaneScene, artifact: Artifact) {
     for (let a of scene.actors) {
         const actor: ArtifactActor = a as ArtifactActor;
@@ -86,12 +100,26 @@ export function updateArtifactOnScene(scene: PlaneScene, artifact: Artifact) {
     }
 }
 
+/**
+ * Remove all actors from the scene when we leave the world.
+ * @param {PlaneScene} scene
+ * @param {Game} engine
+ */
 export function purgeScene(scene: PlaneScene, engine: Game) {
     for (let a of scene.actors) {
         scene.remove(a);
     }
 }
 
+/**
+ * Populate the scene with all actors required to represent the world.
+ * Also sets up the camera.
+ * Currently also sets the editor.
+ * REVISE
+ * @param {PlaneScene} scene
+ * @param {World}      world
+ * @param {Game}       engine
+ */
 export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     let playerActor: ArtifactActor;
     for (let i in world.artifacts) {

@@ -4,12 +4,26 @@ import { Dir, Artifact } from "./universe/interfaces"
 import { Game } from "./index"
 import { ArtifactSprite } from "./sprite"
 
+/**
+ * As an avatar picks an artifact up, it is removed from the game scene
+ * as 'ArtifactActor' and put back as 'InventoryActor' instead.
+ * It allows not only for a different rendering style, but also
+ * for spatial transparency.
+ */
+
+
+/**
+ * Visual helper actor for artifacts that an avatar holds in the inventory.
+ */
 export class InventoryActor extends ex.Actor {
     sprite: ArtifactSprite;
     dir: Dir;
     speed: { x:number, y: number };
     artifact: Artifact;
 
+    /**
+     * Build an actor from the artifact.
+     */
     constructor(artifact: Artifact) {
         let sprite:ArtifactSprite = new ArtifactSprite(artifact);
         super({
@@ -30,7 +44,10 @@ export class InventoryActor extends ex.Actor {
         this.dir = DIR.UP;
     }
 
-    // onInitialize is called before the 1st actor update
+    /**
+     * Called before the first actor update.
+     * Makes all animations ready.
+     */
     onInitialize(engine: Game) {
         if (!this.sprite.animations)
             this.sprite.makeAnimations(engine)
@@ -38,6 +55,5 @@ export class InventoryActor extends ex.Actor {
             this.addDrawing(a, this.sprite.animations[a]);
         }
     }
-
 
 }

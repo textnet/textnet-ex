@@ -6,6 +6,10 @@ import { Game } from "./index"
 import { ArtifactActor } from "./actor"
 import { PlaneScene } from "./plane"
 
+/**
+ * TODO: REWRITE FROM SCRATCH!
+ */
+
 
 
 const prependRows   = 1000;

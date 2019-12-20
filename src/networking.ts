@@ -6,8 +6,13 @@ import {
 import { Game } from "./index"
 import { SyncEvent } from "./universe/events"
 
+/**
+ * Module that should provide support for multiplayer persistence.
+ * Currently a stub.
+ */
 
-export function initSync(engine: Game) {
+
+ export function initSync(engine: Game) {
     let dispatcher:ex.EventDispatcher = new ex.EventDispatcher({});
     engine.syncDispatcher = dispatcher;
     // engine.syncDispatcher.on("sync", networkSync);

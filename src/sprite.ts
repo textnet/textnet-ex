@@ -1,13 +1,33 @@
 import { Artifact } from "./universe/interfaces"
+import { b64toBlob } from "./universe/utils"
 import * as ex from 'excalibur';
 
+/** 
+ * Module for sprite rendering.
+ * Uses `sprite` part of the Artifact structure to create Excalibur sprites.
+ */
+
+/**
+ * Recognised names for animations: move/idle and 4 directions
+ */
 const states: string[] = [
     "idle:left", "idle:right", "idle:up", "idle:down",
     "move:left", "move:right", "move:up", "move:down",
 ]
-const spriteSequence:string[] = ['up', 'left', 'down', 'right']
+
+/**
+ * Sequence of directions in the sprite image.
+ */
+const spriteSequence:string[] = ['up', 'left', 'down', 'right'];
+
+/**
+ * Speed of the sprite animation.
+ */
 const spriteSpeed:number = 60;
 
+/**
+ * Helper class that embed all animations generated for the artifact.
+ */
 export class ArtifactSprite {
     artifact: Artifact;
     move: ex.SpriteSheet;
@@ -15,6 +35,10 @@ export class ArtifactSprite {
     cols: number = 1;
     rows: number = 1;
     animations: Record<string, ex.Animation>;
+
+    /**
+     * Build the helper from the artifact.
+     */
     constructor(artifact: Artifact) {
         let that = this;
         this.artifact = artifact;
@@ -39,6 +63,11 @@ export class ArtifactSprite {
             this.idle = this.move;
         }
     }
+
+    /**
+     * Make 'mode/idle' animations out of the artifact structure.
+     * Used internally, don't call separately!
+     */
     makeAnimations(engine: ex.Engine) {
         // create all animations
         this.animations = {};
@@ -61,25 +90,14 @@ export class ArtifactSprite {
             }
         }        
     }
+
+    /**
+     * Get Excalibur-format animation by the states.
+     * Direction is always provided, even if the sprite is not movable/turnable.
+     * @param {string} name - e.g. 'move:right' or 'idle:up'
+     */
     animation(name:string) {
         return this.animations[name];
     }
 }
 
-
-// --------- helper function to work with blobs ----------
-const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
-  const byteCharacters = atob(b64Data);
-  const byteArrays = [];
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize);
-    const byteNumbers = new Array(slice.length);
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    byteArrays.push(byteArray);
-  }
-  const blob = new Blob(byteArrays, {type: contentType});
-  return blob;
-}

@@ -4,7 +4,20 @@ import { Dir } from "./universe/interfaces"
 import { DIR, COMMAND } from "./universe/const"
 import { deepCopy } from "./universe/utils"
 
+/**
+ * Module that interprets input from the player and converts it
+ * into commands that will be taking into account by ArtifactActor.
+ *
+ * Moved into a separate file to provide more observability.
+ */
 
+
+/**
+ * Returns a direction of the player input.
+ * E.g. if player tries to move right, returns `DIR.LEFT` copy.
+ * Returns DIR.NONE if there is no input that defines direction.
+ * @param {Game} game - Excalibur engine
+ */
 export function getPlayerDirection(game: Game) {
     let result: Dir = deepCopy(DIR.NONE)
     // keys
@@ -33,12 +46,26 @@ export function getPlayerDirection(game: Game) {
     return result;
 }
 
+/**
+ * Internal mapping of command keys.
+ */
 const KEY = {
     ENTER:   17, // CTRL=17 (alt=18)
     PICKUP:  18, // 
     LEAVE:   ex.Input.Keys.Esc,
     PUSH:    ex.Input.Keys.Shift,
 }
+
+/**
+ * Returns the command that player is trying to give.
+ * E.g. COMMAND.ENTER to enter an artifact nearby.
+ * Some of the commands require also direction to be provided.
+ *
+ * Doesn't check if the command could be possibly executed,
+ * it merely recognises the intent.
+ *
+ * @param {Game} game - Excalibur engine
+ */
 export function getPlayerCommand(game: Game) {
     let dir = getPlayerDirection(game)
     // ENTER

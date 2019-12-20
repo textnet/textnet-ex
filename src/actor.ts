@@ -21,11 +21,34 @@ import { deepCopy, addDir } from "./universe/utils"
 import { cpCoords } from "./universe/utils"
 import { InventoryActor } from "./inventoryActor"
 
+/**
+ * When player moves through the world, we draw it on the Scene.
+ * Every Artifact in this world is represented by an ArtifactActor.
+ *
+ * The universe (model) is considered Source of Truth.
+ *
+ * As some of the artifacts (including player's one) have Avatars,
+ * they can change position and take actions. It alters source of truth.
+ *
+ * If Actors are moved by the game engine (e.g. player move her Actor),
+ * these changes are converted into events and emitted to adjust 
+ * the source of truth.
+ */
+
+
+/**
+ * Actor entity from the Excalibur that visualises artifacts on the Scene.
+ * It extends InventoryActor, but introduces more functionality.
+ * E.g. ArtifactActors act as spatial colliders.
+ */
 export class ArtifactActor extends InventoryActor {
     speed: { x:number, y: number };
     needRelease: boolean;
     inventory?: InventoryActor;
 
+    /**
+     * Builds an Actor out of Artifact structure.
+     */
     constructor(artifact: Artifact) {
         let pos:Position = artifact.coords.position;
         let sprite:ArtifactSprite = new ArtifactSprite(artifact);
@@ -48,13 +71,21 @@ export class ArtifactActor extends InventoryActor {
         }
     }
 
-    // onInitialize is called before the 1st actor update
+    /**
+     * Called before the first actor update.
+     * Initialises event dispatchers.
+     */
     onInitialize(engine: Game) {
         this.artifact.dispatcher = engine.syncDispatcher;
         super.onInitialize(engine);
         this.visualiseInventory(engine);
     }
 
+    /**
+     * Visualises the inventory: artifacts that this artifact has picked up.
+     * Does nothing if there is no avatar connected with the artifact.
+     * Called internally; don't call it explicitly.
+     */
     visualiseInventory(engine: Game) {
         if (this.inventory) {
             this.remove(this.inventory);
@@ -72,6 +103,11 @@ export class ArtifactActor extends InventoryActor {
         }
     }
 
+    /**
+     * Update an actor from the actions that its avatar is doing.
+     * For local player avatars: takes input command and attempts to execute it.
+     * Adjusts its own position if moved.
+     */
     updateFromAvatar(engine: Game) {
         this.speed = { x:0, y:0 };
         let speedMod = 100; // TBD get speed from avatar/artifact
@@ -161,7 +197,9 @@ export class ArtifactActor extends InventoryActor {
 
     }
 
-    // After main update, once per frame execute this code
+    /**
+     * Happens after main update once per frame.
+     */
     onPostUpdate(engine: Game, delta: number) {
         // update from avatar
         if (this.artifact.avatar) {
@@ -183,6 +221,11 @@ export class ArtifactActor extends InventoryActor {
         }
     }
 
+    /**
+     * Synchronises its position back into Universe directly.
+     * Doesn't perform any spatial checks, relies on universe
+     * doing so.
+     */
     updatePositionInUniverse(engine: Game) {
         if (!this.artifact.coords) return;
         let newPosition: Position = {
