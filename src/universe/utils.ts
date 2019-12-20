@@ -1,15 +1,34 @@
 import { Position, Coordinates, Dir } from "./interfaces"
 import { DIR } from "./const"
 
-let _num = 0;
-export function numerate(prefix: string) {
-    return prefix + ":" + ++_num;
-}
+/**
+ * Miscellaneous utility function.
+ */
 
+
+/**
+ * Simplest ID generator; should be replaced with something better.
+ * @param {string} prefix
+ * @returns {string} like 'artifact:23'.
+ */
+export function numerate(prefix: string) { return prefix + ":" + ++_num; }
+let _num = 0;
+
+/**
+ * Make a copy of a Position. Uses `deepcopy`.
+ * @param {Position} position
+ * @returns {Position}
+ **/
 export function cpPosition(position: Position) {
     return deepCopy(position);
 }
 
+/**
+ * Make a copy of a Coordinates object.
+ * Can't use `deepcopy`, because we shouldn't copy worlds.
+ * @param {Coordinates} coords
+ * @returns {Coordinates}
+ */
 export function cpCoords(coords: Coordinates) {
     return {
         world: coords.world,
@@ -17,8 +36,18 @@ export function cpCoords(coords: Coordinates) {
     } as Coordinates;
 }
 
+/**
+ * Threshold for standartisation of directions.
+ */
+const THRESHOLD = 0.0001;
 
-const THRESHOLD = 0.0001
+/**
+ * Adds two directions into one.
+ * Fills the right name in if the direction matches a standard one within a threshold.
+ * @param {Dir} dir1
+ * @param {Dir} dir2
+ * @returns {Dir}
+ */
 export function addDir(dir1: Dir, dir2: Dir) {
     let dir: Dir = deepCopy(DIR.NONE)
     dir.x = dir1.x + dir2.x;

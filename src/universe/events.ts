@@ -7,7 +7,18 @@ import {
     EVENT
 } from "./const"
 
+/**
+ * First approach to cross-universe messaging.
+ * Currently a prototype which is not used much.
+ * Expected to come into more use during the 'Written Text' phase 
+ * and fully used in 'Multiplayer Persistence'.
+ */
 
+
+/** 
+ * Events that are sent around about things that happen with artifacts.
+ *
+ */
 export class SyncEvent extends ex.GameEvent<any> {
     _action: string;
     artifact: Artifact;

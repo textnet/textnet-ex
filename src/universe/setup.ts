@@ -10,8 +10,19 @@ import {
 } from "./manipulations"
 import { spawnPosition, DIR } from "./const"
 import { deepCopy } from "./utils"
+/**
+ * Temporary module to initialise the universe when
+ * there is no permanent storage and no persistence.
+ * To be redone as the persistance/multiplayer arrives.
+ */
 
-
+/**
+ * Generate a proper artifact structure using artifact constants embedded in code.
+ * @param {string} name - public name of the artifact
+ * @param {string} setupSpriteName - from the artifact map in the code
+ * @param {Coordinates} coords - optional; where to put the artifact
+ * @returns {Artifact}
+ */
 export function createArtifact(name:string, setupSpriteName:string, coords?:Coordinates) {
     let d = deepCopy(artifacts[setupSpriteName]);
     d.colors = { world: rnd(worldColors), title: rnd(titleColors), };
@@ -28,6 +39,13 @@ export function createArtifact(name:string, setupSpriteName:string, coords?:Coor
     return artifact;
 }
 
+/**
+ * Generate a proper avatar structure for the player.
+ * Generates a private world of the player and puts the avatar in it.
+ * @param {string} name - public name of the player
+ * @param @param {string} setupSpriteName - from the artifact map in the code
+ * @returns {Avatar}
+ */
 export function createPlayerAvatar(name:string, setupSpriteName:string) {
     let avatar: Avatar = {
         id: numerate("avatar"),
@@ -42,6 +60,14 @@ export function createPlayerAvatar(name:string, setupSpriteName:string) {
     return avatar;
 }
 
+/**
+ * Generate a proper account structure for the player.
+ * Generates an avatar structure as well.
+ * Populates the world with some objects to make testing easier.
+ * @param {string} name - public name of the player
+ * @param @param {string} setupSpriteName - from the artifact map in the code
+ * @returns {Account}
+ */
 export function createAccount(name, setupSpriteName) {
     let world: Account = { 
         id: numerate("account"),
@@ -124,7 +150,6 @@ const artifactChair: Artifact = {
 let a2 = deepCopy(artifactDefault)
 a2.body.size = [64,64];
 a2.body.offset = [0,0];
-
 
 
 const artifacts = {

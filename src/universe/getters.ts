@@ -7,14 +7,32 @@ import {
 } from "./const"
 import { deepCopy } from "./utils"
 
+/**
+ * Functions that allow to get artifacts, avatars and other entities
+ * in various ways.
+ */
 
+
+/**
+ * Returns 'World' where the user's avatar currently resides.
+ * @param {Account} account - which account we are tracking
+ * @returns {World} 
+ */
 export function getAccountWorld(account: Account) {
     return account.avatar.body.coords.world;
 }
 
+/**
+ * How far artifacts should be to be considered 'next to each other'.
+ */
 const PROXIMITY = 3; // how far is 'NEXT'
 
-// get an artifact which is directly next to another
+/**
+ * Get an artifact that is directly next to a certain artifact
+ * @param {Artifact} artifact - look around this artifact
+ * @param {Dir} dir - optional; look only in this direction. Must be a standart one.
+ * @returns {Artifact} or false
+ */
 export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
     // no direction: try any
     if (!dir) {
@@ -35,7 +53,13 @@ export function getArtifact_NextTo(artifact: Artifact, dir?: Dir) {
     return false;
 }
 
-// 
+/**
+ * Returns the bounding box for an artifact. 
+ * Takes into account position, size, and offset of the collision body.
+ * @param {Artifact} a
+ * @param {Coordinates} coords - optional; overrides artifact position if provided.
+ * @returns {number[]} array of [Left, Up, Right, Down] coordinates.
+ */
 export function artifactBox(a: Artifact, coords?: Coordinates) {
     if (!coords) coords = a.coords;
     let aBox = [0,0,0,0]; // L-U-R-D
@@ -45,7 +69,14 @@ export function artifactBox(a: Artifact, coords?: Coordinates) {
     aBox[3] = aBox[1] + a.body.size[1];
     return aBox    
 }
-//
+
+/**
+ * Checks if two artifact overlap.
+ * @param {Artifact} a
+ * @param {Artifact} b
+ * @param {Coordinates} coords - optional; used to override coordinates of 'a'.
+ * @returns {boolean}
+ */
 export function isOverlap(a: Artifact, b: Artifact, coords?: Coordinates) {
     if (!b.coords || (!a.coords && !coords)) return false;
     let aBox = artifactBox(a, coords);
@@ -62,8 +93,12 @@ export function isOverlap(a: Artifact, b: Artifact, coords?: Coordinates) {
 }
 
 
-
-// check if B is next to A in direction of DIR
+/**
+ * Checks if an artifact B is next to A in direction of DIR.
+ * @param {Artifact} a
+ * @param {Artifact} b
+ * @param {Dir} dir - must be one of standard.
+ */
 export function isNext(a: Artifact, b: Artifact, dir: Dir) {
     let aBox = artifactBox(a);
     let bBox = artifactBox(b);

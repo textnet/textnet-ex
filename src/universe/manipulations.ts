@@ -10,11 +10,34 @@ import {
 } from "./events"
 import { isOverlap, artifactBox } from "./getters"
 
+/**
+ * Functions that manipulate the universe in a proper manner.
+ * One shouldn't alter any of the structures (e.g. Artifacts or Avatar)
+ * in any way except calling those functions.
+ *
+ * The goal of such approach is to guarantee that all dependencies
+ * handled properly and all necessary messages are emitted.
+ */
 
+
+/**
+ * Avatar enters the world that belongs to an Artifact.
+ * A convenience function, uses `enterWorld` internally.
+ * @param {Avatar} avatar
+ * @param {Artifact} artifact
+ */
 export function enterArtifact(avatar:Avatar, artifact:Artifact) {
     return enterWorld(avatar, artifact.worlds[0]);
 }
 
+/**
+ * Avatar enters a World.
+ * It artifact is removed from the world it currently inhabits,
+ * and placed into the new world.
+ * Visits stack is maintainted.
+ * @param {Avatar} avatar
+ * @param {World} world
+ */
 export function enterWorld(avatar:Avatar, world:World) {
     // EVENT: avatar:enter
     if (avatar.body.coords) {
@@ -27,6 +50,13 @@ export function enterWorld(avatar:Avatar, world:World) {
     avatar.visitsStack.push(world.id);
     placeArtifact(avatar.body, avatar.visits[world.id]);
 }
+
+/**
+ * Avatar leaves the World, going up its visits stack.
+ * It artifact is removed from the world it currently inhabits,
+ * and placed into the topmost world from its visits.
+ * @param {Avatar} avatar
+ */
 export function leaveWorld(avatar:Avatar) {
     // EVENT: avatar:leave
     if (avatar.visitsStack.length > 1) {
@@ -37,14 +67,30 @@ export function leaveWorld(avatar:Avatar) {
     }
 }
 
+/**
+ * Avatar picks an Artifact.
+ * The artifact is removed from the world it placed in, and added to the inventory.
+ * and placed into the topmost world from its visits.
+ * @param {Avatar} avatar
+ * @param {Artifact} artifact
+ */
 export function pickupArtifact(avatar: Avatar, artifact: Artifact) {
     // EVENT: avatar:pickup
     removeArtifact(artifact);
     avatar.inventory.push(artifact);
 }
+
+/**
+ * Avatar attempts to put down the artifact he has recently picked up.
+ * Direction is provided.
+ * The attempt fails if there is no free place for the artifact.
+ * Does nothing if the inventory is empty.
+ * @param {Avatar} avatar
+ * @param {Dir} dir
+ * @returns {Artifact} or nothing if the attempt is failed.
+ */
 export function putdownArtifact(avatar: Avatar, dir: Dir) {
     if (avatar.inventory.length > 0) {
-        // EVENT: avatar:putdown;
         let coords: Coordinates = cpCoords(avatar.body.coords);
         let artifact: Artifact = avatar.inventory.pop();
         coords.position.x += dir.x*(
@@ -60,6 +106,7 @@ export function putdownArtifact(avatar: Avatar, dir: Dir) {
             -artifact.body.offset[1]
             +avatar.body.body.offset[1];
         if (isArtifactPlaceable(artifact, coords)) {
+            // EVENT: avatar:putdown;
             placeArtifact(artifact, coords);
             return artifact;
         } else {
@@ -68,6 +115,11 @@ export function putdownArtifact(avatar: Avatar, dir: Dir) {
     }
 }
 
+/**
+ * Removes the artifact from the world it is placed in.
+ * Keeps consistency of both world and artifact structures.
+ * @param {Artifact} artifact
+ */
 export function removeArtifact(artifact: Artifact) {
     if (!artifact.coords) return;
     // EVENT: world:remove_artifact / artifact: remove
@@ -75,26 +127,44 @@ export function removeArtifact(artifact: Artifact) {
     delete artifact.coords;
 }
 
+/**
+ * Forcibly puts the artifact in a world at the given coordinates.
+ * Keeps consistency of both world and artifact structures.
+ * @param {Artifact} artifact
+ * @param {Coordinates} coords
+ */
 export function placeArtifact(artifact: Artifact, coords: Coordinates) {
     // EVENT: world:place_artifact / artifact: place
     artifact.coords = coords;
     artifact.coords.world.artifacts[artifact.id] = artifact;
 }
 
-// check if it is possible to place artifact here
+/**
+ * Check is is is possible to place the artifact at the given coordinates.
+ * @param {Artifact} artifact
+ * @param {Coordinates} coords
+ * @returns {boolean}
+ */
 export function isArtifactPlaceable(artifact: Artifact, coords: Coordinates) {
     for (let i in coords.world.artifacts) {
         let another:Artifact = coords.world.artifacts[i];
         if (another.id != artifact.id && isOverlap(artifact, another, coords)) {
-            console.log("STUCK", artifact.name, another.name)
-            console.log(artifact.name, artifactBox(artifact, coords))
-            console.log(another.name, artifactBox(another))
+            // console.log("STUCK", artifact.name, another.name)
+            // console.log(artifact.name, artifactBox(artifact, coords))
+            // console.log(another.name, artifactBox(another))
             return false;
         }
     }
     return true;
 }
 
+/**
+ * Updates an artifact position in the world it is placed in.
+ * Emits `script:move` event that describes the move
+ * Events are currently not used.
+ * @param {Artifact} artifact
+ * @param {Position} newPosition
+ */
 export function updateArtifactPosition(artifact: Artifact, newPosition: Position) {
     if (!artifact.coords) return;
     // prep

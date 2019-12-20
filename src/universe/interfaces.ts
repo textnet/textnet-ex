@@ -1,31 +1,72 @@
 import * as ex from 'excalibur';
 
+/**
+ * Proper structures for all TextNet universe objects.
+ *
+ * As the project takes the structural/functional approach,
+ * the universe is not described with classes, but with objects
+ * instead.
+ * 
+ * It should allow for simple artifact duplication and transition
+ * between different accounts of the universe.
+ */
+
+/**
+ * Avatars can be of three kinds:
+ * PLAYER - controlled by the local player.
+ * LOCAL  - controlled by the code (written text) which executes locally.
+ * PROXY  - controlled by events coming from other instances of the game.
+ */
 export enum AvatarKind {
     PLAYER, LOCAL, PROXY
 }
 
+/**
+ * Direction vector; not only functions as a vector, but also 
+ * describes where a certain artifact is facing.
+ * There are standard directions provided in constants, e.g. DIR.UP.
+ * @see "const.ts"
+ */
 export interface Dir {
     name: string;
     x: number;
     y: number;
 }
 
+/**
+ * Position of an artifact, relative to the world it is placed in.
+ * Not only coordinates, but also the direction where the artifact is facing.
+ */
 export interface Position {
     x: number;
     y: number;
     dir: Dir;
 }
 
+/**
+ * Absolute and definitieve coordinates of an artifact.
+ * Include its position and the world it is placed in.
+ */
 export interface Coordinates {
     world: World;
     position: Position;
 }
 
+/**
+ * Structure that describes a user account.
+ * Currently very basic.
+ */
 export interface Account {
     id: string;
     avatar?: Avatar;
 }
 
+/**
+ * Avatar is an artifact that is alive.
+ * Avatar can move in the world, and between the world.
+ * The history of avatar's travels is captured as visits.
+ * Avatar can keep an inventory (artifacts he's picked up).
+ */
 export interface Avatar {
     id: string;
     body: Artifact;
@@ -35,12 +76,41 @@ export interface Avatar {
     visitsStack: string[];
 }
 
+/**
+ * World is a 2D plane where artifacts are placed.
+ * It has fixed width and endless height.
+ * World must belong to an artifact: avatars can enter the world through it.
+ * World contain all artifacts that are placed into it.
+ * Artifacts care of their own position within the world.
+ */
 export interface World {
     id: string;
     owner: Artifact;
     artifacts: Record<string,Artifact>;
 }
 
+/**
+ * Artifact is the most central entity.
+ *
+ * It is an object that has 
+ * - visual representation (sprite) that can be animated
+ *    artifacts can have animation of movement and of staing put
+ *    artifacts can have different visualisations for different directions
+ * - spatial representation (body) that defines with other artifacts
+ *    artifacts can't usually overlap
+ * - colour representation: used to draw HUD frames 
+ *
+ * Artifact may be made 'alive' and provided with an Avatar structure.
+ *
+ * Artifact contains Worlds (currently only one is created by default).
+ * Avatars may enter the artifact thus reaching the world that belongs to the artifact.
+ *
+ * Artifact may be placed into a world in a certain position (=coordinates).
+ * 
+ * There are also connections of avatar structure with game engine:
+ * `actor` and `dispatcher`. 
+ * These connections shouldn't be copied.
+ */
 export interface Artifact {
     id: string;
     name: string;
