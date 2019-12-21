@@ -1,0 +1,277 @@
+WRITTEN WORD
+============
+
+The idea behind the *written word* is that it allows to script some (advanced) behaviour into artifacts. Artifact's world has a surface on which players can place text. Text characters are not considered artifacts, they are summoned to the world's surface instead.
+
+
+Written Word vs. Text.
+----------------------
+
+*Written word* is put into this text and shifted with whitespace (at least 2 characters, 4 is recommended).
+
+    pushable = false
+      function wake(name)
+        log("Wake up, " .. name .. "!")
+    end
+    function on_push(pusher, direction)
+        log("Ouch! Carefully, " .. pusher.name())
+    end
+
+Text which is not shifted is not considered a "written word". It just remains as text.
+
+
+
+Written Word is Lua.
+--------------------
+
+See: https://www.lua.org/pil/contents.html
+
+Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description. 
+
+*Lua is the leading scripting language for games.*
+
+
+
+Running Written Word.
+---------------------
+
+As soon as any actor adjusts the text on the surface, the Written Word on it gets extracted, compiled, and executed.
+
+If the code was executed previously, its state disappears. Variables are redefined, event handlers reassigned, etc. Any code should be developed with this in mind. It is the reason the main approach for the Written Word is oriented towards events and data structures instead of classic OOP.
+
+If there is an error in the code, none of Written Word in the world gets executed.
+
+
+Artifacts: Data Persistence.
+----------------------------
+
+Written Word offers two ways to store data:
+
+1. As text next to written word on the surface of the artifact's world.
+2. As metadata of the artifact itself.
+
+In any case, the data stored is text or at least serializable (e.g. JSON)
+
+The first approach is the most transparent and therefore recommended.
+One can even create supplementary artifacts, place them on the surface and put data in there.
+
+
+The second approach is temporary and will be deprecated later.
+
+
+Avatars: Operating Persistence.
+-------------------------------
+
+Artifacts with Written Word inside become `Avatars`. 
+
+Avatars receive events from the universe. Written Word allows to route these events to a piece of code, thus enabling an Avatar to alter the universe: to move itself, to push other artifacts, to create or dismiss them, to alter texts (including its own Written Word).
+
+However, universe can only emit events, if there is an `Observer` watching it.
+Human players are such observers. (In future, there will be artificial observers as well.)
+
+Avatar receives events from the universe, if:
+
+* it is in the same world as the player
+* it owns the world that player is in
+
+In other cases, none of the Written Word of the Avatar is executed.
+
+
+
+How Artifacts Become Avatars, Summary.
+--------------------------------------
+
+* **Player enters a World**
+    - All Artifacts in the World attempt to become Avatars. Their Written Word is extracted, compiled, and executed. 
+    - That includes the Artifact of the World itself, if it hasn't had an Avatar already.
+
+* **Player leaves a World**
+    - All Avatars in this world are put to sleep — they stop receiving events from the universe.
+    - Except for those which are also present in the world that player enters (see above).
+
+* **Text on the surface of an Artifact is adjusted**
+    - If there is an Observer around, the Artifact attempts to become an Avatar.
+    - Its Written Word is extracted, compiled, and executed.
+
+
+
+
+Operating with the World Around.
+--------------------------------
+
+Written Word of an Artifact has direct access to two worlds:
+
+1. `world` — World that is owned by the Artifact of the Written Word.
+2. `WORLD` — World in which the Artifact is placed on.
+
+There are functions that allow access to artifacts from each world.
+
+    local owned_artifacts_all_1 = get_artifacts()
+    local owned_artifacts_all_2 = get_artifacts( world )
+    local owned_chairs_only     = get_artifacts{ world=world, name="chair" }
+    local only_first_chair      = get_artifact{ name="chair" }
+    local chairs_around_myself  = get_artifacts{ world=WORLD, name="chair" }
+
+Several functions are optimised to work with artifacts around:
+
+    local myself                = get_myself()
+    local closest_chair         = get_closest{ name="chair" }
+    local next_artifact         = get_next{ direction="up" }
+
+
+Operating with Artifacts.
+-------------------------
+
+Artifacts are represented in Written Word as read-only data structures.
+
+Written Word provides several functions to operate with those structures: move them, adjust metadata, etc.
+
+
+### Moving artifacts
+Position of any Artifact can be adjusted, but not set. Artifacts are moved, not positioned — and that movement happens within the World and its limits.
+
+It is only done if it complies with the topology of the World. If there are other Artifacts on the movement path, Artifact stops as soon as it meets them.
+
+    local a = get_myself()
+    move_to{artifact=a, x=10, y=11}
+    move_to{x=10, y=11} -- same as above
+    move_by{x=-1}
+    move_by{direction="up", distance=10}
+
+None of the moves is instantaneous. What is happening is that the command is issued and artifact starts to move. You should not expect artifact to be in the desired position right after issuing the command.
+
+
+### Properties
+Artifact properties like `name` are found in the data structure. They can be changed with special functions.
+
+    update{artifact=a, name="My New Name"}
+    update{passable=false}
+
+Here is the list of properties with description.
+
+- `name` — name of the artifact, doesn't bear any special meaning
+- `passable` – if `true`, artifact doesn't play in collisions; default = `false`
+- `pushable` — if `true`, artifact can be pushed by avatars; default = `true`
+- `speed` defines how fast artifact moves being avatar; default = `100` (=100%)
+- `strength` defines how easy it is to push other artifacts; default = `3`
+- `weight` defines how much strength it requires to start pushing; default = `1`
+
+
+### Global Shortcuts to 'Myself'
+Properties of the artifact that owns the Written Word are exposed as global variables.
+It is done for convenience.
+
+When the Written Word code is compiled and executed, resulting values of those variables are picked up after execution and artifact is updated.
+
+    passable = false
+    pushable = true
+    locked = false
+
+
+### Working with the text itself
+Apart of artifact properties, Written Word have access to the text written on the surface.
+Amongst other things, it means that the code can get and alter itself.
+
+Text can be accessed as a whole, on per line basis. 
+Convenient lookups are done using #anchors.
+
+    local a = get_myself()
+    local text_full = get_text{artifact=a}
+    local text_line = get_text{line=10}
+    local text_find = get_text{anchor="health"}
+
+Anchors work in a very simple and predictable way: if line start with `#anchor`, then you can get the rest of this line (whitespace trimmed) easily.
+
+If text is updated as a whole, it results in recompiling its Written Text.
+
+    local a = get_artifact{ name="chair" }
+    update_text{artifact=a, text="Hello, it is full text"}
+
+If text is updated partially, it doesn't trigger compilation.
+Anchors with partial updates allow for transparent data persistence.
+
+    update_line{line=10, text="Line replaced by another"}
+    update_line{line=10, text="First line\nSecond line."}
+    insert_line{line=5,  text="New line goes before line no.5."}
+    delete_line{line=6}
+    update_line{anchor="health", text="20"}
+
+When line update consists of multiple lines, it updates consequent lines as well.
+Inserting and deleting lines must be done explicitly.
+
+Sometimes there is a need to trigger compilation explicitly.
+
+    local a = get_myself()
+    update_avatar{artifact=a}
+    
+
+Messaging and Handling Events.
+------------------------------
+
+Written Word is built on three concepts:
+
+- **Artifact data structures.** Each artifact is represented by its data.
+- **Procedural manipulations.** Functions are provided to manipulate artifacts.
+- **Event-driven execution.** Control is given to Written Word via events.
+
+Event driven execution assumes that there is no piece of code that takes a lot of time to execute. Instead, it is expected that each piece of Written Word is executed rather quickly and only when need arises.
+
+When an Artifact attempts to become an Avatar, all Written Word is extracted from the Artifact's text, compiled and executed.
+
+There are two ways to make a successful Avatar:
+
+- declare functions with special names that will become event handlers and
+- subscribing functions for certain events.
+
+The former is a convenience layer over the latter. 
+
+    function on_push(pusher, direction)
+        log(self.name .. "says: Ouch! Carefully, " .. pusher.name)
+    end
+
+Same could be done like this:
+
+    function custom_push(pusher, direction) {...}
+    subscribe("push", custom_push)
+
+Avatar can subscribe on events of other objects:
+
+    subscribe{artifact=a,   event="push", handler=custom_push}
+    subscribe{name="Chair", event="push", handler=custom_push}
+
+That sort of subscription will only work for objects while they are visible in one of the worlds that an artifact have access to.
+
+### Events and signatures
+
+    on_push(pusher, direction) - avatar being pushed
+    on_move(x,y)               - avatar being moved
+    on_pickup(owner)           - avatar is picked up by another
+    on_putdown(owner)          - avatar is put down
+    on_timer(delta)            - called regularly (useful for update/draw cycles)
+
+
+Creating artifacts.
+-------------------
+
+Creating artifacts is a heavy task.
+Later it will be fully supported.
+
+Currently, it is only possible to summon a chair.
+
+    summon{name="Chair", x=10, y=203}
+
+There is no way to destroy artifacts currently.
+
+
+Futures.
+--------
+
+In future, many things will be possible.
+Avatars will be able to pick up and reposition artifacts more easily.
+Avatars will be able to summon many different kinds of artifacts.
+Avatars will be able to listen to Spoken Word.
+Avatars will be able to ascend and to become Gods.
+
+It is good, future, isn't it?
+
+

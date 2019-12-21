@@ -24,11 +24,24 @@ Proper distro will be done in Electron later.
     - Enter yourself: CTRL+ESCAPE
 
 
+# THIS ITERATION
++ define Written Word behaviour
+- plug-in text editor and support Enter/Leave w/o compilation
+- extract WW chunks
+- run LUA interpreter
+- provide `console.log` functionality as `log()`
+
+# NEXT ITERATION
+- `get_artifact(s)` support
+- `update` support with basic properties
+- catch `name` as global variable
+- `text` support, full, lines, anchors
+- `update_avatar`
+- support events
+
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
-- document
-- make better utilities
-- reactor positions, coords, and vector stuff
+- refactor positions, coords, and vector stuff
 - animate entering the artifact
 - animate leaving the artifact
 - animate holding the artifact
