@@ -47,8 +47,8 @@ Artifacts: Data Persistence.
 
 Written Word offers two ways to store data:
 
-1. As text next to written word on the surface of the artifact's world.
-2. As metadata of the artifact itself.
+1. Simply as text next to the Written Word on the surface of the Artifact's World.
+2. As metadata of the Artifact itself.
 
 In any case, the data stored is text or at least serializable (e.g. JSON)
 
@@ -102,15 +102,15 @@ Operating with the World Around.
 Written Word of an Artifact has direct access to two worlds:
 
 1. `world` — World that is owned by the Artifact of the Written Word.
-2. `WORLD` — World in which the Artifact is placed on.
+2. `upper` — World in which the Artifact is placed on.
 
 There are functions that allow access to artifacts from each world.
 
     local owned_artifacts_all_1 = get_artifacts()
     local owned_artifacts_all_2 = get_artifacts( world )
-    local owned_chairs_only     = get_artifacts{ world=world, name="chair" }
+    local owned_chairs_only     = get_artifacts{ name="chair" }
     local only_first_chair      = get_artifact{ name="chair" }
-    local chairs_around_myself  = get_artifacts{ world=WORLD, name="chair" }
+    local chairs_around_myself  = get_artifacts{ world=upper, name="chair" }
 
 Several functions are optimised to work with artifacts around:
 
@@ -142,7 +142,7 @@ None of the moves is instantaneous. What is happening is that the command is iss
 
 
 ### Properties
-Artifact properties like `name` are found in the data structure. They can be changed with special functions.
+Artifact properties like `name` are found in the data structure. Changing them directly won't affect the artifact itself. Special function must be used.
 
     update{artifact=a, name="My New Name"}
     update{passable=false}
@@ -152,7 +152,7 @@ Here is the list of properties with description.
 - `name` — name of the artifact, doesn't bear any special meaning
 - `passable` – if `true`, artifact doesn't play in collisions; default = `false`
 - `pushable` — if `true`, artifact can be pushed by avatars; default = `true`
-- `speed` defines how fast artifact moves being avatar; default = `100` (=100%)
+- `speed` defines how fast artifact moves being avatar; default = `100` (as in 100%)
 - `strength` defines how easy it is to push other artifacts; default = `3`
 - `weight` defines how much strength it requires to start pushing; default = `1`
 
