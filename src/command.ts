@@ -54,6 +54,7 @@ const KEY = {
     PICKUP:  18, // 
     LEAVE:   ex.Input.Keys.Esc,
     PUSH:    ex.Input.Keys.Shift,
+    TEXT:    13,
 }
 
 /**
@@ -80,7 +81,10 @@ export function getPlayerCommand(game: Game) {
     // PICKUP/PUTDOWN
     if (game.input.keyboard.isHeld(KEY.PICKUP) && dir.name != DIR.NONE.name) 
         return COMMAND.PICKUP;
-    // TODO: KNEEL
+    // KNEEL
+    if (game.input.keyboard.isHeld(KEY.ENTER) && dir.name == DIR.NONE.name &&
+        game.input.keyboard.isHeld(KEY.TEXT)) 
+        return COMMAND.KNEEL;
     // TODO: STAND
     // ----
     return COMMAND.NONE

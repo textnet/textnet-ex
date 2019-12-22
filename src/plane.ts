@@ -10,7 +10,7 @@ import {
     Artifact,
     AvatarKind
 } from "./universe/interfaces";
-import { adjustEditor, initEditor } from "./editor"
+import { adjustEditor, initEditor, Editor } from "./editor"
 import { Game } from "./index"
 
 
@@ -37,10 +37,13 @@ export const visualBounds = {
  * Scene object we use to draw everything related to the game content.
  */
 export class PlaneScene extends ex.Scene {
-    $editor: object;
+    editor: Editor;
     world:   World;
 
-    public onInitialize(engine: ex.Engine) {}
+    public onInitialize(engine: ex.Engine) {
+        // if (!this.editor) this.editor = initEditor();
+        // console.log(this.editor)
+    }
     public onActivate() {}
     public onDeactivate() {}
 
@@ -77,7 +80,7 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
         if (diff < -this.radius) {
             focus = focus.add(new ex.Vector(0, diff + this.radius));
         }
-        adjustEditor((_eng.currentScene as PlaneScene).$editor, focus)
+        adjustEditor((_eng.currentScene as PlaneScene).editor, focus)
         return focus;
     }
 }
@@ -145,7 +148,7 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     //
     text.color = ex.Color.fromHex(world.owner.colors.title.fg);
     text.text = world.owner.name;
-    text.fontFamily = "Nanum Gothic Coding, monospace"
+    text.fontFamily = "Nanum Gothic Coding, monospace"; // TODO FIX
     text.fontSize = labelHeight;
     text.fontUnit = ex.FontUnit.Px;
     text.textAlign = ex.TextAlign.Center;
@@ -154,8 +157,7 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     //
     title.add(text);
     scene.add(title);
-    scene.$editor = initEditor();
     // TODO REDO the text approach
-    jquery("body").css("backgroundColor", world.owner.colors.world.bg);
-    jquery("textarea#editor").css("color", world.owner.colors.world.fg);
+    // jquery("body").css("backgroundColor", world.owner.colors.world.bg);
+    // jquery("textarea#editor").css("color", world.owner.colors.world.fg);
 }

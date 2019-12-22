@@ -20,6 +20,7 @@ import { getPlayerDirection, getPlayerCommand } from "./command"
 import { deepCopy, addDir } from "./universe/utils"
 import { cpCoords } from "./universe/utils"
 import { InventoryActor } from "./inventoryActor"
+import { Editor } from "./editor"
 
 /**
  * When player moves through the world, we draw it on the Scene.
@@ -173,6 +174,13 @@ export class ArtifactActor extends InventoryActor {
                         enterArtifact(this.artifact.avatar, item)
                         engine.switchScene(this.artifact.coords.world)                       
                     }
+                }
+                if (command == COMMAND.KNEEL) {
+                    console.log("KNEEL");
+                    engine.stop();
+                    ((this.scene as PlaneScene).editor as Editor).focus();
+                    // TODO stop catching.
+
                 }
             }
         }
