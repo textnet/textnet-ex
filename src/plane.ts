@@ -27,7 +27,7 @@ import { Game } from "./index"
  * When we draw a scene, we use some visual padding around the actual world.
  */
 export const visualBounds = {
-    left: 40, right: 40,
+    left: 43, right: 43,
     top: 0,   height: 300,
     margin: 65,
 };
@@ -40,9 +40,8 @@ export class PlaneScene extends ex.Scene {
     editor: Editor;
     world:   World;
 
-    public onInitialize(engine: ex.Engine) {
-        // if (!this.editor) this.editor = initEditor();
-        // console.log(this.editor)
+    public onInitialize(engine: Game) {
+        if (!this.editor) this.editor = initEditor(engine);
     }
     public onActivate() {}
     public onDeactivate() {}

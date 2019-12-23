@@ -33,7 +33,7 @@ export const worldWidth = 1000; // add some visual bounds
 /**
  * When an avatar enters a world in the first time, it is positioned here.
  */
-export const spawnPosition: Position = { x: 0, y: 0, dir: DIR.DOWN };
+export const spawnPosition: Position = { x: worldWidth/2, y: 0, dir: DIR.DOWN };
 
 /**
  * Commands that user can give to an avatar.

@@ -26,16 +26,11 @@ Proper distro will be done in Electron later.
 
 # THIS ITERATION
 + define Written Word behaviour
-- plug-in text editor and support Enter/Leave w/o compilation
-    + find ACE9 editor
-    + make ACE9 editor work
-    - display ACE9 on the floor under the game
-    - enter/exit the editor
-    - make game semi-transparent
-    - scroll ACE9 editor up/down when the character moves
-- extract WW chunks
-- run LUA interpreter
-- provide `console.log` functionality as `log()`
++ plug-in text editor and support Enter/Leave w/o compilation
+- compilation and execution
+    - extract WW chunks
+    - run LUA interpreter
+    - provide `console.log` functionality as `log()`
 
 # NEXT ITERATION
 - `get_artifact(s)` support
