@@ -31,19 +31,23 @@ export class Game extends ex.Engine {
 
 }
 
-const game = new Game();
-const loader = new ex.Loader();
-loader.suppressPlayButton = true;
-game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
+// const game = new Game();
+// const loader = new ex.Loader();
+// loader.suppressPlayButton = true;
+// game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
 
-const account = createAccount("Ni", "human_professor");
-const scene = new PlaneScene(game);
-setupScene(scene, getAccountWorld(account), game)
-initSync(game);
-game.addScene("world", scene);
-game.goToScene("world");
+// const account = createAccount("Ni", "human_professor");
+// const scene = new PlaneScene(game);
+// setupScene(scene, getAccountWorld(account), game)
+// initSync(game);
+// game.addScene("world", scene);
+// game.goToScene("world");
 
 
-game.start(loader).then(() => {
-    console.log("----------------------- :) --------------------");
-});
+// game.start(loader).then(() => {
+//     console.log("----------------------- :) --------------------");
+// });
+
+// import * as $ from "jquery"
+import { testFengari } from "./written_fengari";
+testFengari()
