@@ -49,5 +49,5 @@ export class Game extends ex.Engine {
 // });
 
 // import * as $ from "jquery"
-import { testFengari } from "./written_fengari";
-testFengari()
+import { test } from "./written/test";
+test()
