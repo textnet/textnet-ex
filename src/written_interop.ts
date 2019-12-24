@@ -172,7 +172,7 @@ const tojs = function(L, idx) {
 /* Calls function on the stack with `nargs` from the stack.
    On lua error, re-throws as javascript error
    On success, returns single return value */
-const jscall = function(L, nargs) {
+export const jscall = function(L, nargs) {
     let status = lua.lua_pcall(L, nargs, 1, 0);
     let r = tojs(L, -1);
     lua.lua_pop(L, 1);
@@ -223,7 +223,8 @@ const get = function(L, p, prop) {
     lua.lua_pushcfunction(L, gettable);
     p(L);
     push(L, prop);
-    return jscall(L, 2);
+    let result = jscall(L, 2)
+    return result;
 };
 
 const has = function(L, p, prop) {
@@ -368,7 +369,7 @@ const jsiterator = function(L, p) {
     }
 };
 
-const wrap = function(L1, p) {
+export const wrap = function(L1, p) {
     const L = getmainthread(L1);
     /* we need `typeof js_proxy` to be "function" so that it's acceptable to native apis */
     let js_proxy = function() {
@@ -383,7 +384,8 @@ const wrap = function(L1, p) {
         return invoke(L, p, thisarg, args, lua.LUA_MULTRET);
     };
     js_proxy["get"] = function(k) {
-        return get(L, p, k);
+        let result = get(L, p, k);
+        return result;
     };
     js_proxy["has"] = function(k) {
         return has(L, p, k);
