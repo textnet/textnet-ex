@@ -8,6 +8,15 @@ import { fengari_init, fengari_load, fengari_call, fengari_free } from "./api"
 
 /*
 
+Ideas on how to implement the thing.
+
+1. `observer.ts`, when created?
+2. written environments are created by observer and put into avatars
+3. successful avatars are created by observer
+4. observer listens to events and routes them to written environment
+5. observer updates universe
+6. none of actors is updated directly.
+
 */
 
 export interface WrittenEnvironment {

@@ -28,9 +28,10 @@ Proper distro will be done in Electron later.
 + define Written Word behaviour
 + plug-in text editor and support Enter/Leave w/o compilation
 - compilation and execution
-    - extract WW chunks
-    - run LUA interpreter
-    - provide `console.log` functionality as `log()`
+    + extract WW chunks
+    + learn how to run LUA interpreter
+    - find a proper place to start compiling
+
 
 # NEXT ITERATION
 - `get_artifact(s)` support
