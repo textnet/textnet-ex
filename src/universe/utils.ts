@@ -1,9 +1,18 @@
-import { Position, Coordinates, Dir } from "./interfaces"
+import { Position, Coordinates, Dir, Artifact } from "./interfaces"
 import { DIR } from "./const"
 
 /**
  * Miscellaneous utility function.
  */
+
+
+/**
+ * Push values from B to A if there are no values present in A
+ * @to {object} destination
+ * @defaults {object} object with default values
+ */
+export function pushDefaults(to,defaults) 
+{ for (let i in defaults) if (!to[i]) to[i] = defaults[i]; }
 
 /**
  * Simplest ID generator; should be replaced with something better.
@@ -34,6 +43,7 @@ export function cpCoords(coords: Coordinates) {
         position: cpPosition(coords.position)
     } as Coordinates;
 }
+
 
 /**
  * Threshold for standartisation of directions.

@@ -60,7 +60,8 @@ export function test() {
     console.log("========================================================")
     const test = TESTS.simplest;
     const chunks = getChunks(test);
-    let env = fengari_init();
+    const CTX = {};
+    let env = fengari_init(CTX);
     for (let chunk of chunks) {
         console.log(chunk);
         console.log("-------------------------------------------------------------")

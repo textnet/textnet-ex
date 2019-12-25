@@ -25,20 +25,15 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-+ define Written Word behaviour
-+ plug-in text editor and support Enter/Leave w/o compilation
-+ compilation and execution
-    + extract WW chunks
-    + learn how to run LUA interpreter
-    + find a proper place to start compiling
-    + recompile on entering: create observers
-    + remove observers on purge
-    + restart observer as it is adjusted
-+ update text on screen if it is changed in universe
++ `get_artifact(s)` support
+    + get_artifact() -> alias for get_artifacts()[0]
+    + get_artifacts{ world, name }
+    + get_myself() 
+    + get_next{ direction="up" }
+    + get_closest{ name="chair" }
 
 
 # NEXT ITERATION
-- `get_artifact(s)` support
 - `update` support with basic properties
 - catch `name` as global variable
 - `text` support, full, lines, anchors
@@ -47,6 +42,7 @@ Proper distro will be done in Electron later.
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
+- another session of documentation
 - refactor positions, coords, and vector stuff
 - animate entering the artifact
 - animate leaving the artifact

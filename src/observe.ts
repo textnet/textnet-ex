@@ -25,7 +25,7 @@ export class AvatarObserver {
             texts.push(i.text)
         }
         const text = texts.join("\n\n");
-        const env = initWrittenWord(this.artifact.id, text);
+        const env = initWrittenWord(this, this.artifact.id, text);
         this.free();
         if (env) {
             if (!this.artifact.avatar) {

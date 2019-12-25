@@ -115,9 +115,26 @@ export interface World {
  * `actor` and `_dispatcher`. 
  * These connections shouldn't be copied.
  */
+
+export const defaultsArtifact = {
+    passable: false,
+    pushable: true,
+    speed:    100,
+    power:    100,
+    weight:   100,
+    API:      [ "id", "name", "passable", "pushable", "speed", "power", "weight"],
+}
+
 export interface Artifact {
     id: string;
     name: string;
+    
+    passable?: boolean;
+    pushable?: boolean;
+    speed?:    number;
+    power?:    number;
+    weight?:   number; 
+    API?:      string[];
 
     sprite: { 
         base64: string;

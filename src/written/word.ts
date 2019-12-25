@@ -24,11 +24,11 @@ export interface WrittenEnvironment {
     L: any; // internal LUA state. You should not think about it at all.
 }
 
-export function initWrittenWord(id: string, text: string) {
+export function initWrittenWord(CTX, id: string, text: string) {
     const chunks = getChunks(text);
     const env: WrittenEnvironment = {
         id: id,
-        L: fengari_init()
+        L: fengari_init(CTX)
     }
     for (let chunk of chunks) {
         let success = fengari_load(env.L, chunk.data) && fengari_call(env.L);

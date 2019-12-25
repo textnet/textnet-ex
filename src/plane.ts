@@ -122,6 +122,7 @@ export function purgeScene(scene: PlaneScene, engine: Game) {
             scene.observers[i].free()
         }
     }
+    console.log("purge done")
 }
 
 /**

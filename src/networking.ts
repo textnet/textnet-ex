@@ -17,7 +17,7 @@ import { SyncEvent } from "./universe/events"
     engine.syncDispatcher = dispatcher;
     engine.syncDispatcher.on("sync", networkSync);
     // engine.syncDispatcher.on("script:move", networkSync);
-    engine.syncDispatcher.emit("sync", new SyncEvent("init"));
+    // engine.syncDispatcher.emit("sync", new SyncEvent("init"));
 }
 
 export function networkSync(event: SyncEvent) {

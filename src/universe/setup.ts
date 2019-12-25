@@ -1,7 +1,8 @@
 import {
     Position, Dir, Coordinates,
     Artifact, World, Avatar, AvatarKind,
-    Account
+    Account,
+    defaultsArtifact
 } from "./interfaces"
 import { numerate, cpPosition, cpCoords } from "./utils"
 import {
@@ -9,7 +10,7 @@ import {
     placeArtifact
 } from "./manipulations"
 import { spawnPosition, DIR } from "./const"
-import { deepCopy } from "./utils"
+import { deepCopy, pushDefaults } from "./utils"
 /**
  * Temporary module to initialise the universe when
  * there is no permanent storage and no persistence.
@@ -27,10 +28,11 @@ import { deepCopy } from "./utils"
 export function createArtifact(name:string, setupSpriteName:string, coords?:Coordinates) {
     let d = deepCopy(artifacts[setupSpriteName]);
     d.colors = { world: rnd(worldColors), title: rnd(titleColors), };
-    const artifact: Artifact = Object.create(d)
+    const artifact: Artifact = Object.create(d);
     artifact.id     = numerate("artifact");
     artifact.name   = name;
     artifact.coords = coords;
+    pushDefaults(artifact, defaultsArtifact);
     let world: World = {
         id: numerate("world"),
         owner: artifact,
@@ -163,6 +165,7 @@ const artifacts = {
 
 
 const startupText = `
+
 Welcome to Textnet Game v.0.2!
 ==============================
 
@@ -176,8 +179,11 @@ Last but not least, hit <Ctrl-Enter> to alter this text.
 
 Yes, this text is a fine example of what this game is about. Not only you can alter it, but you can also make this text affect the game. It is called *Written Word*, and it goes like this:
 
-    local a = 10;
-    print("Message from the Written Word: it works!")
+    -- print("Message from the Written Word: here are your artifacts")
+    -- local everything = get_artifacts{ world="upper" }
+    -- for i = 0, #everything-1 do
+    --   print ("Artifact: "..everything[i].name)
+    -- end
 
 You see, once you indented a block of text by a couple spaces, it becomes a chunk of *Written Word*. Written word is LUA with some special sauce.
 

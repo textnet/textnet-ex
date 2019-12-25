@@ -32,6 +32,7 @@ Lua is a powerful, efficient, lightweight, embeddable scripting language. It sup
 
 
 
+
 Running Written Word.
 ---------------------
 
@@ -101,22 +102,24 @@ Operating with the World Around.
 
 Written Word of an Artifact has direct access to two worlds:
 
-1. `world` — World that is owned by the Artifact of the Written Word.
+1. default — World that is owned by the Artifact of the Written Word.
 2. `upper` — World in which the Artifact is placed on.
 
 There are functions that allow access to artifacts from each world.
 
     local owned_artifacts_all_1 = get_artifacts()
-    local owned_artifacts_all_2 = get_artifacts( world )
+    local owned_artifacts_all_2 = get_artifacts{ world="upper" }
     local owned_chairs_only     = get_artifacts{ name="chair" }
     local only_first_chair      = get_artifact{ name="chair" }
-    local chairs_around_myself  = get_artifacts{ world=upper, name="chair" }
+    local chairs_around_myself  = get_artifacts{ world="upper", name="chair" }
 
 Several functions are optimised to work with artifacts around:
 
     local myself                = get_myself()
     local closest_chair         = get_closest{ name="chair" }
     local next_artifact         = get_next{ direction="up" }
+
+NB: Lists in Lua starts with index 1; but data returned from the universe starts with zero.
 
 
 Operating with Artifacts.
@@ -153,7 +156,7 @@ Here is the list of properties with description.
 - `passable` – if `true`, artifact doesn't play in collisions; default = `false`
 - `pushable` — if `true`, artifact can be pushed by avatars; default = `true`
 - `speed` defines how fast artifact moves being avatar; default = `100` (as in 100%)
-- `strength` defines how easy it is to push other artifacts; default = `3`
+- `power` defines how easy it is to push other artifacts; default = `3`
 - `weight` defines how much strength it requires to start pushing; default = `1`
 
 
