@@ -16,6 +16,7 @@ import { deepCopy } from "./utils"
  * To be redone as the persistance/multiplayer arrives.
  */
 
+
 /**
  * Generate a proper artifact structure using artifact constants embedded in code.
  * @param {string} name - public name of the artifact
@@ -34,6 +35,7 @@ export function createArtifact(name:string, setupSpriteName:string, coords?:Coor
         id: numerate("world"),
         owner: artifact,
         artifacts: {},
+        text: '',
     }
     artifact.worlds.push(world)
     return artifact;
@@ -56,6 +58,7 @@ export function createPlayerAvatar(name:string, setupSpriteName:string) {
         visitsStack: []
     }
     avatar.body.avatar = avatar;
+    avatar.body.worlds[0].text = startupText;
     enterWorld(avatar, avatar.body.worlds[0])
     return avatar;
 }
@@ -75,12 +78,12 @@ export function createAccount(name, setupSpriteName) {
     }
     let chair: Artifact = createArtifact('Chair 1', 'chair');
     placeArtifact(chair, {
-        position: { x:100, y:100, dir: DIR.DOWN },
+        position: { x:580, y:95, dir: DIR.DOWN },
         world:    world.avatar.body.worlds[0]
     })
     let chair2: Artifact = createArtifact('Chair 2', 'chair');
     placeArtifact(chair2, {
-        position: { x:150, y:100, dir: DIR.DOWN },
+        position: { x:630, y:85, dir: DIR.DOWN },
         world:    world.avatar.body.worlds[0]
     })
     return world;
@@ -157,3 +160,30 @@ const artifacts = {
     human_professor: deepCopy(artifactPlayer), // artifactPlayer,
     chair:           deepCopy(artifactChair), // artifactChair
 }
+
+
+const startupText = `
+Welcome to Textnet Game v.0.2!
+==============================
+
+The game is a sandbox where you can alter everything you see.
+
+Move your character with cursor keys.
+Use <Shift> to push objects while you move, e.g. chairs:
+Use <Alt> to pick objects up and to put them back down.
+Dive into objects by coming close to them and moving in while holding <Ctrl>.
+Last but not least, hit <Ctrl-Enter> to alter this text.
+
+Yes, this text is a fine example of what this game is about. Not only you can alter it, but you can also make this text affect the game. It is called *Written Word*, and it goes like this:
+
+    local a = 10;
+    print("Message from the Written Word: it works!")
+
+You see, once you indented a block of text by a couple spaces, it becomes a chunk of *Written Word*. Written word is LUA with some special sauce.
+
+Currently, there is no special sauce, as there are no more objects than those two sad chairs. There is no *Spoken Word* yet either. And for sure, there are no Gods.
+
+I bet you were hoping to find god inside here.
+Not just yet, chap.
+
+`

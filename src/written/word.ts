@@ -34,7 +34,7 @@ export function initWrittenWord(id: string, text: string) {
         let success = fengari_load(env.L, chunk.data) && fengari_call(env.L);
         if (!success) return;
     }
-    console.log("<Written Word>", env);
+    // console.log("<Written Word>", env, text);
     return env;
 }
 

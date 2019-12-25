@@ -77,7 +77,7 @@ export class ArtifactActor extends InventoryActor {
      * Initialises event dispatchers.
      */
     onInitialize(engine: Game) {
-        this.artifact.dispatcher = engine.syncDispatcher;
+        this.artifact._dispatcher = engine.syncDispatcher;
         super.onInitialize(engine);
         this.visualiseInventory(engine);
     }

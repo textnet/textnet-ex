@@ -1,4 +1,5 @@
 import * as ex from 'excalibur';
+import { WrittenEnvironment } from "../written/word"
 
 /**
  * Proper structures for all TextNet universe objects.
@@ -74,6 +75,7 @@ export interface Avatar {
     kind: AvatarKind;
     visits: Record<string,Coordinates>;
     visitsStack: string[];
+    _env?: WrittenEnvironment;
 }
 
 /**
@@ -82,11 +84,13 @@ export interface Avatar {
  * World must belong to an artifact: avatars can enter the world through it.
  * World contain all artifacts that are placed into it.
  * Artifacts care of their own position within the world.
+ * World also have floor, which holds the text (with Written Word on it).
  */
 export interface World {
     id: string;
     owner: Artifact;
     artifacts: Record<string,Artifact>;
+    text: string;
 }
 
 /**
@@ -108,7 +112,7 @@ export interface World {
  * Artifact may be placed into a world in a certain position (=coordinates).
  * 
  * There are also connections of avatar structure with game engine:
- * `actor` and `dispatcher`. 
+ * `actor` and `_dispatcher`. 
  * These connections shouldn't be copied.
  */
 export interface Artifact {
@@ -135,7 +139,7 @@ export interface Artifact {
     worlds: World[];
     coords?: Coordinates;
 
-    dispatcher?: ex.EventDispatcher;
+    _dispatcher?: ex.EventDispatcher;
     actor?: ex.Actor;
 }
 

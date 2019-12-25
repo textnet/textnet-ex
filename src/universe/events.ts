@@ -42,6 +42,9 @@ export class SyncEvent extends ex.GameEvent<any> {
 // - "script:create(avatar, artifact)"
 // - "script:destroy(avatar, artifact)"
 
+// - "script:text(artifact, text)"
+// - "script:line(artifact, lineno, line)"
+
 export class ScriptEvent extends SyncEvent {}
 export class ScriptMoveEvent extends ScriptEvent {
     constructor(artifact: Artifact, dx:number, dy:number) {
@@ -51,6 +54,13 @@ export class ScriptMoveEvent extends ScriptEvent {
             x:   artifact.coords.position.x,
             y:   artifact.coords.position.y,
             dir: artifact.coords.position.dir,           
+        });
+    }
+}
+export class ScriptTextEvent extends ScriptEvent {
+    constructor(artifact: Artifact, text:string) {
+        super(EVENT.TEXT.action, artifact, {
+            text: text,
         });
     }
 }

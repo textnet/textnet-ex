@@ -5,7 +5,6 @@ import { DIR } from "./const"
  * Miscellaneous utility function.
  */
 
-
 /**
  * Simplest ID generator; should be replaced with something better.
  * @param {string} prefix

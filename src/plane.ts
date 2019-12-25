@@ -10,8 +10,11 @@ import {
     Artifact,
     AvatarKind
 } from "./universe/interfaces";
-import { adjustEditor, initEditor, Editor } from "./editor"
+import { updateEditor, adjustEditor, initEditor, Editor } from "./editor"
 import { Game } from "./index"
+import { AvatarObserver } from "./observe"
+import { ScriptTextEvent } from "./universe/events"
+import { networkSync } from "./networking"
 
 
 /**
@@ -38,13 +41,16 @@ export const visualBounds = {
  */
 export class PlaneScene extends ex.Scene {
     editor: Editor;
-    world:   World;
+    world:  World;
+    observers: Record<string,AvatarObserver>;
 
-    public onInitialize(engine: Game) {
-        if (!this.editor) this.editor = initEditor(engine);
-    }
+    public onInitialize(engine: Game) {}
     public onActivate() {}
     public onDeactivate() {}
+
+    public onPostUpdate(engine: Game) {
+        updateEditor(this);
+    }
 
     public timeToUpdateUniverse() {
         // global pacing
@@ -111,6 +117,11 @@ export function purgeScene(scene: PlaneScene, engine: Game) {
     for (let a of scene.actors) {
         scene.remove(a);
     }
+    if (scene.observers) {
+        for (let i in scene.observers) {
+            scene.observers[i].free()
+        }
+    }
 }
 
 /**
@@ -156,7 +167,22 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     //
     title.add(text);
     scene.add(title);
-    // TODO REDO the text approach
-    // jquery("body").css("backgroundColor", world.owner.colors.world.bg);
-    // jquery("textarea#editor").css("color", world.owner.colors.world.fg);
+    // editor-world connection
+    scene.world = world;
+    if (!scene.editor) scene.editor = initEditor(engine);
+    updateEditor(scene);
+    // observers
+    scene.observers = {};
+    scene.observers[world.owner.id] = new AvatarObserver(world.owner);
+    for (let i in world.artifacts) {
+        if (world.artifacts[i] != world.owner) {
+            scene.observers[ world.artifacts[i].id ] = new AvatarObserver(world.artifacts[i]);
+        }
+    }
+    engine.syncDispatcher.on("script:text", function(event: ScriptTextEvent) {
+        if (scene.observers[event.artifact.id]) {
+            scene.observers[event.artifact.id].attemptAvatar();
+        }
+    })
 }
+

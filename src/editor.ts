@@ -2,6 +2,7 @@ import * as jquery from "jquery";
 import * as $ from "jquery";
 import * as ex from "excalibur"
 import { worldWidth } from "./universe/const"
+import { World } from "./universe/interfaces"
 import { visualBounds } from "./plane"
 import { Game } from "./index"
 import { ArtifactActor } from "./actor"
@@ -9,21 +10,29 @@ import { PlaneScene } from "./plane"
 import * as ace from "brace"
 import * as luaMode from "brace/mode/lua"
 
+import { updateWorldText } from "./universe/manipulations"
+
 /**
  * TODO: REWRITE FROM SCRATCH!
  */
 
 
-export interface Editor extends ace.Editor {
-}
-
+export interface Editor extends ace.Editor {}
 
 const fontSize      = "15px";
 const prependRows   = 1000;
 const rowHeight     = 16;
 
+export function updateEditor(scene: PlaneScene) {
+    if (scene.editor.getValue() != scene.world.text) {
+        scene.editor.setValue(scene.world.text,-1) 
+    }
+}
+
 export function focusEditor(actor: ArtifactActor) {
+    updateEditor(actor.scene as PlaneScene);
     const editor = (actor.scene as PlaneScene).editor;
+    // TODO: ser cursor position
     editor.setReadOnly(false);
     editor.setOption("showGutter", true);   
     editor.renderer["$cursorLayer"].element.style.display = "block"
@@ -36,7 +45,7 @@ export function blurEditor(editor) {
     editor.setReadOnly(true);
     editor.blur();
     $("canvas").css({  opacity: 1 })
-    $("#editor").css({ opacity: 0.75, 
+    $("#editor").css({ opacity: 0.7, 
         width: worldWidth+visualBounds.left+visualBounds.right, 
     })
     $("#editor").find(".ace_gutter").css({ opacity: 0 })
@@ -53,7 +62,7 @@ export function initEditor(engine: Game) {
         "</div>"
         ].join(""));
     customizeEditor()
-    var editor = ace.edit('editor');
+    var editor: Editor = ace.edit('editor');
     editor.setFontSize(fontSize);
     editor.setOption("printMargin", false);
     editor.setOption("fixedWidthGutter", true);
@@ -65,8 +74,10 @@ export function initEditor(engine: Game) {
     editor.commands.addCommand({
         name: "textnetStandup",
         bindKey: {win: 'Ctrl-Enter',  mac: 'Ctrl-Enter'},
-        exec: function(editor) {
+        exec: function(editor: Editor) {
             blurEditor(editor);
+            const world = (engine.currentScene as PlaneScene).world;
+            updateWorldText(world, editor.getValue())
             engine.start();
         },
         readOnly: false

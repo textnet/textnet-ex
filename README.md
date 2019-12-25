@@ -27,10 +27,14 @@ Proper distro will be done in Electron later.
 # THIS ITERATION
 + define Written Word behaviour
 + plug-in text editor and support Enter/Leave w/o compilation
-- compilation and execution
++ compilation and execution
     + extract WW chunks
     + learn how to run LUA interpreter
-    - find a proper place to start compiling
+    + find a proper place to start compiling
+    + recompile on entering: create observers
+    + remove observers on purge
+    + restart observer as it is adjusted
++ update text on screen if it is changed in universe
 
 
 # NEXT ITERATION

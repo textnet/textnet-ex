@@ -6,7 +6,8 @@ import {
 import { cpCoords, cpPosition } from "./utils"
 import { spawnPosition } from "./const"
 import {
-    ScriptMoveEvent
+    ScriptMoveEvent,
+    ScriptTextEvent,
 } from "./events"
 import { isOverlap, artifactBox } from "./getters"
 
@@ -160,7 +161,7 @@ export function isArtifactPlaceable(artifact: Artifact, coords: Coordinates) {
 
 /**
  * Updates an artifact position in the world it is placed in.
- * Emits `script:move` event that describes the move
+ * Emits `artifact:move` event that describes the move
  * Events are currently not used.
  * @param {Artifact} artifact
  * @param {Position} newPosition
@@ -175,7 +176,16 @@ export function updateArtifactPosition(artifact: Artifact, newPosition: Position
     // update universe
     artifact.coords.position = cpPosition(newPosition);
     // emit events
-    artifact.dispatcher.emit("script:move", new ScriptMoveEvent(artifact, dx, dy));
+    artifact._dispatcher.emit("script:move", new ScriptMoveEvent(artifact, dx, dy));
+}
+
+
+// full text & recompile
+export function updateWorldText(world: World, text: string) {
+    // update universe
+    world.text = text;
+    // emit events
+    world.owner._dispatcher.emit("script:text", new ScriptTextEvent(world.owner, text));
 }
 
 
