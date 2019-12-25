@@ -8,6 +8,7 @@ import { spawnPosition } from "./const"
 import {
     ScriptMoveEvent,
     ScriptTextEvent,
+    ScriptPropertiesEvent,
 } from "./events"
 import { isOverlap, artifactBox } from "./getters"
 
@@ -176,7 +177,7 @@ export function updateArtifactPosition(artifact: Artifact, newPosition: Position
     // update universe
     artifact.coords.position = cpPosition(newPosition);
     // emit events
-    artifact._dispatcher.emit("script:move", new ScriptMoveEvent(artifact, dx, dy));
+    artifact.dispatcher.emit("script:move", new ScriptMoveEvent(artifact, dx, dy));
 }
 
 
@@ -185,7 +186,22 @@ export function updateWorldText(world: World, text: string) {
     // update universe
     world.text = text;
     // emit events
-    world.owner._dispatcher.emit("script:text", new ScriptTextEvent(world.owner, text));
+    world.owner.dispatcher.emit("script:text", new ScriptTextEvent(world.owner, text));
+}
+
+
+export function updateArtifactProperties(artifact: Artifact, properties) {
+    // update universe
+    for (let key in properties) {
+        if (properties[key] != undefined) {
+            artifact[key] = properties[key];
+        }
+    }
+    // emit events
+    if (artifact.dispatcher) {       
+        artifact.dispatcher.emit("script:properties", 
+            new ScriptPropertiesEvent(artifact, properties));
+    }
 }
 
 

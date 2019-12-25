@@ -59,7 +59,8 @@ export const universeUpdateFrequency = 100; // ms
  */
 export const EVENT = {
     MOVE: { action: "move", },
-    TEXT: { action: "text", }
+    TEXT: { action: "text", },
+    PROP: { action: "properties"}, 
 }
 
 

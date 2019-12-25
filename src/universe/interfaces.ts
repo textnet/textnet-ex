@@ -119,18 +119,24 @@ export interface World {
 export const defaultsArtifact = {
     passable: false,
     pushable: true,
+    pickable: true,
+    locked:   false,
     speed:    100,
     power:    100,
     weight:   100,
-    API:      [ "id", "name", "passable", "pushable", "speed", "power", "weight"],
+    API:      [ "id", "name", 
+                "passable", "pushable", "pickable", "locked", 
+                "speed", "power", "weight"],
 }
 
 export interface Artifact {
     id: string;
-    name: string;
-    
+
+    name: string;   
     passable?: boolean;
     pushable?: boolean;
+    pickable?: boolean;
+    locked?:   boolean;
     speed?:    number;
     power?:    number;
     weight?:   number; 
@@ -156,7 +162,7 @@ export interface Artifact {
     worlds: World[];
     coords?: Coordinates;
 
-    _dispatcher?: ex.EventDispatcher;
+    dispatcher?: ex.EventDispatcher;
     actor?: ex.Actor;
 }
 

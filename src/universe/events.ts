@@ -65,6 +65,15 @@ export class ScriptTextEvent extends ScriptEvent {
     }
 }
 
+export class ScriptPropertiesEvent extends ScriptEvent {
+    constructor(artifact: Artifact, properties:object) {
+        super(EVENT.PROP.action, artifact, {
+            properties: properties,
+        });
+    }
+}
+
+
 
 
 

@@ -77,7 +77,6 @@ export class ArtifactActor extends InventoryActor {
      * Initialises event dispatchers.
      */
     onInitialize(engine: Game) {
-        this.artifact._dispatcher = engine.syncDispatcher;
         super.onInitialize(engine);
         this.visualiseInventory(engine);
     }
@@ -111,8 +110,6 @@ export class ArtifactActor extends InventoryActor {
      */
     updateFromAvatar(engine: Game) {
         this.speed = { x:0, y:0 };
-        let speedMod = 100; // TBD get speed from avatar/artifact
-        let pushStrength = 3; // TBD get strength from avatar/artifact
         let dir: Dir = deepCopy(DIR.NONE);
         // Player input for direction and speed
         if (this.artifact.avatar.kind == AvatarKind.PLAYER) {
@@ -124,9 +121,10 @@ export class ArtifactActor extends InventoryActor {
                 let command = getPlayerCommand(engine);
                 if (command == COMMAND.PUSH && playerDir.name != DIR.NONE.name) {
                     let item: Artifact = getArtifact_NextTo(this.artifact, playerDir);
-                    if (item) {
+                    if (item && item.pushable) {
                         let straightDir: Dir = DIRfrom(playerDir);
                         let newCoords = cpCoords(item.coords);
+                        let pushStrength = this.artifact.power / item.weight;
                         newCoords.position.x += straightDir.x*pushStrength;
                         newCoords.position.y += straightDir.y*pushStrength;
                         if (isArtifactPlaceable(item, newCoords)) {
@@ -141,7 +139,7 @@ export class ArtifactActor extends InventoryActor {
                 if (command == COMMAND.PICKUP) {
                     let straightDir: Dir = DIRfrom(addDir(dir, playerDir));
                     let item:Artifact = getArtifact_NextTo(this.artifact, straightDir);
-                    if (item) {
+                    if (item && item.pickable) {
                         pickupArtifact(this.artifact.avatar, item);
                         if (item.actor) {
                             this.scene.remove(item.actor)
@@ -170,7 +168,7 @@ export class ArtifactActor extends InventoryActor {
                 }
                 if (command == COMMAND.ENTER) {
                     let item = getArtifact_NextTo(this.artifact, playerDir);
-                    if (item) {
+                    if (item && !item.locked) {
                         enterArtifact(this.artifact.avatar, item)
                         engine.switchScene(this.artifact.coords.world)                       
                     }
@@ -187,8 +185,8 @@ export class ArtifactActor extends InventoryActor {
             this.dir = dir;
         } 
         // Adjust velocity
-        this.vel.x = dir.x * speedMod;
-        this.vel.y = dir.y * speedMod;
+        this.vel.x = dir.x * this.artifact.speed;
+        this.vel.y = dir.y * this.artifact.speed;
 
         // Stay in bounds 
         if (this.pos.y < 0) {
@@ -210,6 +208,15 @@ export class ArtifactActor extends InventoryActor {
      * Happens after main update once per frame.
      */
     onPostUpdate(engine: Game, delta: number) {
+        // update from properties
+        if (this.artifact.passable) {
+            this.body.collider.type = ex.CollisionType.PreventCollision;
+        } else {
+            this.body.collider.type = ex.CollisionType.Fixed;
+        }
+        if (this.artifact.avatar && this.artifact.avatar.kind == AvatarKind.PLAYER) {
+            this.body.collider.type = ex.CollisionType.Active;
+        }
         // update from avatar
         if (this.artifact.avatar) {
             this.updateFromAvatar(engine)

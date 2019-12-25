@@ -155,9 +155,11 @@ Here is the list of properties with description.
 - `name` — name of the artifact, doesn't bear any special meaning
 - `passable` – if `true`, artifact doesn't play in collisions; default = `false`
 - `pushable` — if `true`, artifact can be pushed by avatars; default = `true`
+- `pickable` — if `true`, artifact can be picked up by avatars; default = `true`
+- `locked` — if `true`, avatars can't enter the artifact; default = `false`
 - `speed` defines how fast artifact moves being avatar; default = `100` (as in 100%)
-- `power` defines how easy it is to push other artifacts; default = `3`
-- `weight` defines how much strength it requires to start pushing; default = `1`
+- `power` defines how easy it is to push other artifacts; default = `100` (as in 100%)
+- `weight` defines how much strength it requires to start pushing; default = `100` (as in 100%)
 
 
 ### Global Shortcuts to 'Myself'

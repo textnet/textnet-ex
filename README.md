@@ -25,17 +25,19 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-+ `get_artifact(s)` support
-    + get_artifact() -> alias for get_artifacts()[0]
-    + get_artifacts{ world, name }
-    + get_myself() 
-    + get_next{ direction="up" }
-    + get_closest{ name="chair" }
++ `update` support basic properties
+    + name
+    + passable
+    + pushable
+    + pickable
+    + locked
+    + speed
+    + power
+    + weight
 
 
 # NEXT ITERATION
-- `update` support with basic properties
-- catch `name` as global variable
+- expose `myself` as a special variable?
 - `text` support, full, lines, anchors
 - `update_avatar`
 - support events

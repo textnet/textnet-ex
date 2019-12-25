@@ -2,6 +2,12 @@ import { lua, lauxlib, lualib, to_luastring, LuaState } from "fengari-web"
 import { push, luaopen_js, wrap, jscall } from "./interop"
 import { supportedFunctions } from "./library"
 
+export interface FengariMap {
+    get(key),
+    set(key, value),
+    has(key)
+}
+
 
 export function fengari_load(L: LuaState, code:string) {
     const loadResult = lauxlib.luaL_loadstring(L, to_luastring(code));
@@ -28,12 +34,15 @@ export function fengari_call(L: LuaState) {
 function fengari_register_function(CTX, L: LuaState, name: string, signature: string[], f)  {
     const fWrapper = function() {
         const argCout = lua.lua_gettop(L);
-        const args    = wrap(L, lua.lua_toproxy(L, 2));        
+        const args = wrap(L, lua.lua_toproxy(L, 2));
         const params = [CTX];
-        for (let paramName of signature) {
-            params.push(args["get"](paramName));    
-        } 
-        // console.log("FUNCTION:", name, 'with params', params)
+        if (signature) {
+            for (let paramName of signature) {
+                params.push(args["get"](paramName));
+            } 
+        } else {
+            params.push(args)
+        }
         return f.apply(null, params);
     }
     // console.log("registered function: "+name+"("+signature.join(", ")+")")
@@ -56,14 +65,6 @@ export function fengari_init(CTX) {
         fengari_register_function(CTX, L, i, supportedFunctions[i].signature, 
                                              supportedFunctions[i].f)
     }
-    // fengari_register_function(CTX, L, "test", [], 
-    //     function(CTX){
-    //         console.log("testing function....")
-    //         const o1 = { id:12, name: "N1"}
-    //         const o2 = { id:34, name: "N2"}
-    //         const o3 = { id:56, name: "N3"}
-    //         return [o1, o2, o3]
-    //     })
     return L;
 }
 

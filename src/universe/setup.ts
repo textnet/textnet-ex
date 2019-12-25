@@ -169,6 +169,12 @@ const startupText = `
 Welcome to Textnet Game v.0.2!
 ==============================
 
+    update{ name="Nikolay", speed=200 }
+    local chair = get_closest{};
+    update{ artifact=chair, name="Nikolay's chair", 
+            passable=true
+          }
+
 The game is a sandbox where you can alter everything you see.
 
 Move your character with cursor keys.

@@ -8,12 +8,6 @@ import {
 import { deepCopy } from "./utils"
 
 /**
- * Functions that allow to get artifacts, avatars and other entities
- * in various ways.
- */
-
-
-/**
  * Returns 'World' where the user's avatar currently resides.
  * @param {Account} account - which account we are tracking
  * @returns {World} 

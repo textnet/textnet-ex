@@ -13,7 +13,10 @@ import {
 import { updateEditor, adjustEditor, initEditor, Editor } from "./editor"
 import { Game } from "./index"
 import { AvatarObserver } from "./observe"
-import { ScriptTextEvent } from "./universe/events"
+import { 
+    ScriptTextEvent,
+    ScriptPropertiesEvent,
+} from "./universe/events"
 import { networkSync } from "./networking"
 
 
@@ -31,7 +34,7 @@ import { networkSync } from "./networking"
  */
 export const visualBounds = {
     left: 43, right: 43,
-    top: 0,   height: 300,
+    top: 0,   height: 150,
     margin: 65,
 };
 
@@ -43,6 +46,7 @@ export class PlaneScene extends ex.Scene {
     editor: Editor;
     world:  World;
     observers: Record<string,AvatarObserver>;
+    handlers: Record<string,any>;
 
     public onInitialize(engine: Game) {}
     public onActivate() {}
@@ -122,7 +126,9 @@ export function purgeScene(scene: PlaneScene, engine: Game) {
             scene.observers[i].free()
         }
     }
-    console.log("purge done")
+    for (let e in scene.handlers) {
+        engine.syncDispatcher.off(e, scene.handlers[e]);
+    }
 }
 
 /**
@@ -142,6 +148,8 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
             if (actor.artifact.avatar.kind == AvatarKind.PLAYER) playerActor = actor;
         }
         scene.add(actor);
+        actor.artifact.dispatcher = engine.syncDispatcher; // TODO events better understood
+
     }
     // create camera strategy
     scene.camera.clearAllStrategies();
@@ -172,6 +180,22 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     scene.world = world;
     if (!scene.editor) scene.editor = initEditor(engine);
     updateEditor(scene);
+    // event handlers
+    scene.handlers = {};
+    scene.handlers["script:properties"] = function(event: ScriptPropertiesEvent) {
+        // update name
+        if (scene.world.owner.id == event.artifact.id) {
+            text.text = world.owner.name;
+        }
+    };
+    scene.handlers["script:text"] = function(event: ScriptTextEvent) {
+        if (scene.observers[event.artifact.id]) {
+            scene.observers[event.artifact.id].attemptAvatar();
+        }
+    };
+    for (let e in scene.handlers) {
+        engine.syncDispatcher.on(e, scene.handlers[e]);
+    }
     // observers
     scene.observers = {};
     scene.observers[world.owner.id] = new AvatarObserver(world.owner);
@@ -179,11 +203,6 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
         if (world.artifacts[i] != world.owner) {
             scene.observers[ world.artifacts[i].id ] = new AvatarObserver(world.artifacts[i]);
         }
-    }
-    engine.syncDispatcher.on("script:text", function(event: ScriptTextEvent) {
-        if (scene.observers[event.artifact.id]) {
-            scene.observers[event.artifact.id].attemptAvatar();
-        }
-    })
+    }    
 }
 
