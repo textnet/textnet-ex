@@ -3,7 +3,10 @@ import { DIRfrom } from "../universe/const"
 import { AvatarObserver } from "../observe"
 import { getArtifact_NextTo } from "../universe/getters"
 import { FengariMap } from "./api"
-import { updateArtifactProperties } from "../universe/manipulations"
+import { 
+    updateArtifactProperties,
+    updateArtifactText,
+} from "../universe/manipulations"
 
 export const supportedFunctions = {
     "get_artifacts": { signature: ["world", "id", "name"], f: get_artifacts },
@@ -13,28 +16,131 @@ export const supportedFunctions = {
     "get_closest":   { signature: ["name"],                f: get_closest   },
     "update":        { signature: false,                   f: update        },
     "self":          { signature: false,                   f: update        },
+
+    "get_text":    { signature: ["artifact", "line", "anchor"         ], f: get_text    },
+    "update_text": { signature: ["artifact", "text",                  ], f: update_text },
+    "update_line": { signature: ["artifact", "line", "anchor", "text" ], f: update_line },
+    "insert_line": { signature: ["artifact", "line", "anchor", "text" ], f: insert_line },
+    "delete_line": { signature: ["artifact", "line", "anchor"         ], f: delete_line },
 }
+
+
+function get_text(observer: AvatarObserver, 
+                  artifactStructure?: object, line?: number, anchor?: string) {
+    let artifact = getArtifactFromStructure(observer, artifactStructure);
+    let text = ""+artifact.worlds[0].text;
+    if (line || anchor) {
+        let lines = text.split("\n");
+        if (line) { lines = [lines[line]] }
+        let result = [];
+        if (anchor) {
+            for (let l of lines) {
+                if (l.substr(0,anchor.length+2) == "#"+anchor+" ") {
+                    result.push(l.substr(anchor.length+2));
+                }
+            }
+        } else {
+            result = lines;
+        }
+        return result.join("\n");
+    } else {
+        return text;
+    }
+}
+
+function update_text(observer: AvatarObserver, 
+                  artifactStructure?: object, text?: string) {
+    let artifact = getArtifactFromStructure(observer, artifactStructure);
+    updateArtifactText(artifact, text, true);
+    return true;
+}
+
+function _update_line(observer: AvatarObserver, 
+                  artifactStructure?: object, line?: number, anchor?: string,
+                  text?: string,
+                  mode?: string
+                  ) {
+    let artifact = getArtifactFromStructure(observer, artifactStructure);
+    let artifact_text = artifact.worlds[0].text
+    if (!line && !anchor) return true;
+    let lines = artifact_text.split("\n");
+    if (line) {
+        if (lines.length >= line) {
+            lines = appendLinesToList(lines, line-lines.length+1);
+        }
+        if (mode == "insert") {
+            if (text === undefined) text = "";
+            lines.splice(line, 0, text);
+        } else
+        if (mode == "delete") {
+            lines.splice(line, 1)
+        } else {
+            lines[line] = text;    
+        }
+    }
+    if (anchor) {
+        let skip = false;
+        for (let i in lines) {
+                if (!skip && (lines[i].substr(0,anchor.length+2) == "#"+anchor+" ")) {
+                    if (mode == "insert") {
+                        if (text === undefined) text = "";
+                        console.log(text)
+                        lines.splice(parseInt(i), 0, "#"+anchor+" "+text)
+                        skip = true;
+                    } else
+                    if (mode == "delete") {
+                        lines.splice(parseInt(i), 1);
+                    } else {
+                        lines[i] = "#"+anchor+" "+text;    
+                    }
+                } else {
+                    skip = false;
+                }
+            }
+    }
+    let result = lines.join("\n");
+    updateArtifactText(artifact, result, false);
+    return true
+}
+
+function update_line(observer: AvatarObserver, 
+                  artifactStructure?: object, line?: number, anchor?: string,
+                  text?: string) {
+    return _update_line(observer, artifactStructure, line, anchor, text);
+}
+function insert_line(observer: AvatarObserver, 
+                  artifactStructure?: object, line?: number, anchor?: string,
+                  text?: string) {
+    return _update_line(observer, artifactStructure, line, anchor, text, "insert");
+}
+function delete_line(observer: AvatarObserver, 
+                  artifactStructure?: object, line?: number, anchor?: string) {
+    return _update_line(observer, artifactStructure, line, anchor, undefined, "delete");
+}
+
+function appendLinesToList(lines, number) {
+    let count = 0;
+    while (count < number) {
+        lines.push("");
+        number++;
+    }
+    return lines;
+}
+
+
+/*
+    local text_full = get_text{artifact=a}
+    local text_line = get_text{line=10}
+    local text_find = get_text{anchor="health"}
+    update_line{line=10, text="First line\nSecond line."}
+    insert_line{line=5,  text="New line goes before line no.5."}
+    delete_line{line=6}
+*/
 
 
 function update(observer: AvatarObserver, 
                 params: FengariMap) {
-    let artifactStructure = params.get("artifact")
-    let artifact = observer.artifact;
-    if (artifactStructure) {
-        // TODO: get artifact from persistence.
-        let found = false;
-        for (let i in artifact.coords.world.artifacts) {
-            if (artifactStructure["id"] == artifact.coords.world.artifacts[i].id) {
-                found = true;
-                artifact = artifact.coords.world.artifacts[i];
-            }
-        }
-        for (let i in artifact.worlds[0].artifacts) {
-            if (artifactStructure["id"] == artifact.worlds[0].artifacts[i].id) {
-                artifact = artifact.worlds[0].artifacts[i];
-            }
-        }
-    }
+    let artifact = getArtifactFromStructure(observer, params.get("artifact"))
     const properties = {}
     for (let key of artifact.API) {
         properties[key] = params.get(key)
@@ -46,7 +152,7 @@ function update(observer: AvatarObserver,
 
 
 function get_artifacts( observer: AvatarObserver, 
-                               world?: string, id?: string, name?: string) {
+                        world?: string, id?: string, name?: string) {
     let _world: World;
     if (world == "upper") _world = observer.artifact.coords.world;
     else                  _world = observer.artifact.worlds[0];   
@@ -113,3 +219,25 @@ function prepArtifact(artifact: Artifact) {
     result["direction"] = artifact.coords.position.dir.name;
     return result;
 }
+
+function getArtifactFromStructure(observer: AvatarObserver, artifactStructure) {
+    let artifact = observer.artifact;
+    if (artifactStructure) {
+        // TODO: get artifact from persistence.
+        let found = false;
+        for (let i in artifact.coords.world.artifacts) {
+            if (artifactStructure["id"] == artifact.coords.world.artifacts[i].id) {
+                found = true;
+                artifact = artifact.coords.world.artifacts[i];
+            }
+        }
+        for (let i in artifact.worlds[0].artifacts) {
+            if (artifactStructure["id"] == artifact.worlds[0].artifacts[i].id) {
+                artifact = artifact.worlds[0].artifacts[i];
+            }
+        }
+    }
+    return artifact;
+}
+
+

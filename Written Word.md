@@ -202,7 +202,7 @@ Inserting and deleting lines must be done explicitly.
 Sometimes there is a need to trigger compilation explicitly.
 
     local a = get_myself()
-    update_avatar{artifact=a}
+    update_text{}
     
 
 Messaging and Handling Events.

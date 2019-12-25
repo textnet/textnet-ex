@@ -58,9 +58,10 @@ export class ScriptMoveEvent extends ScriptEvent {
     }
 }
 export class ScriptTextEvent extends ScriptEvent {
-    constructor(artifact: Artifact, text:string) {
+    constructor(artifact: Artifact, text:string, compile:boolean) {
         super(EVENT.TEXT.action, artifact, {
             text: text,
+            compile: compile,
         });
     }
 }

@@ -189,7 +189,7 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
         }
     };
     scene.handlers["script:text"] = function(event: ScriptTextEvent) {
-        if (scene.observers[event.artifact.id]) {
+        if (event.params["compile"] && scene.observers[event.artifact.id]) {
             scene.observers[event.artifact.id].attemptAvatar();
         }
     };

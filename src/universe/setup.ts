@@ -165,10 +165,8 @@ const artifacts = {
 
 
 const startupText = `
-
 Welcome to Textnet Game v.0.2!
 ==============================
-    
 
 The game is a sandbox where you can alter everything you see.
 
@@ -181,8 +179,12 @@ Last but not least, hit <Ctrl-Enter> to alter this text.
 Yes, this text is a fine example of what this game is about. Not only you can alter it, but you can also make this text affect the game. It is called *Written Word*, and it goes like this:
 
     -- self{ name="Nikolay", speed=200 }
+    -- print( "Value of the #health = " .. get_text{anchor="health"})
     -- local chair = get_closest{};
-    -- update{ artifact=chair, name="Nikolay's chair", passable=true }
+    -- if (chair) then
+    --     update_text{ artifact=chair, text="Hello there!" }
+    --     update{ artifact=chair, name="Nikolay's chair", passable=true }
+    -- end
 
     -- print("Message from the Written Word: here are your artifacts!")
     -- local everything = get_artifacts{ world="upper" }
@@ -197,4 +199,8 @@ Currently, there is no special sauce, as there are no more objects than those tw
 I bet you were hoping to find god inside here.
 Not just yet, chap.
 
+
+P.S.
+Here is a simple way to transfer any parameters around:
+#health 100
 `

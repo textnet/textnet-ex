@@ -25,11 +25,11 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
++ `text` support: full, lines, anchors
 
 
 # NEXT ITERATION
-- `text` support, full, lines, anchors
-- `update_avatar`
+- movement and actions
 - support events
 
 

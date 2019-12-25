@@ -182,11 +182,14 @@ export function updateArtifactPosition(artifact: Artifact, newPosition: Position
 
 
 // full text & recompile
-export function updateWorldText(world: World, text: string) {
+export function updateWorldText(world: World, text?: string, compile?:boolean) {
     // update universe
-    world.text = text;
+    if (text != undefined) {
+        world.text = text;    
+    }
     // emit events
-    world.owner.dispatcher.emit("script:text", new ScriptTextEvent(world.owner, text));
+    world.owner.dispatcher.emit("script:text", 
+        new ScriptTextEvent(world.owner, world.text, compile));
 }
 
 
@@ -204,4 +207,7 @@ export function updateArtifactProperties(artifact: Artifact, properties) {
     }
 }
 
-
+export function updateArtifactText(artifact: Artifact, text?:string, compile?:boolean) {
+    // it is just a shortcut
+    updateWorldText(artifact.worlds[0], text, compile)
+}

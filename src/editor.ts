@@ -77,7 +77,7 @@ export function initEditor(engine: Game) {
         exec: function(editor: Editor) {
             blurEditor(editor);
             const world = (engine.currentScene as PlaneScene).world;
-            updateWorldText(world, editor.getValue())
+            updateWorldText(world, editor.getValue(), true)
             engine.start();
         },
         readOnly: false
