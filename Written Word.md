@@ -148,7 +148,6 @@ None of the moves is instantaneous. What is happening is that the command is iss
 Artifact properties like `name` are found in the data structure. Changing them directly won't affect the artifact itself. Special function must be used.
 
     update{artifact=a, name="My New Name"}
-    update{passable=false}
 
 Here is the list of properties with description.
 
@@ -162,15 +161,11 @@ Here is the list of properties with description.
 - `weight` defines how much strength it requires to start pushing; default = `100` (as in 100%)
 
 
-### Global Shortcuts to 'Myself'
-Properties of the artifact that owns the Written Word are exposed as global variables.
-It is done for convenience.
+### Global Shortcut to 'Myself'
+There is a shortcut to artifact's own properties.
+This shortcut is useful when you want to force certain properties.
 
-When the Written Word code is compiled and executed, resulting values of those variables are picked up after execution and artifact is updated.
-
-    passable = false
-    pushable = true
-    locked = false
+    self{ passable = false, pushable = true, speed = 200 }
 
 
 ### Working with the text itself

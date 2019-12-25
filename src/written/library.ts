@@ -12,6 +12,7 @@ export const supportedFunctions = {
     "get_next":      { signature: ["direction"],           f: get_next      },
     "get_closest":   { signature: ["name"],                f: get_closest   },
     "update":        { signature: false,                   f: update        },
+    "self":          { signature: false,                   f: update        },
 }
 
 

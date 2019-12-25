@@ -25,19 +25,9 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-+ `update` support basic properties
-    + name
-    + passable
-    + pushable
-    + pickable
-    + locked
-    + speed
-    + power
-    + weight
 
 
 # NEXT ITERATION
-- expose `myself` as a special variable?
 - `text` support, full, lines, anchors
 - `update_avatar`
 - support events
