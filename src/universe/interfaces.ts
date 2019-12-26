@@ -124,8 +124,10 @@ export const defaultsArtifact = {
     speed:    100,
     power:    100,
     weight:   100,
+    format:   "markdown",
     API:      [ "id", "name", 
                 "passable", "pushable", "pickable", "locked", 
+                "format",
                 "speed", "power", "weight"],
 }
 
@@ -140,6 +142,7 @@ export interface Artifact {
     speed?:    number;
     power?:    number;
     weight?:   number; 
+    format?:   string;
     API?:      string[];
 
     sprite: { 

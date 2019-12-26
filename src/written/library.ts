@@ -14,6 +14,7 @@ export const supportedFunctions = {
     "get_myself":    { signature: [],                      f: get_myself    },
     "get_next":      { signature: ["direction"],           f: get_next      },
     "get_closest":   { signature: ["name"],                f: get_closest   },
+
     "update":        { signature: false,                   f: update        },
     "self":          { signature: false,                   f: update        },
 
@@ -126,16 +127,6 @@ function appendLinesToList(lines, number) {
     }
     return lines;
 }
-
-
-/*
-    local text_full = get_text{artifact=a}
-    local text_line = get_text{line=10}
-    local text_find = get_text{anchor="health"}
-    update_line{line=10, text="First line\nSecond line."}
-    insert_line{line=5,  text="New line goes before line no.5."}
-    delete_line{line=6}
-*/
 
 
 function update(observer: AvatarObserver, 

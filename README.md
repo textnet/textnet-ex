@@ -25,12 +25,14 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-+ `text` support: full, lines, anchors
+- movement
+    - move_to
+    - move_by
 
 
 # NEXT ITERATION
-- movement and actions
 - support events
+- summon chair
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
@@ -41,6 +43,7 @@ Proper distro will be done in Electron later.
 - animate holding the artifact
 - find the closes empty spot on "re-enter" 
 - embed lua highlighting into markdown
+
 
 
 # PROJECT STRUCTURE

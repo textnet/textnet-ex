@@ -186,6 +186,8 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
         // update name
         if (scene.world.owner.id == event.artifact.id) {
             text.text = world.owner.name;
+            console.log(world.owner.format)
+            scene.editor.getSession().setMode('ace/mode/'+world.owner.format);
         }
     };
     scene.handlers["script:text"] = function(event: ScriptTextEvent) {

@@ -17,6 +17,8 @@ import { updateWorldText } from "./universe/manipulations"
  */
 
 
+export const FORMATS = ["lua", "markdown", "text" ]
+
 export interface Editor extends ace.Editor {}
 
 const fontSize      = "15px";
@@ -53,8 +55,9 @@ export function blurEditor(editor) {
 }
 
 export function initEditor(engine: Game) {
-    require('brace/mode/markdown');
-    require('brace/mode/lua');
+    for (let format of FORMATS) {
+        require('brace/mode/'+format);    
+    }
     require('brace/theme/monokai');
     jquery("body").prepend([
         "<div id=editor-wrapper>",
