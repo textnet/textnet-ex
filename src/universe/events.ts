@@ -46,6 +46,14 @@ export class SyncEvent extends ex.GameEvent<any> {
 // - "script:line(artifact, lineno, line)"
 
 export class ScriptEvent extends SyncEvent {}
+export class ScriptPushEvent extends ScriptEvent {
+    constructor(artifact: Artifact, pusher: Artifact, dir: Dir) {
+        super(EVENT.PUSH.action, artifact, {
+            pusher: pusher,
+            dir: artifact.coords.position.dir,           
+        });
+    }
+}
 export class ScriptMoveEvent extends ScriptEvent {
     constructor(artifact: Artifact, dx:number, dy:number) {
         super(EVENT.MOVE.action, artifact, {
@@ -57,6 +65,24 @@ export class ScriptMoveEvent extends ScriptEvent {
         });
     }
 }
+
+export class ScriptPickupEvent extends ScriptEvent {
+    constructor(artifact: Artifact, holder: Artifact) {
+        super(EVENT.PICK.action, artifact, {
+            holder: holder
+        });
+    }
+}
+export class ScriptPutdownEvent extends ScriptEvent {
+    constructor(artifact: Artifact, holder: Artifact, x:number, y:number) {
+        super(EVENT.DOWN.action, artifact, {
+            holder: holder,
+            x: x, 
+            y: y,
+        });
+    }
+}
+
 export class ScriptTextEvent extends ScriptEvent {
     constructor(artifact: Artifact, text:string, compile:boolean) {
         super(EVENT.TEXT.action, artifact, {

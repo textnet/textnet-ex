@@ -165,6 +165,7 @@ const artifacts = {
 
 
 const startupText = `
+
 Welcome to Textnet Game v.0.2!
 ==============================
 
@@ -189,12 +190,15 @@ Yes, this text is a fine example of what this game is about. Not only you can al
     print( "Value of the #health = " .. get_text{anchor="health"})
     local chair = get_closest{};
     if (chair) then
-        update_text{ artifact=chair, text="Hello there!" }
+        function on_move(event) 
+            print("moving "..event.artifact.name, event.x, event.y)
+        end
+        on{ artifact=chair, event="move", handler=on_move }
+        update_text{ artifact=chair, text="    on{ event='pickup', handler=function() print('PICKED UP') end }"}
         update{ artifact=chair, name="Nikolay's chair", passable=true }
         place_at{ artifact=chair, x=750 }
         move_by{ artifact=chair, direction="left", distance="300" }
     end
-
 
 You see, once you indented a block of text by a couple spaces, it becomes a chunk of *Written Word*. Written word is LUA with some special sauce.
 
@@ -210,4 +214,6 @@ Here is a simple way to transfer any parameters around:
 `;
 
 /*
+
+
 */

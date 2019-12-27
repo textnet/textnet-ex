@@ -32,7 +32,27 @@ export const supportedFunctions = {
     "turn_to":  { signature: ["artifact", "directon"            ], f: move_by  },
     "place_at": { signature: ["artifact", "x", "y", "direction" ], f: place_at },
 
+    "on":  { signature: false, f: event_on }, // artifact, event, handler
+    "off": { signature: ["artifact", "event", "key",     ], f: event_off },
+
 }
+
+function event_on(observer: AvatarObserver, 
+                  params: FengariMap) {
+    let artifact = getArtifactFromStructure(observer, params.get("artifact"));
+    let event = params.get("event") || "timer";
+    let handler = params.get("handler");
+    if (handler == undefined) return false;
+    return observer.subscribe(artifact, event, handler);
+}
+function event_off(observer: AvatarObserver, 
+                   artifactStructure?: object, event?: string, key?:any) {
+    let artifact = getArtifactFromStructure(observer, artifactStructure);
+    if (event === undefined) event = "timer";
+    observer.unsubscribe(artifact, event, key);
+    return true;
+}
+
 
 function move_to(observer: AvatarObserver, 
                  artifactStructure?: object, x?: number, y?: number, direction?: string) {
@@ -135,7 +155,6 @@ function _update_line(observer: AvatarObserver,
                 if (!skip && (lines[i].substr(0,anchor.length+2) == "#"+anchor+" ")) {
                     if (mode == "insert") {
                         if (text === undefined) text = "";
-                        console.log(text)
                         lines.splice(parseInt(i), 0, "#"+anchor+" "+text)
                         skip = true;
                     } else

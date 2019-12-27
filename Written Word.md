@@ -9,13 +9,15 @@ Written Word vs. Text.
 
 *Written word* is put into this text and shifted with whitespace (at least 2 characters, 4 is recommended).
 
-    pushable = false
-      function wake(name)
-        log("Wake up, " .. name .. "!")
+    self{ pushable = false }
+    function wake(name)
+        print("Wake up, " .. name .. "!")
     end
-    function on_push(pusher, direction)
-        log("Ouch! Carefully, " .. pusher.name())
-    end
+    on{ event="push", 
+        function(event)
+            log("Ouch! Carefully, " .. event.pusher.name())
+        end 
+    }
 
 Text which is not shifted is not considered a "written word". It just remains as text.
 
@@ -218,48 +220,32 @@ Event driven execution assumes that there is no piece of code that takes a lot o
 
 When an Artifact attempts to become an Avatar, all Written Word is extracted from the Artifact's text, compiled and executed.
 
-There are two ways to make a successful Avatar:
+To make a successful Avatar full of life you need to subscribe on its events.
 
-- declare functions with special names that will become event handlers and
-- subscribing functions for certain events.
-
-The former is a convenience layer over the latter. 
-
-    function on_push(pusher, direction)
-        print(self.name .. "says: Ouch! Carefully, " .. pusher.name)
+    function custom_push(pusher, direction) 
+        -- body
     end
-
-Same could be done like this:
-
-    function custom_push(pusher, direction) {...}
-    subscribe("push", custom_push)
+    on{ event="push", handler=custom_push }
 
 Avatar can subscribe on events of other objects:
 
-    subscribe{artifact=a,   event="push", handler=custom_push}
-    subscribe{name="Chair", event="push", handler=custom_push}
+    on{ artifact=chair, event="push", handler=custom_push }
 
 That sort of subscription will only work for objects while they are visible in one of the worlds that an artifact have access to.
 
 ### Events and signatures
 
-    on_push(pusher, direction) - avatar being pushed
-    on_move(x,y)               - avatar being moved
-    on_pickup(owner)           - avatar is picked up by another
-    on_putdown(owner)          - avatar is put down
-    on_timer(delta)            - called regularly (useful for update/draw cycles)
+    timer(artifact, delta)
+    push(artifact, pusher, direction) 
+    move(artifact, x, y, dx, dy, direction)
+    pickup(artifact, holder)
+    putdown(artifact, holder, x, y)
 
-
-Creating artifacts.
--------------------
+Creating and destroying artifacts.
+----------------------------------
 
 Creating artifacts is a heavy task.
-Later it will be fully supported.
-
-Currently, it is only possible to summon a chair.
-
-    summon{name="Chair", x=10, y=203}
-
+Later it will be supported.
 There is no way to destroy artifacts currently.
 
 

@@ -91,7 +91,7 @@ const states = new WeakMap();
 export const push = function(L, v) {
     switch (typeof v) {
         case "undefined":
-            lua.ua_pushnil(L);
+            lua.lua_pushnil(L);
             break;
         case "number":
             lua.lua_pushnumber(L, v);
@@ -188,7 +188,7 @@ const invoke = function(L, p, thisarg, args, n_results) {
     if (!isobject(args)) throw new TypeError("`args` argument must be an object");
     let length = +args.length;
     if (!(length >= 0)) length = 0; /* Keep NaN in mind */
-    lauxlib.luaL__checkstack(L, 2+length, null);
+    lua.lua_checkstack(L, 2+length, null);
     let base = lua.lua_gettop(L);
     p(L);
     push(L, thisarg);

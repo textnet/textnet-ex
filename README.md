@@ -25,15 +25,16 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-+ movement
-    + move_to
-    + move_by
-    + place_at
-
-
-# NEXT ITERATION
 - support events
-- summon chair
+    + timer(artifact, delta)
+    + move(artifact, x,y, dx, dy, direction)
+    + push(artifact, pusher, direction)
+    + pickup(artifact, holder)
+    + putdown(artifact, holder, x, y)
++ support `on('push')` syntax?
++ support `off{ artifact, event, value }`
++ embedded written word (working from inside of chairs)
+
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
@@ -48,13 +49,16 @@ Proper distro will be done in Electron later.
 - full-screen Electron distribution
 - support closures in spatial commands
 - `move_by{ distance=10, angle=45 }`
+- position text cursors under avatar and vice versa
+- travel in chairs
+- supporting enter/leave events (complex)
 
 
 
 # PROJECT STRUCTURE
 
 1. [x] Local Universe
-2. [ ] Basic written word (coding)
+2. [x] Basic written word (coding)
 3. [ ] Persistence / network game
 4. [ ] Spoken word / gods (commands)
 5. [ ] Hosted universes and proper multiplayer
@@ -70,14 +74,14 @@ Proper distro will be done in Electron later.
     + move_to
     + move_by
     + place_at
-* [ ] Event handlers
-    - touch
+* [±] Event handlers
+    + push
     - enter
     - leave
-    - pickup
-    - putdown
-    - move
-* [ ] Misc
+    + pickup
+    + putdown
+    + move
+* [x] Misc
     + print
 
 

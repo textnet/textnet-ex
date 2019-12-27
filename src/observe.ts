@@ -44,6 +44,82 @@ export class AvatarObserver {
         }
     }
 
+    subscribe(artifact: Artifact, event: string, handler: any) {
+        let h;
+        // ---- TIMER -----------------------------------------------------
+        if (event == "timer") {
+            let time = Date.now();
+            h = function(){
+                handler.apply({ 
+                    artifact: artifact,
+                    delta: Date.now() - time,
+                }, {});
+                time = Date.now();
+            };
+            this.dispatcher.on("script:"+event, h);
+        }
+        // ---- MOVE -----------------------------------------------------
+        if (event == "move") {
+            h = function(event){
+                if (event.artifact == artifact) {
+                    handler.apply({
+                        artifact: artifact, 
+                        x: event.params.x,
+                        y: event.params.y,
+                        dx: event.params.dx,
+                        dy: event.params.dy,
+                        direction:  event.params.dir.name,
+                    }, {})
+                }
+            };
+            this.dispatcher.on("script:"+event, h);
+        }
+        // ---- PUSH -----------------------------------------------------
+        if (event == "push") {
+            h = function(event){
+                if (event.artifact == artifact) {
+                    handler.apply({
+                        artifact:   artifact, 
+                        pusher:     event.params.pusher,
+                        direction:  event.params.dir.name
+                    }, {})
+                }
+            };
+            this.dispatcher.on("script:"+event, h);
+        }
+        // ---- PICKUP ---------------------------------------------------
+        if (event == "pickup") {
+            h = function(event){
+                if (event.artifact == artifact) {
+                    handler.apply({
+                        artifact:   artifact, 
+                        holder:     event.params.holder,
+                    }, {})
+                }
+            };
+            this.dispatcher.on("script:"+event, h);
+        }
+        // ---- PUTDOWN ---------------------------------------------------
+        if (event == "putdown") {
+            h = function(event){
+                if (event.artifact == artifact) {
+                    handler.apply({
+                        artifact:   artifact, 
+                        holder:     event.params.holder,
+                        x: event.params.x,
+                        y: event.params.y,
+                    }, {})
+                }
+            };
+            this.dispatcher.on("script:"+event, h);
+        }
+        // ---- ..... ----------------------------------------------------
+        return h;
+    }
+    unsubscribe(artifact: Artifact, event: string, key:any) {
+        this.dispatcher.off("script:"+event, key)
+    }
+
     command: ObserverCommand;
     commandFunc: any;
     iterateCommand() { 
@@ -86,7 +162,7 @@ export class AvatarObserver {
                 return ObserverCommand.Move;
             }
         }
-        // ---- ..... ----------------------------------------------------
+        // ---- .... ----------------------------------------------------
     }
 
     attemptAvatar() {

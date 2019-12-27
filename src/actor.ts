@@ -14,6 +14,7 @@ import {
     enterArtifact, leaveWorld, 
     isArtifactPlaceable, placeArtifact,
     pickupArtifact, putdownArtifact,
+    pushArtifact,
     } from "./universe/manipulations"
 import { PlaneScene } from "./plane"
 import { getPlayerDirection, getPlayerCommand } from "./command"
@@ -122,16 +123,10 @@ export class ArtifactActor extends InventoryActor {
                 if (command == COMMAND.PUSH && playerDir.name != DIR.NONE.name) {
                     let item: Artifact = getArtifact_NextTo(this.artifact, playerDir);
                     if (item && item.pushable) {
-                        let straightDir: Dir = DIRfrom(playerDir);
-                        let newCoords = cpCoords(item.coords);
-                        let pushStrength = this.artifact.power / item.weight;
-                        newCoords.position.x += straightDir.x*pushStrength;
-                        newCoords.position.y += straightDir.y*pushStrength;
-                        if (isArtifactPlaceable(item, newCoords)) {
-                            placeArtifact(item, newCoords);
+                        if (pushArtifact(item, this.artifact, playerDir)) {
                             updateArtifactOnScene(this.scene as PlaneScene, item);
-                            dir = addDir(dir, playerDir);
-                        } 
+                            dir = addDir(dir, playerDir);                            
+                        }
                     } else {
                         command = COMMAND.NONE;
                     }
@@ -223,9 +218,11 @@ export class ArtifactActor extends InventoryActor {
         } 
         // update from universe
         if (!this.artifact.avatar || this.artifact.avatar.kind != AvatarKind.PLAYER) {
-            this.body.pos.x = this.artifact.coords.position.x;
-            this.body.pos.y = this.artifact.coords.position.y;
-            this.dir = this.artifact.coords.position.dir;
+            if (this.artifact.coords) {
+                this.body.pos.x = this.artifact.coords.position.x;
+                this.body.pos.y = this.artifact.coords.position.y;
+                this.dir = this.artifact.coords.position.dir;
+            }
         }  else {
             if ((this.scene as PlaneScene).timeToUpdateUniverse()) {
                 this.updatePositionInUniverse(engine)

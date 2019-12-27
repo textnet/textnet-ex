@@ -1,4 +1,4 @@
-import { lua, lauxlib, lualib, to_luastring, LuaState } from "fengari-web"
+import { lua, lauxlib, ldebug, lualib, to_luastring, to_jsstring, LuaState } from "fengari-web"
 import { push, luaopen_js, wrap, jscall } from "./interop"
 import { supportedFunctions } from "./library"
 
@@ -27,6 +27,7 @@ export function fengari_call(L: LuaState) {
                 lua.LUA_OK,
                 lua.LUA_ERRRUN, lua.LUA_ERRMEM, lua.LUA_ERRERR, lua.ERRGCMM,
                 )
+            console.log("Error message: " + to_jsstring(lauxlib.luaL_tolstring(L, -1)))            
         }    
     return callResult == lua.LUA_OK;
 }
@@ -53,6 +54,9 @@ function fengari_register_function(CTX, L: LuaState, name: string, signature: st
 export function fengari_init(CTX) {
     // init ----------------------------------------------------------------
     const L = lauxlib.luaL_newstate();
+    // lua.lua_atnativeerror(L, function (l) {
+    //     lua.lua_pushstring(l, to_luastring(''+lua.lua_touserdata(l, -1)));
+    // });
     if (!L) {
         console.log("luaL_newstate: out of memory")
         return;

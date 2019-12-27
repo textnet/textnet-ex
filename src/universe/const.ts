@@ -58,10 +58,13 @@ export const universeUpdateFrequency = 100; // ms
  * Currently not of much use, will be used as we go into 'multiplayer' phase.
  */
 export const EVENT = {
+    PUSH: { action: "push", },
     MOVE: { action: "move", },
     TEXT: { action: "text", },
     PROP: { action: "properties"}, 
     TIME: { action: "timer"},
+    PICK: { action: "pickup"},
+    DOWN: { action: "putdown" },
 }
 
 

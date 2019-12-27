@@ -4,10 +4,13 @@ import {
     Account
 } from "./interfaces"
 import { cpCoords, cpPosition } from "./utils"
-import { spawnPosition } from "./const"
+import { spawnPosition, DIR, DIRfrom } from "./const"
 import {
+    ScriptPushEvent,
     ScriptMoveEvent,
     ScriptTextEvent,
+    ScriptPutdownEvent,
+    ScriptPickupEvent,
     ScriptPropertiesEvent,
 } from "./events"
 import { isOverlap, artifactBox } from "./getters"
@@ -77,9 +80,11 @@ export function leaveWorld(avatar:Avatar) {
  * @param {Artifact} artifact
  */
 export function pickupArtifact(avatar: Avatar, artifact: Artifact) {
-    // EVENT: avatar:pickup
     removeArtifact(artifact);
     avatar.inventory.push(artifact);
+    // emit events
+    artifact.dispatcher.emit("script:pickup", 
+        new ScriptPickupEvent(artifact, avatar.body));
 }
 
 /**
@@ -107,9 +112,11 @@ export function putdownArtifact(avatar: Avatar, dir: Dir) {
             )/2
             -artifact.body.offset[1]
             +avatar.body.body.offset[1];
-        if (isArtifactPlaceable(artifact, coords)) {
-            // EVENT: avatar:putdown;
-            placeArtifact(artifact, coords);
+        if (tryToPlaceArtifact(artifact, coords)) {
+            // emit events
+            artifact.dispatcher.emit("script:putdown", 
+                new ScriptPutdownEvent(artifact, avatar.body, 
+                                       coords.position.x, coords.position.y));
             return artifact;
         } else {
             avatar.inventory.push(artifact)
@@ -137,11 +144,26 @@ export function removeArtifact(artifact: Artifact) {
  */
 export function placeArtifact(artifact: Artifact, coords: Coordinates) {
     // EVENT: world:place_artifact / artifact: place
-    artifact.coords = coords;
     if (artifact.coords && artifact.coords.world.id != coords.world.id) {
         removeArtifact(artifact);
     }
+    if (!artifact.coords) artifact.coords = coords;
+    artifact.coords.world = coords.world;
+    updateArtifactPosition(artifact, coords.position)
     artifact.coords.world.artifacts[artifact.id] = artifact;
+}
+
+export function pushArtifact(artifact: Artifact, pusher: Artifact, dir: Dir) {
+    let success = false;    
+    let straightDir: Dir = DIRfrom(dir);
+    let newCoords = cpCoords(artifact.coords);
+    let pushStrength = pusher.power / artifact.weight * 2;
+    newCoords.position.x += straightDir.x * pushStrength;
+    newCoords.position.y += straightDir.y * pushStrength;
+    success = tryToPlaceArtifact(artifact, newCoords);
+    // emit events
+    artifact.dispatcher.emit("script:push", new ScriptPushEvent(artifact, pusher, dir));
+    return success
 }
 
 /**
