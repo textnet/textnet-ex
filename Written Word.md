@@ -226,7 +226,7 @@ There are two ways to make a successful Avatar:
 The former is a convenience layer over the latter. 
 
     function on_push(pusher, direction)
-        log(self.name .. "says: Ouch! Carefully, " .. pusher.name)
+        print(self.name .. "says: Ouch! Carefully, " .. pusher.name)
     end
 
 Same could be done like this:

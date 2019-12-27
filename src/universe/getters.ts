@@ -123,3 +123,5 @@ export function isNext(a: Artifact, b: Artifact, dir: Dir) {
     return (distance >= -PROXIMITY && distance <= PROXIMITY);
 }
 
+
+

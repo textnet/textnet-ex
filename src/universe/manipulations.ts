@@ -138,7 +138,25 @@ export function removeArtifact(artifact: Artifact) {
 export function placeArtifact(artifact: Artifact, coords: Coordinates) {
     // EVENT: world:place_artifact / artifact: place
     artifact.coords = coords;
+    if (artifact.coords && artifact.coords.world.id != coords.world.id) {
+        removeArtifact(artifact);
+    }
     artifact.coords.world.artifacts[artifact.id] = artifact;
+}
+
+/**
+ * Forcibly puts the artifact in a world at the given coordinates.
+ * Keeps consistency of both world and artifact structures.
+ * @param {Artifact} artifact
+ * @param {Coordinates} coords
+ */
+export function tryToPlaceArtifact(artifact: Artifact, coords: Coordinates) {
+    if (isArtifactPlaceable(artifact, coords)) {
+        placeArtifact(artifact, coords);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -211,3 +229,4 @@ export function updateArtifactText(artifact: Artifact, text?:string, compile?:bo
     // it is just a shortcut
     updateWorldText(artifact.worlds[0], text, compile)
 }
+

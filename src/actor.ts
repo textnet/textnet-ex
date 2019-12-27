@@ -220,6 +220,16 @@ export class ArtifactActor extends InventoryActor {
         // update from avatar
         if (this.artifact.avatar) {
             this.updateFromAvatar(engine)
+        } 
+        // update from universe
+        if (!this.artifact.avatar || this.artifact.avatar.kind != AvatarKind.PLAYER) {
+            this.body.pos.x = this.artifact.coords.position.x;
+            this.body.pos.y = this.artifact.coords.position.y;
+            this.dir = this.artifact.coords.position.dir;
+        }  else {
+            if ((this.scene as PlaneScene).timeToUpdateUniverse()) {
+                this.updatePositionInUniverse(engine)
+            }
         }
         // Update animations
         if (this.artifact.sprite.turning) {
@@ -231,10 +241,6 @@ export class ArtifactActor extends InventoryActor {
         }
         // update 2.5D visualisation
         this.setZIndex(10000+this.pos.y)
-        // update universe
-        if ((this.scene as PlaneScene).timeToUpdateUniverse()) {
-            this.updatePositionInUniverse(engine)
-        }
     }
 
     /**

@@ -76,6 +76,18 @@ export function addDir(dir1: Dir, dir2: Dir) {
     return dir;
 }
 
+export function normalizeDir(dir: Dir, scale?: number) { 
+    if (scale === undefined) scale = 1;
+    const result = addDir(dir, {x:0, y:0, name: DIR.NONE.name});
+    const len = lengthDir(result);
+    result.x *= scale/len;
+    result.y *= scale/len;
+    return result;
+}
+export function lengthDir(dir: Dir) {
+    return Math.sqrt( Math.pow(dir.x,2) + Math.pow(dir.y,2) ); 
+}
+
 /**
  * Deep copy function for TypeScript.
  * @param T Generic type of target/copied value.

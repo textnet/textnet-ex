@@ -178,19 +178,23 @@ Last but not least, hit <Ctrl-Enter> to alter this text.
 
 Yes, this text is a fine example of what this game is about. Not only you can alter it, but you can also make this text affect the game. It is called *Written Word*, and it goes like this:
 
-    -- self{ name="Nikolay", speed=200 }
-    -- print( "Value of the #health = " .. get_text{anchor="health"})
-    -- local chair = get_closest{};
-    -- if (chair) then
-    --     update_text{ artifact=chair, text="Hello there!" }
-    --     update{ artifact=chair, name="Nikolay's chair", passable=true }
-    -- end
+    self{ name="Nikolay", speed=200 }
 
-    -- print("Message from the Written Word: here are your artifacts!")
-    -- local everything = get_artifacts{ world="upper" }
-    -- for i = 0, #everything-1 do
-    --   print ("Artifact: "..everything[i].name)
-    -- end
+    print("Message from the Written Word: here are your artifacts!")
+    local everything = get_artifacts{ world="upper" }
+    for i = 0, #everything-1 do
+        print ("Artifact: "..everything[i].name)
+    end
+
+    print( "Value of the #health = " .. get_text{anchor="health"})
+    local chair = get_closest{};
+    if (chair) then
+        update_text{ artifact=chair, text="Hello there!" }
+        update{ artifact=chair, name="Nikolay's chair", passable=true }
+        place_at{ artifact=chair, x=750 }
+        move_by{ artifact=chair, direction="left", distance="300" }
+    end
+
 
 You see, once you indented a block of text by a couple spaces, it becomes a chunk of *Written Word*. Written word is LUA with some special sauce.
 
@@ -203,4 +207,7 @@ Not just yet, chap.
 P.S.
 Here is a simple way to transfer any parameters around:
 #health 100
-`
+`;
+
+/*
+*/

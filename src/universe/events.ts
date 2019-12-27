@@ -75,6 +75,12 @@ export class ScriptPropertiesEvent extends ScriptEvent {
 }
 
 
+export class ScriptTimerEvent extends ScriptEvent {
+    constructor() {
+        super(EVENT.TIME.action)
+    }
+}
+
 
 
 

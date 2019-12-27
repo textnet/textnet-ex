@@ -17,7 +17,6 @@ import {
     ScriptTextEvent,
     ScriptPropertiesEvent,
 } from "./universe/events"
-import { networkSync } from "./networking"
 
 
 /**
@@ -183,10 +182,9 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     // event handlers
     scene.handlers = {};
     scene.handlers["script:properties"] = function(event: ScriptPropertiesEvent) {
-        // update name
+        // update name and other editor properties
         if (scene.world.owner.id == event.artifact.id) {
             text.text = world.owner.name;
-            console.log(world.owner.format)
             scene.editor.getSession().setMode('ace/mode/'+world.owner.format);
         }
     };

@@ -1,12 +1,14 @@
 import { Artifact, Dir, World } from "../universe/interfaces"
 import { DIRfrom } from "../universe/const"
-import { AvatarObserver } from "../observe"
+import { AvatarObserver, ObserverCommand } from "../observe"
 import { getArtifact_NextTo } from "../universe/getters"
 import { FengariMap } from "./api"
 import { 
     updateArtifactProperties,
     updateArtifactText,
+    tryToPlaceArtifact,
 } from "../universe/manipulations"
+import { cpCoords, normalizeDir } from "../universe/utils"
 
 export const supportedFunctions = {
     "get_artifacts": { signature: ["world", "id", "name"], f: get_artifacts },
@@ -23,6 +25,54 @@ export const supportedFunctions = {
     "update_line": { signature: ["artifact", "line", "anchor", "text" ], f: update_line },
     "insert_line": { signature: ["artifact", "line", "anchor", "text" ], f: insert_line },
     "delete_line": { signature: ["artifact", "line", "anchor"         ], f: delete_line },
+
+    "move_to":  { signature: ["artifact", "x", "y", "direction" ], f: move_to  },
+    "move_by":  { signature: ["artifact", "x", "y", "direction", "distance" ], 
+                                                                   f: move_by  },
+    "turn_to":  { signature: ["artifact", "directon"            ], f: move_by  },
+    "place_at": { signature: ["artifact", "x", "y", "direction" ], f: place_at },
+
+}
+
+function move_to(observer: AvatarObserver, 
+                 artifactStructure?: object, x?: number, y?: number, direction?: string) {
+    let artifact = getArtifactFromStructure(observer, artifactStructure);
+    const dir = DIRfrom({name:direction} as Dir);
+    if (x === undefined) x = artifact.coords.position.x;
+    if (y === undefined) y = artifact.coords.position.y;
+    observer.executeCommand(ObserverCommand.Move, { artifact: artifact, x: x, y: y, dir: dir })
+    return true;
+}
+
+function move_by(observer: AvatarObserver, 
+                 artifactStructure?: object, x?: number, y?: number, 
+                 direction?: string, distance?: number) {
+    let artifact = getArtifactFromStructure(observer, artifactStructure);
+    const dir = DIRfrom({name:direction} as Dir);
+    if (x === undefined) x = 0;
+    if (y === undefined) y = 0;
+    if (distance == undefined) {
+        x += artifact.coords.position.x;
+        y += artifact.coords.position.y;
+    } else {
+        const nDir = normalizeDir(dir, distance);
+        x = artifact.coords.position.x + nDir.x;
+        y = artifact.coords.position.y + nDir.y;
+    }
+    observer.executeCommand(ObserverCommand.Move, { artifact: artifact, x: x, y: y, dir: dir })
+    return true;
+}
+
+function place_at(observer: AvatarObserver, 
+                 artifactStructure?: object, x?: number, y?: number, direction?: string) {
+    let artifact = getArtifactFromStructure(observer, artifactStructure);
+    const dir = DIRfrom({name:direction} as Dir);
+    if (x === undefined) x = artifact.coords.position.x;
+    if (y === undefined) y = artifact.coords.position.y;
+    const newCoords = cpCoords(artifact.coords);
+    newCoords.position = { x: x, y: y, dir: dir };
+    tryToPlaceArtifact(artifact, newCoords)
+    return true;
 }
 
 

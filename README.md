@@ -25,9 +25,10 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-- movement
-    - move_to
-    - move_by
++ movement
+    + move_to
+    + move_by
+    + place_at
 
 
 # NEXT ITERATION
@@ -43,6 +44,10 @@ Proper distro will be done in Electron later.
 - animate holding the artifact
 - find the closes empty spot on "re-enter" 
 - embed lua highlighting into markdown
+- background & text colour overrides
+- full-screen Electron distribution
+- support closures in spatial commands
+- `move_by{ distance=10, angle=45 }`
 
 
 
@@ -59,12 +64,12 @@ Proper distro will be done in Electron later.
 
 # 2. Basic Written Word
 
-* [ ] Separate editor
-* [ ] Properties
-    - movable
-    - pickable
-    - passable
-    - data
+* [x] Separate editor
+* [x] Getting and settings properties
+* [x] Actions
+    + move_to
+    + move_by
+    + place_at
 * [ ] Event handlers
     - touch
     - enter
@@ -72,8 +77,12 @@ Proper distro will be done in Electron later.
     - pickup
     - putdown
     - move
-* [ ] Actions
-    - log
-    - move
-* [ ] Control structures
+* [ ] Misc
+    + print
 
+
+
+
+
+----
+* https://www.npmjs.com/package/bitboot

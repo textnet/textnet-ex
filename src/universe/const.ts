@@ -61,6 +61,7 @@ export const EVENT = {
     MOVE: { action: "move", },
     TEXT: { action: "text", },
     PROP: { action: "properties"}, 
+    TIME: { action: "timer"},
 }
 
 

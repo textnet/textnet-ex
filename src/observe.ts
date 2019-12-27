@@ -1,22 +1,92 @@
-import { Artifact, Avatar, AvatarKind, World } from "./universe/interfaces"
+import * as ex from 'excalibur';
+import { Dir, Artifact, Avatar, AvatarKind, World, Coordinates } from "./universe/interfaces"
 import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "./written/word"
-import { numerate } from "./universe/utils"
+import { numerate, normalizeDir, lengthDir } from "./universe/utils"
+import { DIR } from "./universe/const"
+import { tryToPlaceArtifact, placeArtifact } from "./universe/manipulations"
+import { ScriptTimerEvent } from "./universe/events"
 
 
+export enum ObserverCommand {
+    None = "None",
+    Move = "Move",
+}
+const observerSpeed     = 0.01;
+const observerThreshold = 0.01;
+const observerInterval =  10; // ms
+
+export function initObservance(dispatcher: ex.EventDispatcher) {
+    setInterval(function(){
+        dispatcher.emit("script:timer", new ScriptTimerEvent())
+    }, observerInterval)
+}
+    
 export class AvatarObserver {
     artifact: Artifact;
     avatar: Avatar;
+    dispatcher: ex.EventDispatcher;
 
     constructor(artifact: Artifact) {
+        const that = this;
+        this.dispatcher = new ex.EventDispatcher({});
+        this.dispatcher.on("script:timer", function(){
+            that.iterateCommand();
+        });
         this.artifact = artifact;
         this.avatar = this.attemptAvatar();
     }
 
     free() {
         if (this.avatar && this.avatar._env) {
+            this.dispatcher.unwire(this.artifact.dispatcher);
             freeWrittenWord(this.artifact.avatar._env);
             delete this.artifact.avatar._env;
         }
+    }
+
+    command: ObserverCommand;
+    commandFunc: any;
+    iterateCommand() { 
+        if (this.command != ObserverCommand.None && this.commandFunc) {
+            const nextCommand = this.commandFunc();
+            if (nextCommand) { this.command = nextCommand }
+            else             { this.command = ObserverCommand.None }
+        }
+    }
+    executeCommand(command: ObserverCommand, params: object) {
+        let that = this;
+        this.command = command;
+        // ---- MOVE -----------------------------------------------------
+        if (command == ObserverCommand.Move) {
+            const target = params;
+            this.commandFunc = function(){
+                const artifact = target["artifact"];
+                const stepSize  = artifact.speed * observerSpeed;
+                const delta = normalizeDir({
+                    x: target["x"]-artifact.coords.position.x,
+                    y: target["y"]-artifact.coords.position.y,
+                    name: DIR.NONE.name
+                }, stepSize);
+                const newCoords: Coordinates = {
+                    world: artifact.coords.world,
+                    position: { 
+                        x: artifact.coords.position.x+delta.x,
+                        y: artifact.coords.position.y+delta.y,
+                        dir: delta,
+                    }
+                }
+                if (lengthDir(delta) < observerThreshold ||
+                        !tryToPlaceArtifact(artifact, newCoords)) {
+                    if (params["dir"].name != DIR.NONE.name) {
+                        artifact.coords.position.dir = params["dir"];
+                        placeArtifact(artifact, artifact.coords)
+                    }                   
+                    return;
+                }
+                return ObserverCommand.Move;
+            }
+        }
+        // ---- ..... ----------------------------------------------------
     }
 
     attemptAvatar() {
@@ -25,6 +95,7 @@ export class AvatarObserver {
             texts.push(i.text)
         }
         const text = texts.join("\n\n");
+        if (text == "") return;
         const env = initWrittenWord(this, this.artifact.id, text);
         this.free();
         if (env) {
@@ -39,6 +110,7 @@ export class AvatarObserver {
                 }
             }
             this.artifact.avatar._env = env;
+            this.dispatcher.wire(this.artifact.dispatcher);
             return this.artifact.avatar;
         }
     }
