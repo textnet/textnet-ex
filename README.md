@@ -25,16 +25,8 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-- support events
-    + timer(artifact, delta)
-    + move(artifact, x,y, dx, dy, direction)
-    + push(artifact, pusher, direction)
-    + pickup(artifact, holder)
-    + putdown(artifact, holder, x, y)
-+ support `on('push')` syntax?
-+ support `off{ artifact, event, value }`
-+ embedded written word (working from inside of chairs)
-
+- research messaging & communication libraries
+- research client-server buildup
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
@@ -52,6 +44,7 @@ Proper distro will be done in Electron later.
 - position text cursors under avatar and vice versa
 - travel in chairs
 - supporting enter/leave events (complex)
+- refactor event processing (too much copy-paste?)
 
 
 
@@ -66,23 +59,17 @@ Proper distro will be done in Electron later.
 7. [ ] Advanced objects like images etc.
 
 
-# 2. Basic Written Word
+# 3. Persistence and Network Game
 
-* [x] Separate editor
-* [x] Getting and settings properties
-* [x] Actions
-    + move_to
-    + move_by
-    + place_at
-* [±] Event handlers
-    + push
-    - enter
-    - leave
-    + pickup
-    + putdown
-    + move
-* [x] Misc
-    + print
+- [ ] Messaging library
+- [ ] Address space
+- [ ] Serverside universe
+- [ ] Client-server protocol
+- [ ] Simultaneous multiplayer
+- [ ] Rightful ovservers
+- [ ] Artifact libraries
+
+
 
 
 
