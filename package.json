@@ -3,32 +3,51 @@
   "version": "1.0.0",
   "private": true,
   "description": "TXT NET EXC",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack": "webpack",
-    "webpack-dev-server": "webpack-dev-server --env.mode development --open",
-    "dev": "npm run webpack-dev-server",
-    "start": "npm run dev",
-    "build:dev": "npm run webpack -- --env.mode development",
-    "build:prod": "npm run webpack -- --env.mode production"
+    "build": "webpack --config webpack.electron.js  --mode production",
+    "prestart": "yarn run build",
+    "start": "electron . debug",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "predist": "yarn run build"
+  },
+  "build": {
+    "appId": "com.electron.textnet",
+    "productName": "Textnet",
+    "directories": {
+      "output": "apps/"
+    },
+    "files": [
+      "!apps/*"
+    ],
+    "mac": {
+      "category": "public.app-category.games"
+    }
   },
   "author": "Textnet Team",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "clean-webpack-plugin": "3.0.0",
     "compression-webpack-plugin": "^3.0.1",
-    "copy-webpack-plugin": "^5.0.5",
+    "copy-webpack-plugin": "^5.1.1",
+    "electron": "^7.1.7",
+    "electron-builder": "^21.2.0",
+    "electron-packager": "^14.1.1",
     "fengari-loader": "0.0.1",
     "fengari-web": "^0.1.4",
     "file-loader": "4.2.0",
     "html-webpack-plugin": "3.2.0",
     "raw-loader": "^4.0.0",
     "source-map-loader": "0.2.4",
+    "standard": "^14.3.1",
+    "standard-loader": "^7.0.0",
+    "terser-webpack-plugin": "^2.3.1",
     "ts-loader": "6.2.1",
     "typescript": "3.7.2",
     "uglifyjs-webpack-plugin": "2.2.0",
-    "webpack": "^4.41.2",
+    "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "3.9.0",
     "webpack-merge": "4.2.2"
@@ -36,12 +55,10 @@
   "dependencies": {
     "@types/jquery": "^3.3.31",
     "brace": "^0.11.1",
-    "codemirror": "^5.50.0",
     "excalibur": "0.23.0",
-    "hypermd": "^0.3.11",
     "jquery": "^3.4.1",
-    "ste-events": "^1.6.3",
-    "ste-simple-events": "^1.6.3",
-    "strongly-typed-events": "^1.6.3"
+    "ste-events": "^1.6.4",
+    "ste-simple-events": "^1.6.4",
+    "strongly-typed-events": "^1.6.4"
   }
 }

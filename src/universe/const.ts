@@ -28,8 +28,12 @@ export function DIRfrom(name: Dir) {
 /** 
  * World have a fixed width, this constant sets it.
  */
-export const worldWidth = 1000; // add some visual bounds
-
+export const worldWidth = 634; // 938; // add some visual bounds
+export const visualBounds = {
+    left: 43, right: 43,
+    top: 0,   height: 500,
+    margin: 65,
+};
 /**
  * When an avatar enters a world in the first time, it is positioned here.
  */

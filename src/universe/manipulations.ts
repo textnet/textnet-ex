@@ -23,7 +23,7 @@ import { isOverlap, artifactBox } from "./getters"
  * The goal of such approach is to guarantee that all dependencies
  * handled properly and all necessary messages are emitted.
  */
-
+    
 
 /**
  * Avatar enters the world that belongs to an Artifact.

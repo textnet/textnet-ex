@@ -1,9 +1,8 @@
 import * as jquery from "jquery";
 import * as $ from "jquery";
 import * as ex from "excalibur"
-import { worldWidth } from "./universe/const"
+import { visualBounds, worldWidth } from "./universe/const"
 import { World } from "./universe/interfaces"
-import { visualBounds } from "./plane"
 import { Game } from "./index"
 import { ArtifactActor } from "./actor"
 import { PlaneScene } from "./plane"
@@ -11,10 +10,6 @@ import * as ace from "brace"
 import * as luaMode from "brace/mode/lua"
 
 import { updateWorldText } from "./universe/manipulations"
-
-/**
- * TODO: REWRITE FROM SCRATCH!
- */
 
 
 export const FORMATS = ["lua", "markdown", "text" ]
@@ -59,6 +54,9 @@ export function initEditor(engine: Game) {
         require('brace/mode/'+format);    
     }
     require('brace/theme/monokai');
+    jquery("head").prepend([
+        '<meta name="viewport" content="width=500, initial-scale=2">'
+        ].join(""))
     jquery("body").prepend([
         "<div id=editor-wrapper>",
         "<div id=editor></div>",

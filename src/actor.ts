@@ -1,10 +1,9 @@
 import * as ex from "excalibur";
-import { DIR, DIRfrom, COMMAND, 
+import { DIR, DIRfrom, COMMAND, visualBounds,
          worldWidth, universeUpdateFrequency } from "./universe/const";
 import { Dir, Position, Artifact, Avatar, AvatarKind } from "./universe/interfaces"
 import { updateArtifactPosition } from "./universe/manipulations"
 import { 
-    visualBounds,
     updateArtifactOnScene
     } from "./plane"
 import { Game } from "./index"
@@ -122,7 +121,7 @@ export class ArtifactActor extends InventoryActor {
                 let command = getPlayerCommand(engine);
                 if (command == COMMAND.PUSH && playerDir.name != DIR.NONE.name) {
                     let item: Artifact = getArtifact_NextTo(this.artifact, playerDir);
-                    if (item && item.pushable) {
+                    if (item && !item.passable && item.pushable) {
                         if (pushArtifact(item, this.artifact, playerDir)) {
                             updateArtifactOnScene(this.scene as PlaneScene, item);
                             dir = addDir(dir, playerDir);                            

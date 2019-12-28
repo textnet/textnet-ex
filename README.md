@@ -3,9 +3,9 @@
 This is an Excalibur-based prototype of the TXT NET
 
     npm install
-    npm run dev
+    ./start.sh
 
-Proper distro will be done in Electron later.
+Uses Electron. To build DMG, use `yarn dist`
 
 # CONTROLS
 
@@ -16,8 +16,8 @@ Proper distro will be done in Electron later.
     + Push:   SHIFT + (move)
     + Pickup: ALT + (move)
 - Written Word:
-    - Enter: CTRL+ENTER 
-    - Leave: CTRL+ENTER / ESC
+    + Enter: CTRL+ENTER 
+    + Leave: CTRL+ENTER / ESC
 - Spoken Word:
     - Say: ENTER
 - Self:
@@ -25,11 +25,13 @@ Proper distro will be done in Electron later.
 
 
 # THIS ITERATION
-- research messaging & communication libraries
-- research client-server buildup
++ Electron
+    + debug: left position
++ BUG: 1px shift when passing `passable=false` chair
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
+- Apple Developer certificate
 - another session of documentation
 - refactor positions, coords, and vector stuff
 - animate entering the artifact
@@ -45,6 +47,7 @@ Proper distro will be done in Electron later.
 - travel in chairs
 - supporting enter/leave events (complex)
 - refactor event processing (too much copy-paste?)
+- enter yourself
 
 
 
@@ -61,6 +64,7 @@ Proper distro will be done in Electron later.
 
 # 3. Persistence and Network Game
 
+- [ ] Electron distro
 - [ ] Messaging library
 - [ ] Address space
 - [ ] Serverside universe

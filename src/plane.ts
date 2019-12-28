@@ -1,7 +1,7 @@
 import * as jquery from "jquery";
 import * as ex from "excalibur";
 import { ArtifactActor } from "./actor";
-import { DIR, spawnPosition, worldWidth } from "./universe/const";
+import { DIR, spawnPosition, worldWidth, visualBounds } from "./universe/const";
 import {
     Position,
     Account,
@@ -18,7 +18,6 @@ import {
     ScriptPropertiesEvent,
 } from "./universe/events"
 
-
 /**
  * Excalibur engine operates with Scenes.
  * We use only one scene to represent worlds that a player is visiting.
@@ -31,11 +30,7 @@ import {
 /**
  * When we draw a scene, we use some visual padding around the actual world.
  */
-export const visualBounds = {
-    left: 43, right: 43,
-    top: 0,   height: 150,
-    margin: 65,
-};
+
 
 
 /**
