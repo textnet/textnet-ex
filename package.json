@@ -9,9 +9,11 @@
     "prestart": "yarn run build",
     "start": "electron . debug",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
+
+    "dist": "electron-builder",
     "predist": "yarn run build"
+  
   },
   "build": {
     "appId": "com.electron.textnet",
@@ -32,13 +34,17 @@
     "clean-webpack-plugin": "3.0.0",
     "compression-webpack-plugin": "^3.0.1",
     "copy-webpack-plugin": "^5.1.1",
+    "dat-swarm-defaults": "^1.0.2",
+    "discovery-swarm": "^6.0.1",
     "electron": "^7.1.7",
     "electron-builder": "^21.2.0",
     "electron-packager": "^14.1.1",
     "fengari-loader": "0.0.1",
     "fengari-web": "^0.1.4",
     "file-loader": "4.2.0",
+    "get-port": "^5.1.0",
     "html-webpack-plugin": "3.2.0",
+    "node-persist": "^3.0.5",
     "raw-loader": "^4.0.0",
     "source-map-loader": "0.2.4",
     "standard": "^14.3.1",

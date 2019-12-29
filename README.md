@@ -15,7 +15,7 @@ Uses Electron. To build DMG, use `yarn dist`
     + Leave:  ESC 
     + Push:   SHIFT + (move)
     + Pickup: ALT + (move)
-- Written Word:
++ Written Word:
     + Enter: CTRL+ENTER 
     + Leave: CTRL+ENTER / ESC
 - Spoken Word:
@@ -25,9 +25,16 @@ Uses Electron. To build DMG, use `yarn dist`
 
 
 # THIS ITERATION
-+ Electron
-    + debug: left position
-+ BUG: 1px shift when passing `passable=false` chair
+- Massive refactoring of interfaces!
+    - Avatars go away
+    - Avatar properties become part of Artifact
+    - Observer links to Artifact directly
+    - Account links to Artifact directly
+- Persistence
+    - Accounts
+    - Artifacts
+    - figure out how to work with worlds
+- Move setup to persistence
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION

@@ -2,3 +2,4 @@ apps/
 node_modules/
 dist
 .DS_Store
+yarn-error.log

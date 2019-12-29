@@ -36,7 +36,7 @@ export function runGame() {
     loader.suppressPlayButton = true;
     game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
     initSync(game);
-
+    
     const account = createAccount("Ni", "human_professor");
     const scene = new PlaneScene(game);
     setupScene(scene, getAccountWorld(account), game)

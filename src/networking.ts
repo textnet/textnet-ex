@@ -12,8 +12,7 @@ import { initObservance } from "./observe"
  * Currently a stub.
  */
 
-
- export function initSync(engine: Game) {
+export function initSync(engine: Game) {
     let dispatcher:ex.EventDispatcher = new ex.EventDispatcher({});
     engine.syncDispatcher = dispatcher;
     initObservance(dispatcher);
