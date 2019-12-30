@@ -156,6 +156,7 @@ export interface Artifact {
     visits: Record<string,Coordinates>;
     visitsStack: string[];
     _env?: WrittenEnvironment;
+    _eventTarget?: EventTarget;
 
 }
 

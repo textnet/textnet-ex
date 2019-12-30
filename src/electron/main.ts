@@ -2,28 +2,25 @@ import { existsSync } from "fs"
 import { app, BrowserWindow } from 'electron'
 import { worldWidth, visualBounds } from "../universe/const"
 
-// import { test } from "../network/test"
-
-// import { Persistence } from "../persistence/startup"
+import { Persistence } from "../persistence/persist"
 
 let mainWindow: Electron.BrowserWindow
 
-// const localPersistence = new Persistence();
-// const alternatePersistence = new Persistence("alt/");
+const localPersistence     = new Persistence("app/");
+const alternatePersistence = new Persistence("alt/");
 
-// async function persistence() {
-//     await localPersistence.init()
-//     await alternatePersistence.init()
-// }
+async function persistence() {
+    await localPersistence.init()
+    await alternatePersistence.init()
+}
 
 function onReady() {
 
     // load!
-    // persistence().then(() => {
-
+    persistence().then(() => {
         const width  = worldWidth + visualBounds.left + visualBounds.right;
         // const height = visualBounds.height + 2*visualBounds.margin + 24;
-        const height = 900;
+        const height = 450;
         visualBounds.height = height - 2*visualBounds.margin;
         mainWindow = new BrowserWindow({
             x: 0, y: 0,
@@ -33,14 +30,11 @@ function onReady() {
             fullscreen: false,
             maximizable: false,
         })
-        mainWindow.webContents.openDevTools({ mode:"detach" })
+        // mainWindow.webContents.openDevTools({ mode:"detach" })
 
         mainWindow.loadFile("dist/index.html")
         mainWindow.on('close', () => app.quit())
-    // })
-
-
-
+    })
 
 }
 

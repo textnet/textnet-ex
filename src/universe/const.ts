@@ -31,7 +31,7 @@ export function DIRfrom(name: Dir) {
 export const worldWidth = 634; // 938; // add some visual bounds
 export const visualBounds = {
     left: 43, right: 43,
-    top: 0,   height: 500,
+    top: 0,   height: 320-24, // 500,
     margin: 65,
 };
 /**

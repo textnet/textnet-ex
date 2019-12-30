@@ -1,97 +1,53 @@
-// import { Storage } from "./storage"
-// import { Account, AvatarKind, defaultsArtifact } from "../universe/interfaces"
-// import { generateId, registerAccountId, getAccountId } from "./identity"
-// import { deepCopy } from "../universe/utils"
+import { Storage } from "./storage"
+import { Artifact, Account, defaultsArtifact } from "../universe/interfaces"
+import { generateId, registerAccountId, getAccountId } from "./identity"
+import { deepCopy } from "../universe/utils"
 
-// import { AccountStructure } from "./structures"
+import { ArtifactRepository, AccountRepository } from "./repo"
 
-// import { registerAccount } from "./startup"
+import { AvatarObserver } from "../observe";
+
+import { registerAccount } from "./startup"
 
 
-// export class Repository {
-//     storage: Storage;
-//     name:    string;
-//     cache: Record<string, any>;
-//     skip: string[];
+export class Persistence {
+    prefix: string;
+    artifacts: ArtifactRepository;
+    accounts:  AccountRepository;
+    config: Storage;
 
-//     constructor(prefix) {
-//         this.name = "default";
-//         this.storage = new Storage(prefix+name)
-//         this.cache = {};
-//         this.skip = [];
-//     }
-//     async init() {
-//         await this.storage.init();
-//     }
-//     async load(id) {
-//         if (!this.cache["id"]) {
-//             const data = await this.storage.get(id);
-//             const result = await this.fromData(data);
-//             this.cache["id"] = result;
-//         }
-//         return this.cache["id"];
-//     }
-//     async save(id, value) {
-//         this.cache["id"] = this.toData(value);
-//         await this.storage.set(id, value);
-//     }
-//     async remove(id) {
-//         delete this.cache["id"];
-//         await this.storage.remove(id);
-//     }
-//     async fromData(data) { return {} }
-//     async toData(obj) { return {} }
-// }
+    account:   Account;
+    observers: Record<string,AvatarObserver>;
 
-// export class ArtifactRepository extends Repository {
-//     constructor(prefix) {
-//         super(prefix);
-//         this.name = "artifacts";
-//     }
-//     async fromData(data) {
+    constructor(prefix?) {
+        this.prefix    = prefix || "";
+        this.artifacts = new ArtifactRepository(this);
+        this.accounts  = new AccountRepository(this);
+        this.config    = new Storage(prefix+"storage");
+    }
 
-//     }
-// }
-
-// export class Persistence {
-//     artifacts: Storage;
-//     accounts:  Storage;
-//     worlds:    Storage;
-//     avatars:   Storage;
-//     account:   Account;
-
-//     constructor(prefix?) {
-//         if (!prefix) prefix = ""
-//         this.artifacts = new Storage(prefix+"artifacts");
-//         this.accounts  = new Storage(prefix+"accounts");
-//     }
-
-//     async init() {
-//         await this.artifacts.init();
-//         await this.accounts.init();
+    async init() {
+        await this.artifacts.init();
+        await this.accounts.init();
+        await this.config.init();
         
-//        // 
-//         let localAccountStructure = await this.accounts.get("");
-//         if (!localAccountStructure) {
-//             localAccountStructure = await registerAccount(this);
-//             this.account = this.accountFrom(localAccountStructure)
-//         }
+        // get account or create one if there is none.
+        let localId = await this.config.get("localId");
+        if (!localId) {
+            const account = await registerAccount(this);
+            await this.config.set("localId", account.id);
+            localId = account.id;
+        }
+        this.account = await this.accounts.load(localId);
 
-//         // 
-//         const artifactStructures = await this.artifacts.all();
-//         for (let a in artifactStructures) {
-//             const artifact = (new artifactStructures)
-//             // attempt at avatar.
-//         }
-//     }
+        // get all available (local) artifacts and make observers for them
+        this.observers = {};
+        const localArtifacts = await this.artifacts.allLocal()
+        for (let i in localArtifacts) {
+            this.observers[(localArtifacts[i] as Artifact).id] = new AvatarObserver(localArtifacts[i]);
+        }
 
-//     accountFrom(structure) {
-//                 if (cacheAccounts[structure["id"]]) return cacheAccounts[structure["id"]];
-//         let result = this._copy(structure);
-//         result["avatar"] = loadAvatar(structure["avatar"]);
-//         cacheAccounts[ result["id"] ] = result as Artifact;
-//         return cacheAccounts[ result["id"] ];
-//     }
+    }
 
  
-// }
+}

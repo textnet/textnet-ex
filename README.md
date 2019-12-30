@@ -25,16 +25,9 @@ Uses Electron. To build DMG, use `yarn dist`
 
 
 # THIS ITERATION
-+ Massive refactoring of interfaces!
-    + get rid of Avatar concept
-    + refactor everything
-    + bug: no init at startup
-
-# NEXT ITERATION
-- Persistence
-    - Accounts
-    - Artifacts
-    - figure out how to work with worlds
++ Persistence storage for accounts and artifacts
+- Event handling with no dependencies on Excalibur
+- Interop.
 - Move setup to persistence
 
 

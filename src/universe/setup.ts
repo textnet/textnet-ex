@@ -164,7 +164,9 @@ const artifacts = {
 }
 
 
-const startupText = `
+const startupText = `Startup`;
+
+const backup = `
 
 Welcome to Textnet Game v.0.2!
 ==============================
