@@ -1,6 +1,6 @@
 import * as ex from 'excalibur';
 import { 
-    Artifact, Avatar, World, 
+    Artifact, World, 
     Position, Dir, Coordinates 
 } from "./universe/interfaces"
 import { Game } from "./index"

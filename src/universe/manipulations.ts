@@ -1,6 +1,6 @@
 import {
     Position, Dir, Coordinates,
-    Artifact, World, Avatar, 
+    Artifact, World, 
     Account
 } from "./interfaces"
 import { cpCoords, cpPosition } from "./utils"
@@ -17,7 +17,7 @@ import { isOverlap, artifactBox } from "./getters"
 
 /**
  * Functions that manipulate the universe in a proper manner.
- * One shouldn't alter any of the structures (e.g. Artifacts or Avatar)
+ * One shouldn't alter any of the structures (e.g. Artifacts)
  * in any way except calling those functions.
  *
  * The goal of such approach is to guarantee that all dependencies
@@ -26,65 +26,65 @@ import { isOverlap, artifactBox } from "./getters"
     
 
 /**
- * Avatar enters the world that belongs to an Artifact.
+ * Artifact avatar enters the world that belongs to an Artifact.
  * A convenience function, uses `enterWorld` internally.
- * @param {Avatar} avatar
+ * @param {Artifact} avatar
  * @param {Artifact} artifact
  */
-export function enterArtifact(avatar:Avatar, artifact:Artifact) {
+export function enterArtifact(avatar:Artifact, artifact:Artifact) {
     return enterWorld(avatar, artifact.worlds[0]);
 }
 
 /**
- * Avatar enters a World.
+ * Artifact avatar enters a World.
  * It artifact is removed from the world it currently inhabits,
  * and placed into the new world.
  * Visits stack is maintainted.
- * @param {Avatar} avatar
+ * @param {Artifact} avatar
  * @param {World} world
  */
-export function enterWorld(avatar:Avatar, world:World) {
+export function enterWorld(avatar:Artifact, world:World) {
     // EVENT: avatar:enter
-    if (avatar.body.coords) {
-        avatar.visits[avatar.body.coords.world.id] = cpCoords(avatar.body.coords);
+    if (avatar.coords) {
+        avatar.visits[avatar.coords.world.id] = cpCoords(avatar.coords);
     }
-    removeArtifact(avatar.body);
+    removeArtifact(avatar);
     if (!avatar.visits[world.id]) {
         avatar.visits[world.id] = { position: cpPosition(spawnPosition), world: world };
      }
     avatar.visitsStack.push(world.id);
-    placeArtifact(avatar.body, avatar.visits[world.id]);
+    placeArtifact(avatar, avatar.visits[world.id]);
 }
 
 /**
- * Avatar leaves the World, going up its visits stack.
+ * Artifact avatar leaves the World, going up its visits stack.
  * It artifact is removed from the world it currently inhabits,
  * and placed into the topmost world from its visits.
- * @param {Avatar} avatar
+ * @param {Artifact} avatar
  */
-export function leaveWorld(avatar:Avatar) {
+export function leaveWorld(avatar:Artifact) {
     // EVENT: avatar:leave
     if (avatar.visitsStack.length > 1) {
-        removeArtifact(avatar.body);
+        removeArtifact(avatar);
         avatar.visitsStack.pop();
         let prevWorld:string = avatar.visitsStack[avatar.visitsStack.length-1];
-        placeArtifact(avatar.body, avatar.visits[prevWorld]);
+        placeArtifact(avatar, avatar.visits[prevWorld]);
     }
 }
 
 /**
- * Avatar picks an Artifact.
+ * Artifact avatar picks an Artifact.
  * The artifact is removed from the world it placed in, and added to the inventory.
  * and placed into the topmost world from its visits.
- * @param {Avatar} avatar
+ * @param {Artifact} avatar
  * @param {Artifact} artifact
  */
-export function pickupArtifact(avatar: Avatar, artifact: Artifact) {
+export function pickupArtifact(avatar: Artifact, artifact: Artifact) {
     removeArtifact(artifact);
     avatar.inventory.push(artifact);
     // emit events
     artifact.dispatcher.emit("script:pickup", 
-        new ScriptPickupEvent(artifact, avatar.body));
+        new ScriptPickupEvent(artifact, avatar));
 }
 
 /**
@@ -92,30 +92,30 @@ export function pickupArtifact(avatar: Avatar, artifact: Artifact) {
  * Direction is provided.
  * The attempt fails if there is no free place for the artifact.
  * Does nothing if the inventory is empty.
- * @param {Avatar} avatar
+ * @param {Artifact} avatar
  * @param {Dir} dir
  * @returns {Artifact} or nothing if the attempt is failed.
  */
-export function putdownArtifact(avatar: Avatar, dir: Dir) {
+export function putdownArtifact(avatar: Artifact, dir: Dir) {
     if (avatar.inventory.length > 0) {
-        let coords: Coordinates = cpCoords(avatar.body.coords);
+        let coords: Coordinates = cpCoords(avatar.coords);
         let artifact: Artifact = avatar.inventory.pop();
         coords.position.x += dir.x*(
-            avatar.body.body.size[0]
+            avatar.body.size[0]
             + artifact.body.size[0]
             )/2
             -artifact.body.offset[0]
-            +avatar.body.body.offset[0];
+            +avatar.body.offset[0];
         coords.position.y += dir.y*(
-            avatar.body.body.size[1] 
+            avatar.body.size[1] 
             + artifact.body.size[1]
             )/2
             -artifact.body.offset[1]
-            +avatar.body.body.offset[1];
+            +avatar.body.offset[1];
         if (tryToPlaceArtifact(artifact, coords)) {
             // emit events
             artifact.dispatcher.emit("script:putdown", 
-                new ScriptPutdownEvent(artifact, avatar.body, 
+                new ScriptPutdownEvent(artifact, avatar, 
                                        coords.position.x, coords.position.y));
             return artifact;
         } else {

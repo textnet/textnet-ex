@@ -12,15 +12,6 @@ import { WrittenEnvironment } from "../written/word"
  * between different accounts of the universe.
  */
 
-/**
- * Avatars can be of three kinds:
- * PLAYER - controlled by the local player.
- * LOCAL  - controlled by the code (written text) which executes locally.
- * PROXY  - controlled by events coming from other instances of the game.
- */
-export enum AvatarKind {
-    PLAYER, LOCAL, PROXY
-}
 
 /**
  * Direction vector; not only functions as a vector, but also 
@@ -59,24 +50,11 @@ export interface Coordinates {
  */
 export interface Account {
     id: string;
-    avatar?: Avatar;
+    // ex-avatar
+    local: boolean;
+    body: Artifact;
 }
 
-/**
- * Avatar is an artifact that is alive.
- * Avatar can move in the world, and between the world.
- * The history of avatar's travels is captured as visits.
- * Avatar can keep an inventory (artifacts he's picked up).
- */
-export interface Avatar {
-    id: string;
-    body: Artifact;
-    inventory: Artifact[];
-    kind: AvatarKind;
-    visits: Record<string,Coordinates>;
-    visitsStack: string[];
-    _env?: WrittenEnvironment;
-}
 
 /**
  * World is a 2D plane where artifacts are placed.
@@ -111,6 +89,9 @@ export interface World {
  *
  * Artifact may be placed into a world in a certain position (=coordinates).
  * 
+ * At some moment an Artifact might become 'alive'. It is entitled to 
+ * have an inventory of artifacts it picks up, and to travel between worlds.
+ *
  * There are also connections of avatar structure with game engine:
  * `actor` and `_dispatcher`. 
  * These connections shouldn't be copied.
@@ -161,12 +142,21 @@ export interface Artifact {
         title: { fg: string, bg: string };
     }
 
-    avatar?: Avatar;
     worlds: World[];
     coords?: Coordinates;
 
     dispatcher?: ex.EventDispatcher;
     actor?: ex.Actor;
+
+    // ex-avatar
+    local?: boolean;
+    player?: Account;
+    // TODO: proxy/local/etc.
+    inventory: Artifact[];
+    visits: Record<string,Coordinates>;
+    visitsStack: string[];
+    _env?: WrittenEnvironment;
+
 }
 
 

@@ -5,10 +5,8 @@ import { DIR, spawnPosition, worldWidth, visualBounds } from "./universe/const";
 import {
     Position,
     Account,
-    Avatar,
     World,
     Artifact,
-    AvatarKind
 } from "./universe/interfaces";
 import { updateEditor, adjustEditor, initEditor, Editor } from "./editor"
 import { Game } from "./index"
@@ -138,18 +136,20 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     let playerActor: ArtifactActor;
     for (let i in world.artifacts) {
         let actor = new ArtifactActor(world.artifacts[i]);
-        if (actor.artifact.avatar) {
-            if (actor.artifact.avatar.kind == AvatarKind.PLAYER) playerActor = actor;
+        if (actor.artifact.local) {
+            playerActor = actor;
         }
         scene.add(actor);
         actor.artifact.dispatcher = engine.syncDispatcher; // TODO events better understood
 
     }
     // create camera strategy
-    scene.camera.clearAllStrategies();
-    scene.camera.addStrategy(
-        new RadiusAroundActorStrategy(playerActor, visualBounds.height / 2)
-    );
+    if (playerActor) {
+        scene.camera.clearAllStrategies();
+        scene.camera.addStrategy(
+            new RadiusAroundActorStrategy(playerActor, visualBounds.height / 2)
+        );
+    }
     // create the label
     let titleHeight = 24;
     let labelHeight = 16;

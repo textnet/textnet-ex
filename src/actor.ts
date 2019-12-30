@@ -1,7 +1,7 @@
 import * as ex from "excalibur";
 import { DIR, DIRfrom, COMMAND, visualBounds,
          worldWidth, universeUpdateFrequency } from "./universe/const";
-import { Dir, Position, Artifact, Avatar, AvatarKind } from "./universe/interfaces"
+import { Dir, Position, Artifact  } from "./universe/interfaces"
 import { updateArtifactPosition } from "./universe/manipulations"
 import { 
     updateArtifactOnScene
@@ -27,9 +27,6 @@ import { Editor, focusEditor } from "./editor"
  * Every Artifact in this world is represented by an ArtifactActor.
  *
  * The universe (model) is considered Source of Truth.
- *
- * As some of the artifacts (including player's one) have Avatars,
- * they can change position and take actions. It alters source of truth.
  *
  * If Actors are moved by the game engine (e.g. player move her Actor),
  * these changes are converted into events and emitted to adjust 
@@ -58,7 +55,7 @@ export class ArtifactActor extends InventoryActor {
         this.opacity = 1;
         this.rotation = 0;
         this.body.pos = new ex.Vector(pos.x, pos.y);
-        if (artifact.avatar && artifact.avatar.kind == AvatarKind.PLAYER) {
+        if (artifact.local) {
             this.body.collider.type = ex.CollisionType.Active;
         } else {
             this.body.collider.type = ex.CollisionType.Fixed;
@@ -83,7 +80,6 @@ export class ArtifactActor extends InventoryActor {
 
     /**
      * Visualises the inventory: artifacts that this artifact has picked up.
-     * Does nothing if there is no avatar connected with the artifact.
      * Called internally; don't call it explicitly.
      */
     visualiseInventory(engine: Game) {
@@ -91,9 +87,9 @@ export class ArtifactActor extends InventoryActor {
             this.remove(this.inventory);
             delete this.inventory;
         }
-        if (this.artifact.avatar && this.artifact.avatar.inventory.length > 0) {
+        if (this.artifact.inventory.length > 0) {
             // create a new artifact
-            this.inventory = new InventoryActor(this.artifact.avatar.inventory[0]);
+            this.inventory = new InventoryActor(this.artifact.inventory[0]);
             this.inventory.pos = new ex.Vector(
                 this.artifact.body.size[0]/2+ 
                 this.inventory.artifact.body.size[0]/2*this.inventory.scale.x,
@@ -104,15 +100,15 @@ export class ArtifactActor extends InventoryActor {
     }
 
     /**
-     * Update an actor from the actions that its avatar is doing.
-     * For local player avatars: takes input command and attempts to execute it.
+     * Update an actor from the actions that are happening in the universe.
+     * For local player: takes input command and attempts to execute it.
      * Adjusts its own position if moved.
      */
-    updateFromAvatar(engine: Game) {
+    updateFromActions(engine: Game) {
         this.speed = { x:0, y:0 };
         let dir: Dir = deepCopy(DIR.NONE);
         // Player input for direction and speed
-        if (this.artifact.avatar.kind == AvatarKind.PLAYER) {
+        if (this.artifact.local) {
             if (this.needRelease && engine.input.keyboard.getKeys().length == 0) {
                 this.needRelease = false;
             }
@@ -134,15 +130,15 @@ export class ArtifactActor extends InventoryActor {
                     let straightDir: Dir = DIRfrom(addDir(dir, playerDir));
                     let item:Artifact = getArtifact_NextTo(this.artifact, straightDir);
                     if (item && item.pickable) {
-                        pickupArtifact(this.artifact.avatar, item);
+                        pickupArtifact(this.artifact, item);
                         if (item.actor) {
                             this.scene.remove(item.actor)
                         }
                         this.needRelease = true;
                         this.visualiseInventory(engine)
-                    } else if (this.artifact.avatar.inventory.length > 0) {
+                    } else if (this.artifact.inventory.length > 0) {
                         let straightDir: Dir = DIRfrom(playerDir);
-                        let item: Artifact = putdownArtifact(this.artifact.avatar, playerDir);
+                        let item: Artifact = putdownArtifact(this.artifact, playerDir);
                         if (item) {
                             if (item.actor) {
                                 this.scene.add(item.actor)
@@ -157,13 +153,13 @@ export class ArtifactActor extends InventoryActor {
                     dir = addDir(dir, playerDir);
                 }
                 if (command == COMMAND.LEAVE) {
-                    leaveWorld(this.artifact.avatar);
+                    leaveWorld(this.artifact);
                     engine.switchScene(this.artifact.coords.world)                   
                 }
                 if (command == COMMAND.ENTER) {
                     let item = getArtifact_NextTo(this.artifact, playerDir);
                     if (item && !item.locked) {
-                        enterArtifact(this.artifact.avatar, item)
+                        enterArtifact(this.artifact, item)
                         engine.switchScene(this.artifact.coords.world)                       
                     }
                 }
@@ -208,25 +204,26 @@ export class ArtifactActor extends InventoryActor {
         } else {
             this.body.collider.type = ex.CollisionType.Fixed;
         }
-        if (this.artifact.avatar && this.artifact.avatar.kind == AvatarKind.PLAYER) {
+        if (this.artifact.local) {
             this.body.collider.type = ex.CollisionType.Active;
         }
-        // update from avatar
-        if (this.artifact.avatar) {
-            this.updateFromAvatar(engine)
-        } 
-        // update from universe
-        if (!this.artifact.avatar || this.artifact.avatar.kind != AvatarKind.PLAYER) {
+        if (this.artifact.local) {
+            // update from local player directly and then communicate to the universe.
+            // check if the last part of update should run for everything.
+            // hint: it shouldn't
+            // hint: I have to validate bounds somewhere
+            this.updateFromActions(engine)
+            if ((this.scene as PlaneScene).timeToUpdateUniverse()) {
+                this.updatePositionInUniverse(engine)
+            }
+        } else {
+            // update from universe
             if (this.artifact.coords) {
                 this.body.pos.x = this.artifact.coords.position.x;
                 this.body.pos.y = this.artifact.coords.position.y;
                 this.dir = this.artifact.coords.position.dir;
             }
-        }  else {
-            if ((this.scene as PlaneScene).timeToUpdateUniverse()) {
-                this.updatePositionInUniverse(engine)
-            }
-        }
+        } 
         // Update animations
         if (this.artifact.sprite.turning) {
             if (Math.abs(this.vel.x)+Math.abs(this.vel.y) > 0) {

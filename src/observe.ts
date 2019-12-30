@@ -1,5 +1,5 @@
 import * as ex from 'excalibur';
-import { Dir, Artifact, Avatar, AvatarKind, World, Coordinates } from "./universe/interfaces"
+import { Dir, Artifact, World, Coordinates } from "./universe/interfaces"
 import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "./written/word"
 import { numerate, normalizeDir, lengthDir } from "./universe/utils"
 import { DIR } from "./universe/const"
@@ -23,7 +23,6 @@ export function initObservance(dispatcher: ex.EventDispatcher) {
     
 export class AvatarObserver {
     artifact: Artifact;
-    avatar: Avatar;
     dispatcher: ex.EventDispatcher;
 
     constructor(artifact: Artifact) {
@@ -33,14 +32,14 @@ export class AvatarObserver {
             that.iterateCommand();
         });
         this.artifact = artifact;
-        this.avatar = this.attemptAvatar();
+        this.attemptAvatar()
     }
 
     free() {
-        if (this.avatar && this.avatar._env) {
+        if (this.artifact._env) {
             this.dispatcher.unwire(this.artifact.dispatcher);
-            freeWrittenWord(this.artifact.avatar._env);
-            delete this.artifact.avatar._env;
+            freeWrittenWord(this.artifact._env);
+            delete this.artifact._env;
         }
     }
 
@@ -166,6 +165,7 @@ export class AvatarObserver {
     }
 
     attemptAvatar() {
+        this.free();
         const texts = []
         for (let i of this.artifact.worlds) {
             texts.push(i.text)
@@ -173,21 +173,10 @@ export class AvatarObserver {
         const text = texts.join("\n\n");
         if (text == "") return;
         const env = initWrittenWord(this, this.artifact.id, text);
-        this.free();
         if (env) {
-            if (!this.artifact.avatar) {
-                this.artifact.avatar = {
-                    id: numerate("avatar"),
-                    body: this.artifact,
-                    inventory: [],
-                    kind: AvatarKind.LOCAL,
-                    visits: {},
-                    visitsStack: [],
-                }
-            }
-            this.artifact.avatar._env = env;
+            this.artifact._env = env;
             this.dispatcher.wire(this.artifact.dispatcher);
-            return this.artifact.avatar;
+            return this.artifact;
         }
     }
 }

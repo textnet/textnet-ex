@@ -1,5 +1,5 @@
 import { 
-    Account, Avatar, Artifact, World, 
+    Account, Artifact, World, 
     Coordinates, Position, Dir,
 } from "./interfaces"
 import {
@@ -13,7 +13,7 @@ import { deepCopy } from "./utils"
  * @returns {World} 
  */
 export function getAccountWorld(account: Account) {
-    return account.avatar.body.coords.world;
+    return account.body.coords.world;
 }
 
 /**

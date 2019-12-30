@@ -25,11 +25,12 @@ Uses Electron. To build DMG, use `yarn dist`
 
 
 # THIS ITERATION
-- Massive refactoring of interfaces!
-    - Avatars go away
-    - Avatar properties become part of Artifact
-    - Observer links to Artifact directly
-    - Account links to Artifact directly
++ Massive refactoring of interfaces!
+    + get rid of Avatar concept
+    + refactor everything
+    + bug: no init at startup
+
+# NEXT ITERATION
 - Persistence
     - Accounts
     - Artifacts
@@ -38,6 +39,7 @@ Uses Electron. To build DMG, use `yarn dist`
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
+- validate bounds when working with artifacts
 - Apple Developer certificate
 - another session of documentation
 - refactor positions, coords, and vector stuff

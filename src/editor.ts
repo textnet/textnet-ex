@@ -72,24 +72,22 @@ export function initEditor(engine: Game) {
     editor.getSession().setUseWrapMode(true);
     editor.getSession().setTabSize(4);
     editor.getSession().setUseSoftTabs(true);
+    function standup(editor: Editor) {
+        blurEditor(editor);
+        const world = (engine.currentScene as PlaneScene).world;
+        updateWorldText(world, editor.getValue(), true)
+        engine.start();
+    }
     editor.commands.addCommand({
         name: "textnetStandup",
         bindKey: {win: 'Ctrl-Enter',  mac: 'Ctrl-Enter'},
-        exec: function(editor: Editor) {
-            blurEditor(editor);
-            const world = (engine.currentScene as PlaneScene).world;
-            updateWorldText(world, editor.getValue(), true)
-            engine.start();
-        },
+        exec: standup,
         readOnly: false
     });
     editor.commands.addCommand({
         name: "textnetStandup2",
         bindKey: {win: 'Escape',  mac: 'Escape'},
-        exec: function(editor) {
-            blurEditor(editor);
-            engine.start();
-        },
+        exec: standup,
         readOnly: false
     });
 
