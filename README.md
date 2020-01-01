@@ -27,8 +27,22 @@ Uses Electron. To build DMG, use `yarn dist`
 # THIS ITERATION
 + Persistence storage for accounts and artifacts
 - Event handling with no dependencies on Excalibur
-- Interop.
+    + remove all ex.Events
+    + make sure there is no dependencies in Universe on ex
+    + research interop
+    + move all presentation to presentation, including manipulations
+    + emit interop events from manipulations
+    - fix things back
+        - moving
+        - collisions
+        - pushing
+        - pickup/putdown
+        - enter/leave
+        - console logging
 - Move setup to persistence
+    - on startup, ask for account->body
+    - place artifact in the visits stack
+    - add chairs
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION

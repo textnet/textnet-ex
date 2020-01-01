@@ -1,6 +1,10 @@
-import { Artifact } from "./universe/interfaces"
-import { b64toBlob } from "./universe/utils"
 import * as ex from 'excalibur';
+
+import { b64toBlob } from "../universe/utils"
+
+import { BaseActor } from "./actors/base"
+import { ArtifactStructure } from "./data_structures"
+import { Game } from "./game"
 
 /** 
  * Module for sprite rendering.
@@ -29,7 +33,7 @@ const spriteSpeed:number = 60;
  * Helper class that embed all animations generated for the artifact.
  */
 export class ArtifactSprite {
-    artifact: Artifact;
+    artifact: ArtifactStructure;
     move: ex.SpriteSheet;
     idle: ex.SpriteSheet;
     cols: number = 1;
@@ -39,7 +43,7 @@ export class ArtifactSprite {
     /**
      * Build the helper from the artifact.
      */
-    constructor(artifact: Artifact) {
+    constructor(artifact: ArtifactStructure) {
         let that = this;
         this.artifact = artifact;
         if (artifact.sprite.moving)  this.cols = 9;

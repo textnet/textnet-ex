@@ -1,20 +1,18 @@
 import * as jquery from "jquery";
 import * as ex from "excalibur";
-import { ArtifactActor } from "./actor";
-import { DIR, spawnPosition, worldWidth, visualBounds } from "./universe/const";
+
+import { DIR, spawnPosition, worldWidth, visualBounds } from "../universe/const";
 import {
     Position,
     Account,
     World,
     Artifact,
-} from "./universe/interfaces";
+} from "../universe/interfaces";
+
+import { ArtifactActor } from "./actor";
 import { updateEditor, adjustEditor, initEditor, Editor } from "./editor"
 import { Game } from "./index"
-import { AvatarObserver } from "./observe"
-import { 
-    ScriptTextEvent,
-    ScriptPropertiesEvent,
-} from "./universe/events"
+
 
 /**
  * Excalibur engine operates with Scenes.
@@ -37,7 +35,7 @@ import {
 export class PlaneScene extends ex.Scene {
     editor: Editor;
     world:  World;
-    observers: Record<string,AvatarObserver>;
+    // observers: Record<string,AvatarObserver>;
     handlers: Record<string,any>;
 
     public onInitialize(engine: Game) {}
@@ -46,11 +44,6 @@ export class PlaneScene extends ex.Scene {
 
     public onPostUpdate(engine: Game) {
         updateEditor(this);
-    }
-
-    public timeToUpdateUniverse() {
-        // global pacing
-        return true;
     }
 
 }
@@ -113,14 +106,14 @@ export function purgeScene(scene: PlaneScene, engine: Game) {
     for (let a of scene.actors) {
         scene.remove(a);
     }
-    if (scene.observers) {
-        for (let i in scene.observers) {
-            scene.observers[i].free()
-        }
-    }
-    for (let e in scene.handlers) {
-        engine.syncDispatcher.off(e, scene.handlers[e]);
-    }
+    // if (scene.observers) {
+    //     for (let i in scene.observers) {
+    //         scene.observers[i].free()
+    //     }
+    // }
+    // for (let e in scene.handlers) {
+    //     engine.syncDispatcher.off(e, scene.handlers[e]);
+    // }
 }
 
 /**
@@ -133,6 +126,7 @@ export function purgeScene(scene: PlaneScene, engine: Game) {
  * @param {Game}       engine
  */
 export function setupScene(scene: PlaneScene, world: World, engine: Game) {
+    console.log("setting scene up!")
     let playerActor: ArtifactActor;
     for (let i in world.artifacts) {
         let actor = new ArtifactActor(world.artifacts[i]);
@@ -140,8 +134,7 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
             playerActor = actor;
         }
         scene.add(actor);
-        actor.artifact.dispatcher = engine.syncDispatcher; // TODO events better understood
-
+        // actor.artifact.dispatcher = engine.syncDispatcher; // TODO events better understood
     }
     // create camera strategy
     if (playerActor) {
@@ -174,30 +167,30 @@ export function setupScene(scene: PlaneScene, world: World, engine: Game) {
     scene.world = world;
     if (!scene.editor) scene.editor = initEditor(engine);
     updateEditor(scene);
-    // event handlers
-    scene.handlers = {};
-    scene.handlers["script:properties"] = function(event: ScriptPropertiesEvent) {
-        // update name and other editor properties
-        if (scene.world.owner.id == event.artifact.id) {
-            text.text = world.owner.name;
-            scene.editor.getSession().setMode('ace/mode/'+world.owner.format);
-        }
-    };
-    scene.handlers["script:text"] = function(event: ScriptTextEvent) {
-        if (event.params["compile"] && scene.observers[event.artifact.id]) {
-            scene.observers[event.artifact.id].attemptAvatar();
-        }
-    };
-    for (let e in scene.handlers) {
-        engine.syncDispatcher.on(e, scene.handlers[e]);
-    }
-    // observers
-    scene.observers = {};
-    scene.observers[world.owner.id] = new AvatarObserver(world.owner);
-    for (let i in world.artifacts) {
-        if (world.artifacts[i] != world.owner) {
-            scene.observers[ world.artifacts[i].id ] = new AvatarObserver(world.artifacts[i]);
-        }
-    }    
+    // // event handlers
+    // scene.handlers = {};
+    // scene.handlers["script:properties"] = function(event: ScriptPropertiesEvent) {
+    //     // update name and other editor properties
+    //     if (scene.world.owner.id == event.artifact.id) {
+    //         text.text = world.owner.name;
+    //         scene.editor.getSession().setMode('ace/mode/'+world.owner.format);
+    //     }
+    // };
+    // scene.handlers["script:text"] = function(event: ScriptTextEvent) {
+    //     if (event.params["compile"] && scene.observers[event.artifact.id]) {
+    //         scene.observers[event.artifact.id].attemptAvatar();
+    //     }
+    // };
+    // for (let e in scene.handlers) {
+    //     engine.syncDispatcher.on(e, scene.handlers[e]);
+    // }
+    // // observers
+    // scene.observers = {};
+    // scene.observers[world.owner.id] = new AvatarObserver(world.owner);
+    // for (let i in world.artifacts) {
+    //     if (world.artifacts[i] != world.owner) {
+    //         scene.observers[ world.artifacts[i].id ] = new AvatarObserver(world.artifacts[i]);
+    //     }
+    // }    
 }
 

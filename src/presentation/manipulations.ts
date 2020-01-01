@@ -1,19 +1,14 @@
+import { ipcRenderer } from "electron";
+
 import {
     Position, Dir, Coordinates,
     Artifact, World, 
     Account
-} from "./interfaces"
-import { cpCoords, cpPosition } from "./utils"
-import { spawnPosition, DIR, DIRfrom } from "./const"
-import {
-    ScriptPushEvent,
-    ScriptMoveEvent,
-    ScriptTextEvent,
-    ScriptPutdownEvent,
-    ScriptPickupEvent,
-    ScriptPropertiesEvent,
-} from "./events"
-import { isOverlap, artifactBox } from "./getters"
+} from "../universe/interfaces"
+import { cpCoords, cpPosition } from "../universe/utils"
+import { spawnPosition, DIR, DIRfrom, 
+         universeUpdateProbability, universeUpdateDelay } from "../universe/const"
+import { isOverlap, artifactBox } from "../universe/getters"
 
 /**
  * Functions that manipulate the universe in a proper manner.
@@ -44,6 +39,12 @@ export function enterArtifact(avatar:Artifact, artifact:Artifact) {
  * @param {World} world
  */
 export function enterWorld(avatar:Artifact, world:World) {
+    ipcRenderer.send("enter", {
+        avatarId: avatar.id,
+        artifactId: world.owner.id,
+        worldId: world.id,
+    })
+
     // EVENT: avatar:enter
     if (avatar.coords) {
         avatar.visits[avatar.coords.world.id] = cpCoords(avatar.coords);
@@ -63,6 +64,10 @@ export function enterWorld(avatar:Artifact, world:World) {
  * @param {Artifact} avatar
  */
 export function leaveWorld(avatar:Artifact) {
+    ipcRenderer.send("leave", {
+        avatarId: avatar.id,
+    })
+
     // EVENT: avatar:leave
     if (avatar.visitsStack.length > 1) {
         removeArtifact(avatar);
@@ -80,11 +85,16 @@ export function leaveWorld(avatar:Artifact) {
  * @param {Artifact} artifact
  */
 export function pickupArtifact(avatar: Artifact, artifact: Artifact) {
+    ipcRenderer.send("pickup", {
+        avatarId: avatar.id,
+        artifactId: artifact.id,
+    })
+
     removeArtifact(artifact);
     avatar.inventory.push(artifact);
     // emit events
-    artifact.dispatcher.emit("script:pickup", 
-        new ScriptPickupEvent(artifact, avatar));
+    // artifact.dispatcher.emit("script:pickup", 
+    //     new ScriptPickupEvent(artifact, avatar));
 }
 
 /**
@@ -97,6 +107,11 @@ export function pickupArtifact(avatar: Artifact, artifact: Artifact) {
  * @returns {Artifact} or nothing if the attempt is failed.
  */
 export function putdownArtifact(avatar: Artifact, dir: Dir) {
+    ipcRenderer.send("putdown", {
+        avatarId: avatar.id,
+        dir: dir,
+    })
+
     if (avatar.inventory.length > 0) {
         let coords: Coordinates = cpCoords(avatar.coords);
         let artifact: Artifact = avatar.inventory.pop();
@@ -114,9 +129,9 @@ export function putdownArtifact(avatar: Artifact, dir: Dir) {
             +avatar.body.offset[1];
         if (tryToPlaceArtifact(artifact, coords)) {
             // emit events
-            artifact.dispatcher.emit("script:putdown", 
-                new ScriptPutdownEvent(artifact, avatar, 
-                                       coords.position.x, coords.position.y));
+            // artifact.dispatcher.emit("script:putdown", 
+            //     new ScriptPutdownEvent(artifact, avatar, 
+            //                            coords.position.x, coords.position.y));
             return artifact;
         } else {
             avatar.inventory.push(artifact)
@@ -130,6 +145,10 @@ export function putdownArtifact(avatar: Artifact, dir: Dir) {
  * @param {Artifact} artifact
  */
 export function removeArtifact(artifact: Artifact) {
+    ipcRenderer.send("remove", {
+        artifactId: artifact.id,
+    })
+
     if (!artifact.coords) return;
     // EVENT: world:remove_artifact / artifact: remove
     delete artifact.coords.world.artifacts[artifact.id];
@@ -147,6 +166,13 @@ export function placeArtifact(artifact: Artifact, coords: Coordinates) {
     if (artifact.coords && artifact.coords.world.id != coords.world.id) {
         removeArtifact(artifact);
     }
+    //
+    ipcRenderer.send("place", {
+        artifactId: artifact.id,
+        targetArtifactId: coords.world.owner.id,
+        position: coords.position,
+    })
+    //
     if (!artifact.coords) artifact.coords = coords;
     artifact.coords.world = coords.world;
     updateArtifactPosition(artifact, coords.position)
@@ -154,6 +180,12 @@ export function placeArtifact(artifact: Artifact, coords: Coordinates) {
 }
 
 export function pushArtifact(artifact: Artifact, pusher: Artifact, dir: Dir) {
+    ipcRenderer.send("push", {
+        artifactId: artifact.id,
+        pusherId: pusher.id,
+        dir: dir,
+    })
+
     let success = false;    
     let straightDir: Dir = DIRfrom(dir);
     let newCoords = cpCoords(artifact.coords);
@@ -162,7 +194,7 @@ export function pushArtifact(artifact: Artifact, pusher: Artifact, dir: Dir) {
     newCoords.position.y += straightDir.y * pushStrength;
     success = tryToPlaceArtifact(artifact, newCoords);
     // emit events
-    artifact.dispatcher.emit("script:push", new ScriptPushEvent(artifact, pusher, dir));
+    // artifact.dispatcher.emit("script:push", new ScriptPushEvent(artifact, pusher, dir));
     return success
 }
 
@@ -214,26 +246,47 @@ export function updateArtifactPosition(artifact: Artifact, newPosition: Position
     dx = newPosition.x - artifact.coords.position.x;
     dy = newPosition.y - artifact.coords.position.y;
     if (dx == 0 && dy == 0) return;
-    // update universe
+    //
+    if (artifact.updateTimeout) { clearTimeout(artifact.updateTimeout); }
+    function update() {
+        ipcRenderer.send("position", {
+            artifactId: artifact.id,
+            position: newPosition,
+        }) 
+        clearTimeout(artifact.updateTimeout);
+    }
+    artifact.updateTimeout = setTimeout(update, universeUpdateDelay);
+    if (Math.random() < universeUpdateProbability) { update() }
+    // update locally
     artifact.coords.position = cpPosition(newPosition);
     // emit events
-    artifact.dispatcher.emit("script:move", new ScriptMoveEvent(artifact, dx, dy));
+    // artifact.dispatcher.emit("script:move", new ScriptMoveEvent(artifact, dx, dy));
 }
 
 
 // full text & recompile
 export function updateWorldText(world: World, text?: string, compile?:boolean) {
+    ipcRenderer.send("text", {
+        artifactId: world.owner.id,
+        worldId: world.id,
+        text: text,
+        compile: compile
+    })    
     // update universe
     if (text != undefined) {
         world.text = text;    
     }
     // emit events
-    world.owner.dispatcher.emit("script:text", 
-        new ScriptTextEvent(world.owner, world.text, compile));
+    // world.owner.dispatcher.emit("script:text", 
+    //     new ScriptTextEvent(world.owner, world.text, compile));
 }
 
 
 export function updateArtifactProperties(artifact: Artifact, properties) {
+    ipcRenderer.send("properties", {
+        artifactId: artifact.id,
+        properties: properties
+    })    
     // update universe
     for (let key in properties) {
         if (properties[key] != undefined) {
@@ -241,14 +294,14 @@ export function updateArtifactProperties(artifact: Artifact, properties) {
         }
     }
     // emit events
-    if (artifact.dispatcher) {       
-        artifact.dispatcher.emit("script:properties", 
-            new ScriptPropertiesEvent(artifact, properties));
-    }
+    // if (artifact.dispatcher) {       
+    //     artifact.dispatcher.emit("script:properties", 
+    //         new ScriptPropertiesEvent(artifact, properties));
+    // }
 }
 
 export function updateArtifactText(artifact: Artifact, text?:string, compile?:boolean) {
-    // it is just a shortcut
+    // it is just a convenience shortcut
     updateWorldText(artifact.worlds[0], text, compile)
 }
 

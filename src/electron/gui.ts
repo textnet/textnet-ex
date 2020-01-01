@@ -1,3 +1,2 @@
-import { runGame } from "../index"
-
+import { runGame } from "../render/game"
 runGame();

@@ -1,9 +1,9 @@
+import * as events from "events"
+
 import { Dir, Artifact, World, Coordinates } from "../universe/interfaces"
 import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "../written/word"
 import { numerate, normalizeDir, lengthDir } from "../universe/utils"
 import { DIR } from "../universe/const"
-import { tryToPlaceArtifact, placeArtifact } from "../universe/manipulations"
-import { ScriptTimerEvent } from "../universe/events"
 
 
 export enum ObserverCommand {
@@ -15,7 +15,7 @@ const observerThreshold = 0.01;
 const observerInterval =  10; // ms
 
 
-export class TimerEvent extends Event {}
+export interface TimerEvent {}
 
 
 export function initObservance(eventTarget: ex.EventDispatcher) {
@@ -23,7 +23,7 @@ export function initObservance(eventTarget: ex.EventDispatcher) {
     
 export class PersistenceObserver {
     artifact: Artifact;
-    eventTarget: EventTarget;
+    emitter: events.EventEmitter;
     interval;
     
 
@@ -36,16 +36,19 @@ export class PersistenceObserver {
 
     free() {
         const that = this;
-        this.eventTarget = new EventTarget();
-        this.eventTarget.addEventListener("script:timer", function(){
+        //
+        if (this.emitter) this.emitter.removeAllListeners();
+        this.emitter = new events.EventEmitter();
+        this.emitter.on("timer", function(){
             that.iterateCommand();
         })
+        //
         clearInterval(this.interval);
         this.interval = setInterval(function(){
-            that.eventTarget.dispatchEvent(new TimerEvent("timer"));
+            that.emitter.emit("timer", {} as TimerEvent);
         }, observerInterval)
+        //
         if (this.artifact._env) {
-            this.artifact._eventTarget = null;
             freeWrittenWord(this.artifact._env);
             delete this.artifact._env;
         }
@@ -117,12 +120,12 @@ export class PersistenceObserver {
         }
         // ---- ..... ----------------------------------------------------
         if (h) {
-            this.eventTarget.addEventListener(event, h);            
+            this.emitter.on(event, h);            
         }        
         return h;
     }
     unsubscribe(artifact: Artifact, event: string, key:any) {
-        this.eventTarget.removeEventListener(event, key);
+        this.emitter.removeListener(event, key);
     }
 
     command: ObserverCommand;
@@ -156,14 +159,15 @@ export class PersistenceObserver {
                         dir: delta,
                     }
                 }
-                if (lengthDir(delta) < observerThreshold ||
-                        !tryToPlaceArtifact(artifact, newCoords)) {
-                    if (params["dir"].name != DIR.NONE.name) {
-                        artifact.coords.position.dir = params["dir"];
-                        placeArtifact(artifact, artifact.coords)
-                    }                   
-                    return;
-                }
+                // TODO ACTUAL MOVE PROCESSING
+                // if (lengthDir(delta) < observerThreshold ||
+                //         !tryToPlaceArtifact(artifact, newCoords)) {
+                //     if (params["dir"].name != DIR.NONE.name) {
+                //         artifact.coords.position.dir = params["dir"];
+                //         placeArtifact(artifact, artifact.coords)
+                //     }                   
+                //     return;
+                // }
                 return ObserverCommand.Move;
             }
         }
@@ -172,7 +176,7 @@ export class PersistenceObserver {
 
     attempt() {
         this.free();
-        const texts = []
+        const texts = [];
         for (let i of this.artifact.worlds) {
             texts.push(i.text)
         }
@@ -181,7 +185,7 @@ export class PersistenceObserver {
         const env = initWrittenWord(this, this.artifact.id, text);
         if (env) {
             this.artifact._env = env;
-            this.artifact._eventTarget = this.eventTarget;
+            this.artifact._emitter = this.emitter;
             return this.artifact;
         }
     }

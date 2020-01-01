@@ -1,26 +1,27 @@
 import * as ex from "excalibur";
+
 import { DIR, DIRfrom, COMMAND, visualBounds,
-         worldWidth, universeUpdateFrequency } from "./universe/const";
-import { Dir, Position, Artifact  } from "./universe/interfaces"
-import { updateArtifactPosition } from "./universe/manipulations"
-import { 
-    updateArtifactOnScene
-    } from "./plane"
+         worldWidth } from "../universe/const";
+import { Dir, Position, Artifact  } from "../universe/interfaces"
+import { getArtifact_NextTo } from "../universe/getters"
+import { deepCopy, addDir, cpCoords } from "../universe/utils"
+
+import { updateArtifactOnScene } from "./plane"
+import { PlaneScene } from "./plane"
 import { Game } from "./index"
 import { ArtifactSprite } from "./sprite"
-import { getArtifact_NextTo } from "./universe/getters"
+import { getPlayerDirection, getPlayerCommand } from "./command"
+import { InventoryActor } from "./inventoryActor"
+import { Editor, focusEditor } from "./editor"
+
 import { 
     enterArtifact, leaveWorld, 
     isArtifactPlaceable, placeArtifact,
     pickupArtifact, putdownArtifact,
     pushArtifact,
-    } from "./universe/manipulations"
-import { PlaneScene } from "./plane"
-import { getPlayerDirection, getPlayerCommand } from "./command"
-import { deepCopy, addDir } from "./universe/utils"
-import { cpCoords } from "./universe/utils"
-import { InventoryActor } from "./inventoryActor"
-import { Editor, focusEditor } from "./editor"
+    updateArtifactPosition,
+    } from "./manipulations"
+
 
 /**
  * When player moves through the world, we draw it on the Scene.
@@ -71,33 +72,32 @@ export class ArtifactActor extends InventoryActor {
 
     /**
      * Called before the first actor update.
-     * Initialises event dispatchers.
      */
     onInitialize(engine: Game) {
         super.onInitialize(engine);
-        this.visualiseInventory(engine);
+        //this.visualiseInventory(engine);
     }
 
     /**
      * Visualises the inventory: artifacts that this artifact has picked up.
      * Called internally; don't call it explicitly.
      */
-    visualiseInventory(engine: Game) {
-        if (this.inventory) {
-            this.remove(this.inventory);
-            delete this.inventory;
-        }
-        if (this.artifact.inventory.length > 0) {
-            // create a new artifact
-            this.inventory = new InventoryActor(this.artifact.inventory[0]);
-            this.inventory.pos = new ex.Vector(
-                this.artifact.body.size[0]/2+ 
-                this.inventory.artifact.body.size[0]/2*this.inventory.scale.x,
-                -this.inventory.artifact.body.size[1]/2*this.inventory.scale.y
-                )
-            this.add(this.inventory);
-        }
-    }
+    // visualiseInventory(engine: Game) {
+    //     if (this.inventory) {
+    //         this.remove(this.inventory);
+    //         delete this.inventory;
+    //     }
+    //     if (this.artifact.inventory.length > 0) {
+    //         // create a new artifact
+    //         this.inventory = new InventoryActor(this.artifact.inventory[0]);
+    //         this.inventory.pos = new ex.Vector(
+    //             this.artifact.body.size[0]/2+ 
+    //             this.inventory.artifact.body.size[0]/2*this.inventory.scale.x,
+    //             -this.inventory.artifact.body.size[1]/2*this.inventory.scale.y
+    //             )
+    //         this.add(this.inventory);
+    //     }
+    // }
 
     /**
      * Update an actor from the actions that are happening in the universe.
@@ -108,6 +108,7 @@ export class ArtifactActor extends InventoryActor {
         this.speed = { x:0, y:0 };
         let dir: Dir = deepCopy(DIR.NONE);
         // Player input for direction and speed
+
         if (this.artifact.local) {
             if (this.needRelease && engine.input.keyboard.getKeys().length == 0) {
                 this.needRelease = false;
@@ -115,57 +116,9 @@ export class ArtifactActor extends InventoryActor {
             if (!this.needRelease) {
                 let playerDir = getPlayerDirection(engine);
                 let command = getPlayerCommand(engine);
-                if (command == COMMAND.PUSH && playerDir.name != DIR.NONE.name) {
-                    let item: Artifact = getArtifact_NextTo(this.artifact, playerDir);
-                    if (item && !item.passable && item.pushable) {
-                        if (pushArtifact(item, this.artifact, playerDir)) {
-                            updateArtifactOnScene(this.scene as PlaneScene, item);
-                            dir = addDir(dir, playerDir);                            
-                        }
-                    } else {
-                        command = COMMAND.NONE;
-                    }
-                }
-                if (command == COMMAND.PICKUP) {
-                    let straightDir: Dir = DIRfrom(addDir(dir, playerDir));
-                    let item:Artifact = getArtifact_NextTo(this.artifact, straightDir);
-                    if (item && item.pickable) {
-                        pickupArtifact(this.artifact, item);
-                        if (item.actor) {
-                            this.scene.remove(item.actor)
-                        }
-                        this.needRelease = true;
-                        this.visualiseInventory(engine)
-                    } else if (this.artifact.inventory.length > 0) {
-                        let straightDir: Dir = DIRfrom(playerDir);
-                        let item: Artifact = putdownArtifact(this.artifact, playerDir);
-                        if (item) {
-                            if (item.actor) {
-                                this.scene.add(item.actor)
-                            }
-                            updateArtifactOnScene(this.scene as PlaneScene, item);
-                            this.needRelease = true;
-                            this.visualiseInventory(engine)
-                        }
-                    }
-                }
+                // just MOVE
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
                     dir = addDir(dir, playerDir);
-                }
-                if (command == COMMAND.LEAVE) {
-                    leaveWorld(this.artifact);
-                    engine.switchScene(this.artifact.coords.world)                   
-                }
-                if (command == COMMAND.ENTER) {
-                    let item = getArtifact_NextTo(this.artifact, playerDir);
-                    if (item && !item.locked) {
-                        enterArtifact(this.artifact, item)
-                        engine.switchScene(this.artifact.coords.world)                       
-                    }
-                }
-                if (command == COMMAND.KNEEL) {
-                    engine.stop();
-                    focusEditor(this);
                 }
             }
         }
@@ -178,7 +131,7 @@ export class ArtifactActor extends InventoryActor {
         this.vel.x = dir.x * this.artifact.speed;
         this.vel.y = dir.y * this.artifact.speed;
 
-        // Stay in bounds 
+        // Stay in bounds — TODO: reintroduce on other side
         if (this.pos.y < 0) {
             this.pos.y = 0;
             this.vel.y = 0;
@@ -187,11 +140,10 @@ export class ArtifactActor extends InventoryActor {
             this.pos.x = visualBounds.left;
             this.vel.x = 0;
         }
-        if (this.pos.x > visualBounds.right+worldWidth) {
-            this.pos.x = visualBounds.right+worldWidth;
+        if (this.pos.x > visualBounds.left+worldWidth) { 
+            this.pos.x = visualBounds.left+worldWidth;
             this.vel.x = 0;
-        }
-
+        }        
     }
 
     /**
@@ -207,17 +159,11 @@ export class ArtifactActor extends InventoryActor {
         if (this.artifact.local) {
             this.body.collider.type = ex.CollisionType.Active;
         }
+        // update position and issue commands
         if (this.artifact.local) {
-            // update from local player directly and then communicate to the universe.
-            // check if the last part of update should run for everything.
-            // hint: it shouldn't
-            // hint: I have to validate bounds somewhere
             this.updateFromActions(engine)
-            if ((this.scene as PlaneScene).timeToUpdateUniverse()) {
-                this.updatePositionInUniverse(engine)
-            }
+            this.updatePositionInUniverse(engine)
         } else {
-            // update from universe
             if (this.artifact.coords) {
                 this.body.pos.x = this.artifact.coords.position.x;
                 this.body.pos.y = this.artifact.coords.position.y;
@@ -248,8 +194,70 @@ export class ArtifactActor extends InventoryActor {
             y: this.pos.y,
             dir: this.dir
         }
-        updateArtifactPosition(this.artifact, newPosition)
+        updateArtifactPosition(this.artifact, newPosition);
     }
 
-
 }
+
+
+        // if (this.artifact.local) {
+        //     if (this.needRelease && engine.input.keyboard.getKeys().length == 0) {
+        //         this.needRelease = false;
+        //     }
+        //     if (!this.needRelease) {
+        //         let playerDir = getPlayerDirection(engine);
+        //         let command = getPlayerCommand(engine);
+        //         if (command == COMMAND.PUSH && playerDir.name != DIR.NONE.name) {
+        //             let item: Artifact = getArtifact_NextTo(this.artifact, playerDir);
+        //             if (item && !item.passable && item.pushable) {
+        //                 if (pushArtifact(item, this.artifact, playerDir)) {
+        //                     updateArtifactOnScene(this.scene as PlaneScene, item);
+        //                     dir = addDir(dir, playerDir);                            
+        //                 }
+        //             } else {
+        //                 command = COMMAND.NONE;
+        //             }
+        //         }
+        //         if (command == COMMAND.PICKUP) {
+        //             let straightDir: Dir = DIRfrom(addDir(dir, playerDir));
+        //             let item:Artifact = getArtifact_NextTo(this.artifact, straightDir);
+        //             if (item && item.pickable) {
+        //                 pickupArtifact(this.artifact, item);
+        //                 if (item.actor) {
+        //                     this.scene.remove(item.actor)
+        //                 }
+        //                 this.needRelease = true;
+        //                 this.visualiseInventory(engine)
+        //             } else if (this.artifact.inventory.length > 0) {
+        //                 let straightDir: Dir = DIRfrom(playerDir);
+        //                 let item: Artifact = putdownArtifact(this.artifact, playerDir);
+        //                 if (item) {
+        //                     if (item.actor) {
+        //                         this.scene.add(item.actor)
+        //                     }
+        //                     updateArtifactOnScene(this.scene as PlaneScene, item);
+        //                     this.needRelease = true;
+        //                     this.visualiseInventory(engine)
+        //                 }
+        //             }
+        //         }
+        //         if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
+        //             dir = addDir(dir, playerDir);
+        //         }
+        //         if (command == COMMAND.LEAVE) {
+        //             leaveWorld(this.artifact);
+        //             engine.switchScene(this.artifact.coords.world)                   
+        //         }
+        //         if (command == COMMAND.ENTER) {
+        //             let item = getArtifact_NextTo(this.artifact, playerDir);
+        //             if (item && !item.locked) {
+        //                 enterArtifact(this.artifact, item)
+        //                 engine.switchScene(this.artifact.coords.world)                       
+        //             }
+        //         }
+        //         if (command == COMMAND.KNEEL) {
+        //             engine.stop();
+        //             focusEditor(this);
+        //         }
+        //     }
+        // }

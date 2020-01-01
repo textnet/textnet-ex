@@ -24,9 +24,9 @@ export class Storage {
         return await this.s.removeItem(key);
     }
     async clear() {
-        return await storage.clear();
+        return await this.s.clear();
     }
     async all() {
-        return await storage.values();
+        return await this.s.values();
     }
 }

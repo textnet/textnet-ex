@@ -1,16 +1,13 @@
 import * as jquery from "jquery";
 import * as $ from "jquery";
 import * as ex from "excalibur"
-import { visualBounds, worldWidth } from "./universe/const"
-import { World } from "./universe/interfaces"
-import { Game } from "./index"
-import { ArtifactActor } from "./actor"
-import { PlaneScene } from "./plane"
 import * as ace from "brace"
-import * as luaMode from "brace/mode/lua"
 
-import { updateWorldText } from "./universe/manipulations"
+import { visualBounds, worldWidth } from "../universe/const"
 
+import { Game } from "./game"
+import { GameScene } from "./scene"
+import { ArtifactActor } from "./actors/artifact"
 
 export const FORMATS = ["lua", "markdown", "text" ]
 
@@ -19,16 +16,19 @@ export interface Editor extends ace.Editor {}
 const fontSize      = "15px";
 const prependRows   = 1000;
 const rowHeight     = 16;
+const labelHeight   = 24;
 
-export function updateEditor(scene: PlaneScene) {
-    if (scene.editor.getValue() != scene.world.text) {
-        scene.editor.setValue(scene.world.text,-1) 
+export function updateEditor(scene: GameScene) {
+    if (!scene.editor) return;
+    if (scene.editor.getValue() != scene.worldData.text) {
+        scene.editor.setValue(scene.worldData.text,-1) 
     }
 }
 
 export function focusEditor(actor: ArtifactActor) {
-    updateEditor(actor.scene as PlaneScene);
-    const editor = (actor.scene as PlaneScene).editor;
+    const scene: GameScene = actor.scene as GameScene;
+    updateEditor(scene);
+    const editor = scene.editor;
     // TODO: ser cursor position
     editor.setReadOnly(false);
     editor.setOption("showGutter", true);   
@@ -38,6 +38,7 @@ export function focusEditor(actor: ArtifactActor) {
     $("#editor").css({ opacity: 1 })
     $("#editor").find(".ace_gutter").css({ opacity: 1 })
 }
+
 export function blurEditor(editor) {
     editor.setReadOnly(true);
     editor.blur();
@@ -49,7 +50,7 @@ export function blurEditor(editor) {
     editor.renderer.$cursorLayer.element.style.display = "none"
 }
 
-export function initEditor(engine: Game) {
+export function initEditor(game: Game) {
     for (let format of FORMATS) {
         require('brace/mode/'+format);    
     }
@@ -74,9 +75,7 @@ export function initEditor(engine: Game) {
     editor.getSession().setUseSoftTabs(true);
     function standup(editor: Editor) {
         blurEditor(editor);
-        const world = (engine.currentScene as PlaneScene).world;
-        updateWorldText(world, editor.getValue(), true)
-        engine.start();
+        // todo: send stand=up event
     }
     editor.commands.addCommand({
         name: "textnetStandup",
@@ -90,7 +89,6 @@ export function initEditor(engine: Game) {
         exec: standup,
         readOnly: false
     });
-
     editor.getSession().setMode('ace/mode/markdown');
     editor.setTheme('ace/theme/monokai');
     blurEditor(editor)
@@ -103,7 +101,7 @@ export function customizeEditor() {
         zIndex: 1000,
         width: worldWidth+visualBounds.left+visualBounds.right,
         left: 0,
-        top: 24, // TODO: labelHeight
+        top: labelHeight, 
         bottom: 0,
         position:"absolute"
     })
@@ -116,7 +114,6 @@ export function customizeEditor() {
         position: "absolute",
     })
 }
-
 
 export function adjustEditor(editor: Editor, focus: ex.Vector) {
     let home = visualBounds.height / 2 + visualBounds.margin;

@@ -1,4 +1,3 @@
-import * as ex from 'excalibur';
 import { WrittenEnvironment } from "../written/word"
 
 /**
@@ -145,8 +144,8 @@ export interface Artifact {
     worlds: World[];
     coords?: Coordinates;
 
-    dispatcher?: ex.EventDispatcher;
-    actor?: ex.Actor;
+    actor?: any; // to be used clientside
+    updateTimeout?: any; // to be used clientside
 
     // ex-avatar
     local?: boolean;
@@ -156,7 +155,7 @@ export interface Artifact {
     visits: Record<string,Coordinates>;
     visitsStack: string[];
     _env?: WrittenEnvironment;
-    _eventTarget?: EventTarget;
+    _emitter?: any; // to be used serverside
 
 }
 

@@ -55,7 +55,8 @@ export const COMMAND = {
 /**
  * Events to update the universe are sent not often than this time.
  */
-export const universeUpdateFrequency = 100; // ms
+export const universeUpdateDelay       = 100; // ms
+export const universeUpdateProbability = 1;
 
 /**
  * Event registry: which events are emitted across the universe.

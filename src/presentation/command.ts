@@ -1,8 +1,10 @@
 import * as ex from "excalibur";
+
+import { Dir } from "../universe/interfaces"
+import { DIR, COMMAND } from "../universe/const"
+import { deepCopy } from "../universe/utils"
+
 import { Game } from "./index";
-import { Dir } from "./universe/interfaces"
-import { DIR, COMMAND } from "./universe/const"
-import { deepCopy } from "./universe/utils"
 
 /**
  * Module that interprets input from the player and converts it

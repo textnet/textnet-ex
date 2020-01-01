@@ -3,21 +3,23 @@ import { app, BrowserWindow } from 'electron'
 import { worldWidth, visualBounds } from "../universe/const"
 
 import { Persistence } from "../persistence/persist"
+import { interopSetup } from "../persistence/interop/setup"
+
 
 let mainWindow: Electron.BrowserWindow
 
 const localPersistence     = new Persistence("app/");
 const alternatePersistence = new Persistence("alt/");
 
-async function persistence() {
-    await localPersistence.init()
-    await alternatePersistence.init()
-}
-
 function onReady() {
 
-    // load!
-    persistence().then(() => {
+    // another persistence to test multiplayer.
+    // alternatePersistence.init().then(()=> {
+    // })
+    // local game initialisation!
+    localPersistence.init().then(() => { 
+        interopSetup(localPersistence);
+
         const width  = worldWidth + visualBounds.left + visualBounds.right;
         // const height = visualBounds.height + 2*visualBounds.margin + 24;
         const height = 450;
@@ -29,8 +31,11 @@ function onReady() {
             resizable: false,
             fullscreen: false,
             maximizable: false,
+            webPreferences: {
+                nodeIntegration: true,
+            }
         })
-        // mainWindow.webContents.openDevTools({ mode:"detach" })
+        mainWindow.webContents.openDevTools({ mode:"detach" })
 
         mainWindow.loadFile("dist/index.html")
         mainWindow.on('close', () => app.quit())

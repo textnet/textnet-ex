@@ -34,7 +34,7 @@ export class Repository {
     }
     async load(id) {
         if (!this.cache["id"]) {
-            const data = await this.storage.get(id);
+            const data = await this.storage.get(id); // should we always do that? check.
             const result = await this.fromData(data);
             this.cache["id"] = result;
         }
@@ -56,8 +56,8 @@ export class Repository {
         const everything = await this.storage.all();
         const result = {}
         for (let i in everything) {
-            if (everything[i]["value"]["local"]) {
-                result[everything[i]["key"]] = this.load(everything[i]["value"]["id"]);
+            if (everything[i]["local"]) {
+                result[everything[i]["id"]] = await this.load(everything[i]["id"]);
             }
         }
         return result;
@@ -70,8 +70,9 @@ export class ArtifactRepository extends Repository {
     constructor(persistence: Persistence) {
         super(persistence);
         this.name = "artifacts";
-        this.skip = [ "dispatcher", "actor", "worlds", "_env", "_eventTarget",
-                      "inventory", "player", ];
+        this.skip = [ "dispatcher", "actor", "worlds", "_env", "_emitter",
+                      "inventory", "player", "updateTimeout",
+                      "coords" ];
     }
     async load(id) {
         return await super.load(id) as Artifact;
@@ -82,16 +83,7 @@ export class ArtifactRepository extends Repository {
         // get worlds
         result["worlds"] = {};
         for (let i in data["worlds"]) {
-            const world: World = {
-                id: data["worlds"][i].id,
-                text: data["worlds"][i].text,
-                owner: data["worlds"][i].owner,
-                artifacts: {},
-            }
-            for (let k in data["worlds"][i].artifacts) {
-                world.artifacts[k] = await this.load(data["worlds"][i].artifacts[k]);
-            }
-            result["worlds"][i] = world;
+            result["worlds"][i] = await this.persistence.worlds.load(data["worlds"][i])
         }
         // get inventory
         result["inventory"] = [];
@@ -102,31 +94,70 @@ export class ArtifactRepository extends Repository {
         if (data["player"]) {
             result["player"] = await this.persistence.accounts.load(data["player"])
         }
+        // get coords
+        if (data["coords"]) {
+            result["coords"] = {
+                world: await this.persistence.worlds.load(result["coords"]["world"]),
+                position: deepCopy(result["coords"]["position"])
+            }
+        }
         return result;
     }
 
-    toData(obj) {
+    toData(obj: Artifact) {
         const result = this._copy(obj);
         // console.log("=> _copy result:", result)
+        // worlds
         result["worlds"] = [];
-        for (let i in obj["worlds"]) {
-            let worldData = {
-                owner: obj.id,
-                id: obj["worlds"][i].id,
-                text: obj["worlds"][i].text,
-                artifacts: {}
-            }
-            for (let k in obj["worlds"][i].artifacts) {
-                result["artifacts"][k] = obj["worlds"][i].artifacts[k].id
-            }
-            result["worlds"].push(worldData);
+        for (let i in obj.worlds) {
+            result["worlds"].push( obj.worlds[i].id );
         }
+        // inventory
         result["inventory"] = [];
-        for (let i in obj["inventory"]) {
+        for (let i in obj.inventory) {
             result["inventory"].push( obj.inventory[i].id )
+        }
+        // player
+        if (obj.player) {
+            result["player"] = obj.player.id;
+        }
+        // coords
+        if (obj.coords) {
+            result["coords"] = {
+                world: obj.coords.world.id,
+                position: deepCopy(obj.coords.position)
+            }
         }
         return result;
     }
+}
+
+export class WorldRepository extends Repository {
+    constructor(persistence: Persistence) {
+        super(persistence);
+        this.name = "worlds";
+        this.skip = [ "artifacts", "owner" ];
+    }
+    async load(id) {
+        return await super.load(id) as World;
+    }
+    async fromData(data) {
+        const result = this._copy(data, true);
+        result["owner"] = await this.persistence.artifacts.load(data["owner"])
+        result["artifacts"] = {}
+        for (let k in data["artifacts"])
+            result["artifacts"][k] = await this.persistence.artifacts.load(k);
+        return result;
+    }
+    toData(obj) {
+        const result = this._copy(obj);
+        result["owner"] = obj.owner.id;
+        result["artifacts"] = {}
+        for (let k in obj["artifacts"])
+            result["artifacts"][k] = k;
+        return result;
+    }
+
 }
 
 export class AccountRepository extends Repository {

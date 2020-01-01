@@ -1,11 +1,15 @@
 import * as ex from "excalibur";
+import { ipcRenderer } from "electron";
+
+import { visualBounds, worldWidth } from "../universe/const";
+import { Account, World } from "../universe/interfaces";
+import { getAccountWorld } from "../universe/getters"
+
 import { PlaneScene, setupScene, purgeScene } from "./plane";
-import { visualBounds, worldWidth } from "./universe/const";
-import { Account, World } from "./universe/interfaces";
-import { createAccount } from "./universe/setup";
-import { initSync } from "./networking";
-import { getAccountWorld } from "./universe/getters"
 import { initEditor } from "./editor"
+
+import { interopSetup } from "./interop";
+
 
 /**
  * Main module. 
@@ -35,20 +39,13 @@ export function runGame() {
     const loader = new ex.Loader();
     loader.suppressPlayButton = true;
     game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
-    initSync(game);
     
-    const account = createAccount("Ni", "human_professor");
     const scene = new PlaneScene(game);
-    setupScene(scene, getAccountWorld(account), game)
     game.addScene("world", scene);
     game.goToScene("world");
 
-    game.start(loader).then(() => {
-        console.log("----------------------- :) --------------------");
-    });
+    interopSetup(game);
+    ipcRenderer.send("askToStart")
 }
 
 
-
-// import { test } from "./written/test";
-// test()

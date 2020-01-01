@@ -3,14 +3,14 @@ import {
     Artifact, World, 
     Account,
     defaultsArtifact
-} from "./interfaces"
-import { numerate, cpPosition, cpCoords } from "./utils"
+} from "../universe/interfaces"
+import { numerate, cpPosition, cpCoords } from "../universe/utils"
 import {
     enterWorld,
     placeArtifact
 } from "./manipulations"
-import { spawnPosition, DIR } from "./const"
-import { deepCopy, pushDefaults } from "./utils"
+import { spawnPosition, DIR } from "../universe/const"
+import { deepCopy, pushDefaults } from "../universe/utils"
 /**
  * Temporary module to initialise the universe when
  * there is no permanent storage and no persistence.
@@ -164,7 +164,7 @@ const artifacts = {
 }
 
 
-const startupText = `Startup`;
+const startupText = `Startup 2`;
 
 const backup = `
 
