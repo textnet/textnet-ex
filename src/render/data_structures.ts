@@ -2,6 +2,7 @@ import { Position } from "../universe/interfaces"
 
 
 export interface WorldStructure {
+    id: string;
     ownerId: string;
     name: string;
     text: string;

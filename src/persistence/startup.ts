@@ -1,4 +1,5 @@
-import { Artifact, Account, defaultsArtifact } from "../universe/interfaces"
+import { mundaneWorldName } from "../universe/const"
+import { Artifact, World, Account, defaultsArtifact } from "../universe/interfaces"
 import { generateId, registerAccountId, getAccountId } from "./identity"
 import { deepCopy } from "../universe/utils"
 
@@ -10,10 +11,10 @@ export async function registerAccount(persistence: Persistence) {
     const world = {
         id: generateId(id),
         text: startupText,
-        artifacts: {},
-    }
+        artifactPositions: {},
+    } as World;
     // artifact
-    const artifact = deepCopy(defaultsArtifact);
+    const artifact = deepCopy(defaultsArtifact) as Artifact;
     artifact["id"] = generateId(id);
     artifact["name"] = "Player None";
     artifact["local"] = true;
@@ -27,19 +28,21 @@ export async function registerAccount(persistence: Persistence) {
         size:   [ 30,  20],
         offset: [  5,  15],
     };
-    artifact["worlds"] = [world];
-    artifact["inventory"] = [];
+    artifact["worldIds"] = {
+        mundaneWorldName: world.id,
+    }
+    artifact["inventoryIds"] = [];
     artifact["visits"] = {}
     artifact["visitsStack"] = [ world.id ];
     // account and avatar
     const account = {
         id: id,
         local: true,
-        body: artifact as Artifact,
-    }
+        bodyId: artifact["id"],
+    } as Account;
     // connections
-    artifact["player"] = account;
-    world["owner"] = artifact;
+    artifact.playerId = account.id;
+    world.ownerId = artifact.id;
     // save
     await persistence.artifacts.save(artifact);
     await persistence.accounts.save(account);

@@ -15,3 +15,8 @@ export function updateArtifactPosition(actor: ArtifactActor) {
         position: { x: actor.pos.x, y: actor.pos.y, dir: actor.dir }
     }) 
 }
+
+export function askForPlayer() {
+    ipcRenderer.send("askForPlayer", {});
+}
+

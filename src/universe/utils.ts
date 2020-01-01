@@ -1,4 +1,4 @@
-import { Position, Coordinates, Dir, Artifact } from "./interfaces"
+import { Position, Dir } from "./interfaces"
 import { DIR } from "./const"
 
 /**
@@ -29,19 +29,6 @@ let _num = 0;
  **/
 export function cpPosition(position: Position) {
     return deepCopy(position);
-}
-
-/**
- * Make a copy of a Coordinates object.
- * Can't use `deepcopy`, because we shouldn't copy worlds.
- * @param {Coordinates} coords
- * @returns {Coordinates}
- */
-export function cpCoords(coords: Coordinates) {
-    return {
-        world: coords.world,
-        position: cpPosition(coords.position)
-    } as Coordinates;
 }
 
 

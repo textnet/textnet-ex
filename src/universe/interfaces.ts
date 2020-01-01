@@ -34,14 +34,6 @@ export interface Position {
     dir: Dir;
 }
 
-/**
- * Absolute and definitieve coordinates of an artifact.
- * Include its position and the world it is placed in.
- */
-export interface Coordinates {
-    world: World;
-    position: Position;
-}
 
 /**
  * Structure that describes a user account.
@@ -51,7 +43,7 @@ export interface Account {
     id: string;
     // ex-avatar
     local: boolean;
-    body: Artifact;
+    bodyId: string;
 }
 
 
@@ -65,8 +57,8 @@ export interface Account {
  */
 export interface World {
     id: string;
-    owner: Artifact;
-    artifacts: Record<string,Artifact>;
+    ownerId: string;
+    artifactPositions: Record<string,Position>;
     text: string;
 }
 
@@ -141,21 +133,20 @@ export interface Artifact {
         title: { fg: string, bg: string };
     }
 
-    worlds: World[];
-    coords?: Coordinates;
+    hostId: string; // id
+    worldIds: Record<string, string>;
 
-    actor?: any; // to be used clientside
-    updateTimeout?: any; // to be used clientside
-
-    // ex-avatar
-    local?: boolean;
-    player?: Account;
-    // TODO: proxy/local/etc.
-    inventory: Artifact[];
-    visits: Record<string,Coordinates>;
+    inventoryIds: string[];
+    visits: Record<string,Position>;
     visitsStack: string[];
-    _env?: WrittenEnvironment;
+
+    playerId?: string;
+    
+    _updateTimeout?: any; // to be used clientside
     _emitter?: any; // to be used serverside
+    _local?: boolean;
+
+    // TODO: proxy/local/etc.
 
 }
 

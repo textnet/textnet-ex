@@ -4,6 +4,9 @@ import { Dir, Position } from "./interfaces"
  * Constants used across universe: directioms, commands, events.
  */
 
+
+ export const mundaneWorldName = "mundane";
+
 /**
  * Standard directions (structure matches [[Dir]]).
  */

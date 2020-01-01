@@ -18,8 +18,6 @@ function onReady() {
     // })
     // local game initialisation!
     localPersistence.init().then(() => { 
-        interopSetup(localPersistence);
-
         const width  = worldWidth + visualBounds.left + visualBounds.right;
         // const height = visualBounds.height + 2*visualBounds.margin + 24;
         const height = 450;
@@ -35,13 +33,16 @@ function onReady() {
                 nodeIntegration: true,
             }
         })
+        localPersistence.attachWindow(mainWindow);
         mainWindow.webContents.openDevTools({ mode:"detach" })
-
         mainWindow.loadFile("dist/index.html")
-        mainWindow.on('close', () => app.quit())
     })
+}
 
+function onQuit() {
+    localPersistence.free();
 }
 
 app.on('ready', () => onReady())
 app.on('window-all-closed', () => app.quit())
+app.on("quit", () => onQuit())
