@@ -5,11 +5,12 @@ import { getOwnerId } from "../identity"
 
 import { playerPrepareWorld, playerEnterWorld } from "./player"
 import { placeArtifact } from "./place"
+import { pushFromArtifact } from "./push"
 
 const supportedChannels = [
     // "enter", "leave",
     // "pickup", "putdown",
-    // "push",
+    "push",
     "position",
     // "place", "remove",
 
@@ -35,6 +36,10 @@ export function interopSetup(P: Persistence) {
     
     ipcMain.on("position", (event, args) => {
         placeArtifact(P, args).then(data => {});
+    })
+
+    ipcMain.on("push", (event, args) => {
+        pushFromArtifact(P, args).then(data => {});
     })
 
 }

@@ -11,14 +11,14 @@ import { sendPlaceArtifact, sendInsertArtifact } from "../interop/send"
 export async function place(P: Persistence,
                       artifact: Artifact, world: World, position: Position) {
     await force(P, artifact, world, position);
-    return deepCopy(position);
+    return true;
 }
 
 // fit to the closest available space
 export async function fit(P: Persistence,
                       artifact: Artifact, world: World, position: Position) {
     await force(P, artifact, world, position);
-    return deepCopy(position);
+    return true;
 }
 
 export async function force(P: Persistence,
@@ -30,7 +30,6 @@ export async function force(P: Persistence,
     } else {
         await updateInWorld(P, artifact, world, position);
     }
-    
 }
 
 

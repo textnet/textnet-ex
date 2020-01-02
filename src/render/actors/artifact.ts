@@ -51,14 +51,18 @@ export class ArtifactActor extends BaseActor {
         let dir: Dir = deepCopy(DIR.NONE);
         // Player input for direction and speed
 
-        if (this.artifact.isLocal) {
+        if (this.artifact.isPlayer) {
             if (this.needRelease && engine.input.keyboard.getKeys().length == 0) {
                 this.needRelease = false;
             }
             if (!this.needRelease) {
                 let playerDir = getPlayerDirection(engine);
                 let command   = getPlayerCommand(engine);
-                // just MOVE
+                // MOVE, PUSH
+                if (command == COMMAND.PUSH && playerDir.name != DIR.NONE.name) {
+                    interopSend.push(this, playerDir);
+                    dir = addDir(dir, playerDir);
+                }                
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
                     dir = addDir(dir, playerDir);
                 }

@@ -25,7 +25,7 @@ export function DIRfrom(name: Dir) {
     for (let i in DIR) {
         if (DIR[i].name == name.name) return DIR[i] as Dir;
     }
-    return DIR.NONE;
+    return DIR.NONE as Dir;
 }
 
 /** 

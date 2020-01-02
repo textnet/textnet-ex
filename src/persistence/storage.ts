@@ -5,7 +5,11 @@ export class Storage {
     private kind: string;
     constructor(kind: string) {
         this.kind = kind;
-        this.s = storage.create({ dir: "./.persistence/"+kind });
+        this.s = storage.create({ 
+            dir: "./.persistence/"+kind,
+            stringify: (value, replacer, space) => 
+                       { return JSON.stringify(value, replacer, "  ") },
+        });
     }
     async init() {
         await this.s.init();

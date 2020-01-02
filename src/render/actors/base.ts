@@ -30,6 +30,7 @@ export class BaseActor extends ex.Actor {
                 })
             })
         });
+        console.log(`Adding artifact ${artifactData.name} to scene`, artifactData);
         this.artifact = artifactData;
         this.sprite = sprite;
     }
