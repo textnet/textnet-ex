@@ -12,6 +12,16 @@ export interface PushEvent {
     artifactId: string;
     direction: Dir;
 }
+export interface PickupEvent {
+    artifactId: string;
+    direction: Dir;
+}
+
+export interface InventoryEvent {
+    artifactId: string;
+    inventoryStructure?: ArtifactStructure;
+}
+
 
 export interface EnterEvent {
     artifactStructure: ArtifactStructure;
@@ -21,3 +31,4 @@ export interface EnterEvent {
 export interface LeaveEvent {
     artifactId: string;
 }
+

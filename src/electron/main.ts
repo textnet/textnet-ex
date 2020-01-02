@@ -40,7 +40,7 @@ function onReady() {
 }
 
 function onQuit() {
-    localPersistence.free();
+    localPersistence.free()
 }
 
 app.on('ready', () => onReady())

@@ -5,7 +5,7 @@ import { deepCopy } from "../../universe/utils"
 import { Artifact, World, Position } from "../../universe/interfaces"
 import { Persistence } from "../persist"
 
-import { sendPlaceArtifact, sendInsertArtifact } from "../interop/send"
+import { sendPlaceArtifact, sendInsertArtifact, sendRemoveArtifact } from "../interop/send"
 
 // fit if there is space
 export async function place(P: Persistence,
@@ -25,7 +25,7 @@ export async function force(P: Persistence,
                       artifact: Artifact, world: World, position: Position) {
     let prevWorldId;
     if (!artifact.hostId || artifact.hostId != world.id) {
-        removeFromWorld(P, artifact, world);
+        await removeFromWorld(P, artifact, world);
         await insertIntoWorld(P, artifact, world, position);
     } else {
         await updateInWorld(P, artifact, world, position);
@@ -40,11 +40,12 @@ export async function removeFromWorld(P: Persistence, artifact: Artifact, world:
         delete hostWorld.artifactPositions[ artifact.id ];
         await P.worlds.save(hostWorld);
     }
-    delete world.artifactPositions[ artifact.id ];
+    delete world.artifactPositions[ artifact.id ];    
     artifact.hostId = null;
     await P.worlds.save(world);
     await P.artifacts.save(artifact);
     // sent event to renderer
+    await sendRemoveArtifact(P, artifact);
 }
 
 // technical, don't use directly

@@ -1,7 +1,7 @@
 import { ipcRenderer } from "electron";
 
 
-import { PositionEvent, PushEvent } from "./events";
+import { PositionEvent, PushEvent, PickupEvent } from "./events";
 import { ArtifactActor } from "../actors/artifact";
 import { Position, Dir } from "../../universe/interfaces"
 
@@ -21,10 +21,16 @@ export function askForPlayer() {
     ipcRenderer.send("askForPlayer", {});
 }
 
-
 export function push(actor: ArtifactActor, dir: Dir) {
     ipcRenderer.send("push", {
         artifactId: actor.artifact.id,
         direction: dir
     } as PushEvent) 
+}
+
+export function pickup(actor: ArtifactActor, dir: Dir) {
+    ipcRenderer.send("pickup", {
+        artifactId: actor.artifact.id,
+        direction: dir
+    } as PickupEvent) 
 }

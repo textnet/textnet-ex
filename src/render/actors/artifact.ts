@@ -63,6 +63,10 @@ export class ArtifactActor extends BaseActor {
                     interopSend.push(this, playerDir);
                     dir = addDir(dir, playerDir);
                 }                
+                if (command == COMMAND.PICKUP) {
+                    interopSend.pickup(this, playerDir);
+                    this.needRelease = true;
+                }
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
                     dir = addDir(dir, playerDir);
                 }

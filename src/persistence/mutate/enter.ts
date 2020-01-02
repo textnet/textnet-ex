@@ -1,6 +1,7 @@
 
 import { Persistence } from "../persist"
 import { fit, removeFromWorld } from "./place"
+import { sendTopInventory } from "../interop/send";
 
 import { spawnPosition } from "../../universe/const"
 import { Position, Artifact, World } from "../../universe/interfaces"
@@ -16,6 +17,7 @@ export async function enterWorld(P: Persistence, artifact: Artifact, world: Worl
     await P.artifacts.save(artifact);
     // fit to the closest available place (always possible)
     await fit(P, artifact, world, artifact.visits[ world.id ]);
+    await sendTopInventory(P, artifact);
 }
 
 export async function leaveWorld(P: Persistence, artifact: Artifact, world: World, 
@@ -30,7 +32,6 @@ export async function leaveWorld(P: Persistence, artifact: Artifact, world: Worl
         artifact.visits[world.id] = position;
         await P.artifacts.save(artifact);
         // adjust world
-        removeFromWorld(P, artifact, world);
-//        await removeFromWorld(P, arr)
+        await removeFromWorld(P, artifact, world);
     }
 }

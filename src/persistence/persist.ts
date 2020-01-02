@@ -70,13 +70,15 @@ export class Persistence {
 
     async free() {
         // account
+        console.log("FREE PERSISTENCE!")
+        this.window = null;
         const accountBody = await this.artifacts.load(this.account.bodyId);
         const worldId = accountBody.hostId;
         const world: World = await this.worlds.load(worldId);
         await mutateEnter.leaveWorld(this, accountBody, world, false);
         // observers
         for (let id in this.observers) {
-            this.observers[id].free();
+            await this.observers[id].free();
         }
     }
 }
