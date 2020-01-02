@@ -1,3 +1,4 @@
+.persistence/
 apps/
 node_modules/
 dist

@@ -19,14 +19,16 @@ export async function enterWorld(P: Persistence, artifact: Artifact, world: Worl
 }
 
 export async function leaveWorld(P: Persistence, artifact: Artifact, world: World, 
-                                 saveHistory: boolean) {
+                                 goUp: boolean) {
     if (artifact.visitsStack.length > 1 
         && world.id == artifact.visitsStack[artifact.visitsStack.length-1]) {
         // adjust artifact
-        if (saveHistory) {
+        if (goUp) {
             artifact.visitsStack.pop();
-            await P.artifacts.save(artifact);
         }
+        const position = world.artifactPositions[artifact.id];
+        artifact.visits[world.id] = position;
+        await P.artifacts.save(artifact);
         // adjust world
         removeFromWorld(P, artifact, world);
 //        await removeFromWorld(P, arr)
