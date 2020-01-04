@@ -52,7 +52,7 @@ export function prepareWorld(game: Game, params) {
     title.add(text);
     scene.add(title);
     // editor
-    if (!scene.editor) scene.editor = initEditor(game);
+    scene.editor = game.editor;
     updateEditor(scene);    
     // // resume
     game.start();

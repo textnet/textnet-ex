@@ -5,6 +5,7 @@ import { visualBounds, worldWidth } from "../universe/const";
 
 import { interopSetup } from "./interop/setup"
 import { GameScene } from "./scene"
+import { Editor, initEditor } from "./editor"
 import * as interopSend from "./interop/send"
 
 
@@ -18,6 +19,7 @@ import * as interopSend from "./interop/send"
 const gameSceneName = "world";
 
 export class Game extends ex.Engine {
+    editor?: Editor;
     syncDispatcher: ex.EventDispatcher;
     constructor() {
         super({
@@ -39,6 +41,8 @@ export function runGame() {
     loader.suppressPlayButton = true;
     game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
     
+    game.editor = initEditor(game);
+ 
     interopSetup(game);
     interopSend.askForWorldLocal();
 }

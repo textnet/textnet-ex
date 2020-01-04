@@ -27,22 +27,8 @@ This is an Excalibur+Electron prototype of the TXT NET.
 
 
 # THIS ITERATION
-+ Persistence storage for accounts and artifacts
-+ Move setup to persistence
-- Event handling with no dependencies on Excalibur
-    + remove all ex.Events
-    + make sure there is no dependencies in Universe on ex
-    + research interop
-    + move all presentation to presentation, including manipulations
-    + emit interop events from manipulations
-    - fix things back
-        + moving
-        + collisions
-        + pushing
-        + pickup/putdown
-        - enter/leave
-            - show inventory after enter w/pickup
-            - enter->enter losing target world
+- return editor to its state: scrolling with text.
+
 
 # NEXT ITERATION
 - Make Written Word work again

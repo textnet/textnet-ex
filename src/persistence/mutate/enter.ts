@@ -31,7 +31,8 @@ export async function disconnect(P: Persistence, artifact: Artifact, world: Worl
 
 export async function leaveWorld(P: Persistence, artifact: Artifact, world: World, 
                                  disconnect?: boolean) {
-    console.log(`Leave world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`, goUp);
+    console.log(`Leave world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
+    if (disconnect) console.log("--- disconnect.")
     if (disconnect 
         || (artifact.visitsStack.length > 1 
            && world.id == artifact.visitsStack[artifact.visitsStack.length-1])) {

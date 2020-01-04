@@ -6,7 +6,7 @@ import { visualBounds } from "../universe/const"
 import { ArtifactActor  } from "./actors/artifact";
 import { InventoryActor } from "./actors/inventory";
 import { Game } from "./game"
-import { Editor } from "./editor"
+import { Editor, adjustEditor } from "./editor"
 
 export class GameScene extends ex.Scene {
     editor?: Editor;
@@ -47,6 +47,7 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
         if (diff < -this.radius) {
             focus = focus.add(new ex.Vector(0, diff + this.radius));
         }
+        adjustEditor((target.scene as GameScene).editor, focus)
         return focus;
     }
 }

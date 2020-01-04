@@ -28,7 +28,6 @@ export function positionArtifact(game: Game, event: PositionEvent) {
 export function repositionCamera(game: Game, actor: BaseActor) {
     var scene = game.gameScene();
     if (actor.artifact.isPlayer && !scene.hasCamera) {
-        console.log("setup camera")
         scene.hasCamera = true;
         scene.camera.clearAllStrategies();
         scene.camera.addStrategy(
