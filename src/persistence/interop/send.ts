@@ -7,7 +7,8 @@ import { Persistence } from "../persist"
 
 import { structureFromAccount, structureFromArtifact, structureFromWorld } from "./structures"
 
-import { PositionEvent, EnterEvent, LeaveEvent, InventoryEvent } from "../../render/interop/events"
+import { PositionEvent, EnterEvent, LeaveEvent, 
+         InventoryEvent, TextEvent } from "../../render/interop/events"
 import { ArtifactStructure } from "../../render/data_structures"
 
 import { Artifact, World, Position } from "../../universe/interfaces"
@@ -77,4 +78,14 @@ export async function sendEmptyInventory(P: Persistence, artifact: Artifact) {
     }
     if (P.window) P.window.webContents.send('inventory', event);
 }
+
+export async function sendText(P: Persistence, world: World) {
+    console.log(`INTEROP: text`);
+    const event: TextEvent = {
+        worldId: world.id,
+        text: world.text
+    }
+    if (P.window) P.window.webContents.send('text', event);
+}
+
 

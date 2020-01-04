@@ -24,6 +24,11 @@ export interface StandEvent {
     position: Position;
 }
 
+export interface TextEvent {
+    worldId: string;
+    text: string;
+}
+
 export interface GotoEvent {
     artifactId: string;
     worldName?: string;

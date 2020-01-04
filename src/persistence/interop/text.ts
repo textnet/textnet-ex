@@ -17,7 +17,7 @@ export async function standArtifact(P: Persistence, event: StandEvent) {
 
     // 1. update world
     if (world.text != text) {
-        await mutateWorld.updateText(P, world, world.text);
+        await mutateWorld.updateText(P, world, text);
     }
     // 2. fit artifact
     if (position) {

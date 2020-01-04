@@ -2,10 +2,10 @@ import { ipcRenderer } from "electron";
 
 import { Game } from "../game"
 
-import { prepareWorld     } from "./world"
-import { positionArtifact } from "./position"
+import { prepareWorld, updateText     } from "./world"
+import { positionArtifact             } from "./position"
 import { enterArtifact, leaveArtifact } from "./enter"
-import { inventoryArtifact } from "./inventory"
+import { inventoryArtifact                } from "./inventory"
 
 
 export function interopSetup(game: Game) {
@@ -18,6 +18,7 @@ export function interopSetup(game: Game) {
     ipcRenderer.on("enter",    (event, args) => { enterArtifact(game, args) });
     ipcRenderer.on("leave",    (event, args) => { leaveArtifact(game, args) });
     ipcRenderer.on("inventory",(event, args) => { inventoryArtifact(game, args) });
+    ipcRenderer.on("text",     (event, args) => { updateText(game, args) });
 
 }
 

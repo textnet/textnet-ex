@@ -36,6 +36,7 @@ export function adjustEditor(editor: Editor, focus: ex.Vector) {
     let camera = focus.y;
     let distance = camera-home;
     distance += visualBounds.margin;
+    if (distance < 0) distance = 0;
     if (distance - editor["renderer"].getScrollTop() != 0) {
         editor["renderer"].scrollToY(distance)
     }
@@ -67,7 +68,7 @@ export function focusEditor(actor: ArtifactActor) {
     editor.playerActor = actor;
     editor.setReadOnly(false);
     editor.setOption("showGutter", true);
-    editor.renderer["$cursorLayer"].element.style.display = "block"
+    editor.renderer["$cursorLayer"].element.style.visibility = "visible"
     editor.focus();
     $("canvas").css({  opacity: 0.2 })
     $("#editor").css({ opacity: 1 })
@@ -83,7 +84,7 @@ export function blurEditor(editor) {
         width: worldWidth+visualBounds.left+visualBounds.right, 
     })
     $("#editor").find(".ace_gutter").css({ opacity: 0 })
-    editor.renderer.$cursorLayer.element.style.display = "none"
+    editor.renderer.$cursorLayer.element.style.visibility = "hidden"
 }
 
 export function initEditor(game: Game) {
@@ -105,6 +106,7 @@ export function initEditor(game: Game) {
     editor.setOption("printMargin", false);
     editor.setOption("fixedWidthGutter", true);
     editor.setOption("highlightActiveLine", false);
+    editor.setOption("minLines", 10);
     editor.container.style.lineHeight = lineHeight+"px";
 
     editor.getSession().setUseWrapMode(true);

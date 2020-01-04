@@ -9,7 +9,7 @@ import { ArtifactActor } from "../actors/artifact"
 import { initEditor, updateEditor } from "../editor"
 
 import { askForPlayer, askForWorldLocal } from "./send"
-import { InventoryEvent } from "./events"
+import { InventoryEvent, TextEvent } from "./events"
 import { inventoryArtifact } from "./inventory";
 
 import { WorldStructure, AccountStructure, ArtifactStructure } from "../data_structures"
@@ -53,9 +53,19 @@ export function prepareWorld(game: Game, params) {
     scene.add(title);
     // editor
     scene.editor = game.editor;
-    updateEditor(scene);    
+    updateEditor(scene);
     // // resume
     game.start();
     // ask for player!
     askForPlayer();
+}
+
+
+export function updateText(game: Game, event: TextEvent) {
+    var scene = game.gameScene();
+    if (scene.worldData.id == event.worldId) {
+        console.log("updating text...")
+        scene.worldData.text = event.text;
+        updateEditor(scene);       
+    }
 }
