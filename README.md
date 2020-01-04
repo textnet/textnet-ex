@@ -69,7 +69,6 @@ Then here are options:
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
-- Write documentation on 1) Universe and 2) Written Word
 - excessive position submit (e.g. pickup)
 - Apple Developer certificate
 - another session of documentation
