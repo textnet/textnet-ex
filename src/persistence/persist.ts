@@ -52,7 +52,9 @@ export class Persistence {
         
         // get account or create one if there is none.
         let localId = await this.config.get("localId");
-        if (!localId) {
+        console.log(await this.config.all())
+        if (localId == undefined) {
+            console.log("reinstall")
             const account = await registerAccount(this);
             await this.config.set("localId", account.id);
             localId = account.id;
@@ -74,7 +76,7 @@ export class Persistence {
         const accountBody = await this.artifacts.load(this.account.bodyId);
         const worldId = accountBody.hostId;
         const world: World = await this.worlds.load(worldId);
-        await mutateEnter.leaveWorld(this, accountBody, world, false);
+        await mutateEnter.disconnect(this, accountBody, world);
         // observers
         for (let id in this.observers) {
             await this.observers[id].free();

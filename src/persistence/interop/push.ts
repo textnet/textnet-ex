@@ -14,12 +14,14 @@ export async function pushFromArtifact(P: Persistence, event: PushEvent) {
     if (!artifact.hostId) return false;
     const hostWorld = await P.worlds.load(artifact.hostId);
 
+    let success = false;
     const candidate = await getArtifact_NextTo(P, artifact, direction) as Artifact;
     if (candidate && candidate.pushable ) {
         const newPos = await artifactPos(P, candidate);
         const pushStrength = artifact.power / candidate.weight * 2;
         newPos.x += direction.x * pushStrength;
         newPos.y += direction.y * pushStrength;
-        const success = await mutatePlace.place(P, candidate, hostWorld, newPos);
+        success = await mutatePlace.place(P, candidate, hostWorld, newPos);
     }
+    return success
 }

@@ -1,7 +1,7 @@
 
 import { Persistence } from "../persist"
 import { Dir, Position, Artifact, World } from "../../universe/interfaces"
-import { DIR } from "../../universe/const"
+import { DIR, visualBounds, worldWidth } from "../../universe/const"
 import { deepCopy } from "../../universe/utils"
 /**
  * How far artifacts should be to be considered 'next to each other'.
@@ -28,6 +28,14 @@ export async function getArtifact_NextTo(P: Persistence, artifact: Artifact, dir
         }
     }
     return;
+}
+
+export function isInBounds(pos: Position, body?: number[]) {
+    if (pos.x < 0) return false;
+    if (pos.y < 0) return false;
+    if (!body) body = [0,0];
+    if (pos.x+body[0] >= visualBounds.left+worldWidth) return false;
+    return true;
 }
 
 export async function isNext(P: Persistence, a: Artifact, b: Artifact, dir: Dir) {
@@ -59,6 +67,19 @@ export async function isNext(P: Persistence, a: Artifact, b: Artifact, dir: Dir)
     return (distance >= -PROXIMITY && distance <= PROXIMITY);
 }
 
+export async function isPlaceable(P: Persistence, artifact: Artifact, 
+                    world: World, pos: Position) {
+    for (let id in world.artifactPositions) {
+        if (id != artifact.id) {
+            const another = await P.artifacts.load(id);
+            if (await isOverlap(P, artifact, another, pos)) {
+                return false;
+            }
+        }
+    }
+    return true
+}
+
 export async function isOverlap(P: Persistence, a: Artifact, b: Artifact, pos?: Position) {
     let aBox = await artifactBox(P, a, pos);
     let bBox = await artifactBox(P, b);
@@ -67,9 +88,12 @@ export async function isOverlap(P: Persistence, a: Artifact, b: Artifact, pos?: 
         bBox = deepCopy(aBox);
         aBox = cBox;
     }
+    // console.log("Box A:", a.name, aBox[0], aBox[1], aBox[2], aBox[3]);
+    // console.log("Box B:", b.name, bBox[0], bBox[1], bBox[2], bBox[3]);
     if (aBox[2] <= bBox[0]) return false;
     if (aBox[1] <= bBox[1] && aBox[3] <= bBox[1]) return false;
     if (aBox[1] >= bBox[3] && aBox[3] >= bBox[3]) return false;
+    // console.log("-- overlap --")
     return true;
 }
 

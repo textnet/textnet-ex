@@ -28,15 +28,19 @@ This is an Excalibur+Electron prototype of the TXT NET.
 
 # THIS ITERATION
 + return editor to its state: scrolling with text.
-- kneel
-- stand up
-- sync position
-    - on kneel: actor  -> cursor
-    - on stand: cursor -> actor
++ kneel
++ stand up
++ sync position
+    + on kneel: actor  -> cursor
+    + on stand: cursor -> actor
++ Collisions
+    + can't push
+    + can't place
+    ? fit (implemented, not tested)
++ check saves are working
 
 
 # NEXT ITERATION
-- Collisions (FIT)
 - Make Written Word work again
 
 
