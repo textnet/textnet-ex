@@ -8,27 +8,32 @@ import { GameScene } from "../scene"
 import { ArtifactActor } from "../actors/artifact"
 import { initEditor, updateEditor } from "../editor"
 
-import { askForPlayer } from "./send"
+import { askForPlayer, askForWorldLocal } from "./send"
+import { InventoryEvent } from "./events"
+import { inventoryArtifact } from "./inventory";
 
 import { WorldStructure, AccountStructure, ArtifactStructure } from "../data_structures"
 
 export function prepareWorld(game: Game, params) {
-    const scene = game.gameScene();
+    const oldScene = game.gameScene();
+    if (oldScene) game.removeScene(oldScene);
+    const scene = new GameScene(game);
+    game.addScene(game.gameSceneName(), scene);
+    game.goToScene(game.gameSceneName())
+
     const worldData:   WorldStructure      = params["world"];
     const accountData: AccountStructure    = params["account"];
     const artifacts:   ArtifactStructure[] = params["artifacts"];
+    const inventoryEvents: InventoryEvent[] = params["inventoryEvents"]
     scene.worldData = worldData;
-    // stop game
-    game.stop();
-    // setup scene
-    for (let a of scene.actors) {
-        scene.remove(a);
-    }
     for (let i in artifacts) {
         let actor = new ArtifactActor(artifacts[i]);
         scene.add(actor);
     }
-    // create the label
+    for (let event of inventoryEvents) {
+        inventoryArtifact(game, event)
+    }
+    // // create the label
     let titleHeight = 24;
     let labelHeight = 16;
     let title = new ex.UIActor();
@@ -49,8 +54,7 @@ export function prepareWorld(game: Game, params) {
     // editor
     if (!scene.editor) scene.editor = initEditor(game);
     updateEditor(scene);    
-    // resume
-    game.goToScene(game.gameSceneName())
+    // // resume
     game.start();
     // ask for player!
     askForPlayer();

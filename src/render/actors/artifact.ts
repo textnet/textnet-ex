@@ -64,11 +64,20 @@ export class ArtifactActor extends BaseActor {
                     dir = addDir(dir, playerDir);
                 }                
                 if (command == COMMAND.PICKUP) {
-                    interopSend.pickup(this, playerDir);
                     this.needRelease = true;
+                    interopSend.pickup(this, playerDir);
                 }
                 if (command == COMMAND.NONE && playerDir.name != DIR.NONE.name) {
+                    // this.needRelease = true;
                     dir = addDir(dir, playerDir);
+                }
+                if (command == COMMAND.LEAVE) {
+                    this.needRelease = true;
+                    interopSend.leave(this);
+                }
+                if (command == COMMAND.ENTER && playerDir.name != DIR.NONE.name) {
+                    this.needRelease = true;
+                    interopSend.goto(this, playerDir);
                 }
             }
         }
@@ -80,7 +89,6 @@ export class ArtifactActor extends BaseActor {
         // Adjust velocity
         this.vel.x = dir.x * this.artifact.speed;
         this.vel.y = dir.y * this.artifact.speed;
-      
     }
 
     checkBounds() {

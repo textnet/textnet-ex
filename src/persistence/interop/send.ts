@@ -24,18 +24,28 @@ export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, posi
 }
 
 export async function sendInsertArtifact(P: Persistence, artifact: Artifact, position: Position) {
-    console.log(`INTEROP: position(insertArtifact)`, artifact.name, position)
+    const world = await P.worlds.load(artifact.hostId);
+    const worldOwner = await P.artifacts.load(world.ownerId);
+    console.log(`INTEROP: position(insertArtifact)`, artifact.name, "to", worldOwner.name, "at", position)
     const structure = await structureFromArtifact(P, artifact);
     const event: EnterEvent = {
         artifactStructure: structure,
+        worldId: artifact.hostId,
         position:   deepCopy(position)
     }
+    if (artifact.inventoryIds.length > 0) {
+        const inventoryId = artifact.inventoryIds[ artifact.inventoryIds.length-1 ];
+        const inventoryArtifact  = await P.artifacts.load(inventoryId);
+        const inventoryStructure = await structureFromArtifact(P, inventoryArtifact, world);
+        event.inventoryStructure = inventoryStructure;
+    }        
     if (P.window) P.window.webContents.send('enter', event);
 }
 
-export async function sendRemoveArtifact(P: Persistence, artifact: Artifact) {
+export async function sendRemoveArtifact(P: Persistence, artifact: Artifact, world: World) {
     console.log(`INTEROP: leave`, artifact.name)
     const event: LeaveEvent = {
+        worldId: world.id,
         artifactId: artifact.id
     }
     if (P.window) P.window.webContents.send('leave', event);
@@ -67,3 +77,4 @@ export async function sendEmptyInventory(P: Persistence, artifact: Artifact) {
     }
     if (P.window) P.window.webContents.send('inventory', event);
 }
+

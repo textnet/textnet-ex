@@ -1,7 +1,7 @@
 import { ipcRenderer } from "electron";
 
 
-import { PositionEvent, PushEvent, PickupEvent } from "./events";
+import { PositionEvent, PushEvent, PickupEvent, GotoEvent, LeaveEvent } from "./events";
 import { ArtifactActor } from "../actors/artifact";
 import { Position, Dir } from "../../universe/interfaces"
 
@@ -15,6 +15,10 @@ export function updateArtifactPosition(actor: ArtifactActor) {
         artifactId: actor.artifact.id,
         position: { x: actor.pos.x, y: actor.pos.y, dir: actor.dir }
     } as PositionEvent) 
+}
+
+export function askForWorldLocal() {
+    ipcRenderer.send("askForWorld", {});
 }
 
 export function askForPlayer() {
@@ -33,4 +37,17 @@ export function pickup(actor: ArtifactActor, dir: Dir) {
         artifactId: actor.artifact.id,
         direction: dir
     } as PickupEvent) 
+}
+
+export function goto(actor: ArtifactActor, dir: Dir) {
+    ipcRenderer.send("goto", {
+        artifactId: actor.artifact.id,
+        direction: dir
+    } as GotoEvent) 
+}
+
+export function leave(actor: ArtifactActor) {
+    ipcRenderer.send("leave", {
+        artifactId: actor.artifact.id,
+    } as LeaveEvent) 
 }

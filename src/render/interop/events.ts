@@ -12,8 +12,15 @@ export interface PushEvent {
     artifactId: string;
     direction: Dir;
 }
+
 export interface PickupEvent {
     artifactId: string;
+    direction: Dir;
+}
+
+export interface GotoEvent {
+    artifactId: string;
+    worldName?: string;
     direction: Dir;
 }
 
@@ -22,13 +29,15 @@ export interface InventoryEvent {
     inventoryStructure?: ArtifactStructure;
 }
 
-
 export interface EnterEvent {
     artifactStructure: ArtifactStructure;
+    inventoryStructure?: ArtifactStructure;
+    worldId: string;
     position: Position;    
 }
 
 export interface LeaveEvent {
     artifactId: string;
+    worldId: string;
 }
 

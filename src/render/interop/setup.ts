@@ -11,7 +11,7 @@ import { inventoryArtifact } from "./inventory"
 export function interopSetup(game: Game) {
 
     // preparing new world to render
-    ipcRenderer.on("world", (event, args) => { prepareWorld(game, args) });
+    ipcRenderer.on("world", (event, args)    => { prepareWorld(game, args) });
 
     // artifacts are moving, entering world, leaving it
     ipcRenderer.on("position", (event, args) => { positionArtifact(game, args) });

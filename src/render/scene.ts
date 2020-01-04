@@ -2,6 +2,7 @@ import * as jquery from "jquery";
 import * as ex from "excalibur";
 
 import { WorldStructure, ArtifactStructure } from "./data_structures"
+import { visualBounds } from "../universe/const"
 import { ArtifactActor  } from "./actors/artifact";
 import { InventoryActor } from "./actors/inventory";
 import { Game } from "./game"
@@ -9,6 +10,7 @@ import { Editor } from "./editor"
 
 export class GameScene extends ex.Scene {
     editor?: Editor;
+    hasCamera?: boolean;
     worldData?: WorldStructure;
     artifacts?: Record<string, ArtifactStructure>;
 
@@ -37,6 +39,7 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
     ) {
         const position = target.center;
         let focus = cam.getFocus();
+        focus.y = visualBounds.height/2;
         const diff = position.y - focus.y;
         if (diff > this.radius) {
             focus = focus.add(new ex.Vector(0, diff - this.radius));

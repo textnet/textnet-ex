@@ -2,14 +2,17 @@ const path = require('path')
 
 const modeConfig = env => require(`./build-utils/webpack.${env}`)(env);
 
+const CopyPlugin = require('copy-webpack-plugin');
+
 const baseConfig = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js'
   },
-  externals: [
-      'fsevents',
-    ],  
+  externals: {
+      fsevents: 'fsevents',
+      "better-sqlite3": "commonjs better-sqlite3",
+    },
   module: {
     rules: [
       {
@@ -42,7 +45,9 @@ module.exports = [
   Object.assign(
     {
       target: 'electron-main',
-      entry: { main: './src/electron/main.ts' }
+      entry: { main: './src/electron/main.ts' },
+      plugins: [
+      ]
     },
     commonConfig),
   Object.assign(

@@ -5,6 +5,8 @@ import { visualBounds, worldWidth } from "../universe/const";
 
 import { interopSetup } from "./interop/setup"
 import { GameScene } from "./scene"
+import * as interopSend from "./interop/send"
+
 
 
 /**
@@ -37,11 +39,8 @@ export function runGame() {
     loader.suppressPlayButton = true;
     game.backgroundColor = ex.Color.fromRGB(0,0,0,0)
     
-    const scene = new GameScene(game);
-    game.addScene(game.gameSceneName(), scene);
-
     interopSetup(game);
-    ipcRenderer.send("askToStart")
+    interopSend.askForWorldLocal();
 }
 
 

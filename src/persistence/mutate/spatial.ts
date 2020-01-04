@@ -33,9 +33,9 @@ export async function getArtifact_NextTo(P: Persistence, artifact: Artifact, dir
 export async function isNext(P: Persistence, a: Artifact, b: Artifact, dir: Dir) {
     let aBox = await artifactBox(P, a);
     let bBox = await artifactBox(P, b);
-    console.log(dir)
-    console.log("Box A:", a.name, aBox[0], aBox[1], aBox[2], aBox[3]);
-    console.log("Box B:", b.name, bBox[0], bBox[1], bBox[2], bBox[3]);
+    // console.log("IsNext:", dir)
+    // console.log("Box A:", a.name, aBox[0], aBox[1], aBox[2], aBox[3]);
+    // console.log("Box B:", b.name, bBox[0], bBox[1], bBox[2], bBox[3]);
     // check the overlap
     let overlapX = false, overlapY = false;
     if ((aBox[0] >= bBox[0] && aBox[0] < bBox[2]) ||
@@ -49,12 +49,12 @@ export async function isNext(P: Persistence, a: Artifact, b: Artifact, dir: Dir)
     if (overlapY) {
         if (dir.name == DIR.LEFT.name)  distance = aBox[0]-bBox[2];
         if (dir.name == DIR.RIGHT.name) distance = bBox[0]-aBox[2];
-        console.log("overlapY", distance, dir.name)
+        // console.log("overlapY", distance, dir.name)
     }
     if (overlapX) {
         if (dir.name == DIR.UP.name)   distance = aBox[1]-bBox[3];
         if (dir.name == DIR.DOWN.name) distance = bBox[1]-aBox[3];
-        console.log("overlapX", distance, dir.name)
+        // console.log("overlapX", distance, dir.name)
     }
     return (distance >= -PROXIMITY && distance <= PROXIMITY);
 }

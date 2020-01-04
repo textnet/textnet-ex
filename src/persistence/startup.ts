@@ -1,22 +1,17 @@
 import { mundaneWorldName } from "../universe/const"
 import { Artifact, World, Account, defaultsArtifact } from "../universe/interfaces"
-import { generateId, registerAccountId, getAccountId } from "./identity"
+import { generateId, registerAccountId } from "./identity"
 import { deepCopy , pushDefaults} from "../universe/utils"
 import { DIR } from "../universe/const"
 
 import { Persistence } from "./persist"
 
-export async function registerAccount(persistence: Persistence) {
+export async function registerAccount(P: Persistence) {
     const id = registerAccountId()
-    // world
-    const world = {
-        id: generateId(id),
-        text: startupText,
-        artifactPositions: {},
-    } as World;
     // player artifact
-    const artifact = createArtifact(id, null, "Player None", "human_professor");
-    artifact["visitsStack"] = [ world.id ];
+    const artifact = await createArtifact(P, id, null, "P1", "human_professor", startupText);
+    const hostWorld = await P.worlds.load(artifact.hostId);
+    artifact.hostId = null;
     // account and avatar
     const account = {
         id: id,
@@ -25,30 +20,43 @@ export async function registerAccount(persistence: Persistence) {
     } as Account;
     // connections
     artifact.playerId = account.id;
-    world.ownerId = artifact.id;
     // ------ chairs ---------
-    const chair1 = createArtifact(id, world.id, "Chair 1", "chair");
-    const chair2 = createArtifact(id, world.id, "Chair 2", "chair");
-    world.artifactPositions[chair1.id] = { x: 370, y: 50, dir: DIR.DOWN } 
-    // world.artifactPositions[chair2.id] = { x: 200, y: 100, dir: DIR.DOWN }
-    await persistence.artifacts.save(chair1);
-    // await persistence.artifacts.save(chair2);
+    const chair1 = await createArtifact(P, id, hostWorld.id, "Chair 1", "chair", "");
+    const chair2 = await createArtifact(P, id, hostWorld.id, "Chair 2", "chair", "");
+    hostWorld.artifactPositions[chair1.id] = { x: 370, y: 50, dir: DIR.DOWN } 
+    hostWorld.artifactPositions[chair2.id] = { x: 200, y: 100, dir: DIR.DOWN }
+    await P.artifacts.save(chair1);
+    await P.artifacts.save(chair2);
+    await P.worlds.save(hostWorld);
     // -----------------------
     // save
-    await persistence.artifacts.save(artifact);
-    await persistence.accounts.save(account);
-    await persistence.worlds.save(world);
+    await P.artifacts.save(artifact);
+    await P.accounts.save(account);
     return account as Account;
 }
 
-function createArtifact(accountId: string, hostId: string, 
-                        name:string, setupSpriteName:string ) {
+async function createArtifact(P: Persistence, accountId: string, hostId: string, 
+                        name:string, setupSpriteName:string,
+                        text:string ) {
+    // world
+    const world = {
+        id: generateId(accountId),
+        ownerId: generateId(accountId),
+        text: text,
+        artifactPositions: {},
+    } as World;
+    await P.worlds.save(world);
+    // artifact
     let artifact = deepCopy(artifacts[setupSpriteName]);
     artifact.colors = { world: rnd(worldColors), title: rnd(titleColors), };
-    artifact.id = generateId(accountId);
+    artifact.id = world.ownerId;
     artifact.name = name;
-    artifact.hostId = hostId;
+    artifact.hostId = hostId || world.id;
+    artifact.worldIds = {}
+    artifact.worldIds[mundaneWorldName] = world.id;
+    artifact.visitsStack = [ artifact.hostId ];
     pushDefaults(artifact, defaultsArtifact);
+    console.log(`CREATE ARTIFACT "${artifact.name}" -> ${artifact.id}`, artifact.worldIds)
     return artifact;
 }
 

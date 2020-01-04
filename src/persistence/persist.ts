@@ -2,7 +2,7 @@ import { BrowserWindow } from "electron"
 
 import { Storage } from "./storage"
 import { Artifact, Account, World, defaultsArtifact } from "../universe/interfaces"
-import { generateId, registerAccountId, getAccountId } from "./identity"
+import { generateId, registerAccountId } from "./identity"
 import { deepCopy } from "../universe/utils"
 
 /* TODO: convert to ID-based entities */
@@ -43,10 +43,10 @@ export class Persistence {
     }
 
     async init() {
-        await this.artifacts.init();
-        await this.accounts.init();
-        await this.worlds.init();
-        await this.config.init();
+        this.artifacts.init();
+        this.accounts.init();
+        this.worlds.init();
+        this.config.init();
 
         interopSetup(this);
         
@@ -70,7 +70,6 @@ export class Persistence {
 
     async free() {
         // account
-        console.log("FREE PERSISTENCE!")
         this.window = null;
         const accountBody = await this.artifacts.load(this.account.bodyId);
         const worldId = accountBody.hostId;
@@ -80,5 +79,10 @@ export class Persistence {
         for (let id in this.observers) {
             await this.observers[id].free();
         }
+        // close db
+        this.artifacts.free();
+        this.accounts.free();
+        this.worlds.free();
+        this.config.free();
     }
 }
