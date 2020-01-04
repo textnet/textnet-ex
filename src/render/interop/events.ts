@@ -18,6 +18,12 @@ export interface PickupEvent {
     direction: Dir;
 }
 
+export interface StandEvent {
+    artifactId: string;
+    text: string;
+    position: Position;
+}
+
 export interface GotoEvent {
     artifactId: string;
     worldName?: string;

@@ -1,7 +1,8 @@
 import { ipcRenderer } from "electron";
 
 
-import { PositionEvent, PushEvent, PickupEvent, GotoEvent, LeaveEvent } from "./events";
+import { PositionEvent, PushEvent, PickupEvent, 
+         GotoEvent, LeaveEvent, StandEvent } from "./events";
 import { ArtifactActor } from "../actors/artifact";
 import { Position, Dir } from "../../universe/interfaces"
 
@@ -50,4 +51,12 @@ export function leave(actor: ArtifactActor) {
     ipcRenderer.send("leave", {
         artifactId: actor.artifact.id,
     } as LeaveEvent) 
+}
+
+export function stand(actor: ArtifactActor, text: string, pos: Position) {
+    ipcRenderer.send("stand", {
+        artifactId: actor.artifact.id,
+        text: text,
+        position: pos
+    } as StandEvent)
 }

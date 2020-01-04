@@ -7,6 +7,7 @@ import { placeArtifact } from "./place"
 import { pushFromArtifact } from "./push"
 import { pickupFromArtifact } from "./pickup"
 import { leaveOfArtifact, gotoOfArtifact } from "./goto"
+import { standArtifact } from "./text"
 
 const supportedChannels = [
     "goto", "leave",
@@ -15,6 +16,7 @@ const supportedChannels = [
     "pickup", // also putdown
     "askForPlayer",
     "askForWorld",
+    "stand",
 ]
 
 export function interopSetup(P: Persistence) {
@@ -34,5 +36,6 @@ export function interopSetup(P: Persistence) {
     ipcMain.on("pickup",   (event, args) => { pickupFromArtifact(P, args) });
     ipcMain.on("leave",    (event, args) => { leaveOfArtifact(P, args) });
     ipcMain.on("goto",     (event, args) => { gotoOfArtifact(P, args) });
+    ipcMain.on("stand",    (event, args) => { standArtifact(P, args) });
 
 }

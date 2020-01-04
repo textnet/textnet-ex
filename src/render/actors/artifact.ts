@@ -13,18 +13,22 @@ import { BaseActor } from "./base"
 import { InventoryActor } from "./inventory"
 import { getPlayerDirection, getPlayerCommand } from "../command"
 
+import { focusEditor } from "../editor"
+
 import * as interopSend from "../interop/send"
 
 
 export class ArtifactActor extends BaseActor {
     speed: { x:number, y: number };
     needRelease: boolean;
+    isKneeled: boolean;
     inventory?: InventoryActor;
 
     constructor(artifact: ArtifactStructure) {
         let pos:Position = artifact.position;
         let sprite:ArtifactSprite = new ArtifactSprite(artifact);
         super(artifact);
+        this.isKneeled = false;
         this.scale = new ex.Vector(1,1);
         this.opacity = 1;
         this.rotation = 0;
@@ -51,7 +55,7 @@ export class ArtifactActor extends BaseActor {
         let dir: Dir = deepCopy(DIR.NONE);
         // Player input for direction and speed
 
-        if (this.artifact.isPlayer) {
+        if (this.artifact.isPlayer && !this.isKneeled) {
             if (this.needRelease && engine.input.keyboard.getKeys().length == 0) {
                 this.needRelease = false;
             }
@@ -78,6 +82,11 @@ export class ArtifactActor extends BaseActor {
                 if (command == COMMAND.ENTER && playerDir.name != DIR.NONE.name) {
                     this.needRelease = true;
                     interopSend.goto(this, playerDir);
+                }
+                if (command == COMMAND.KNEEL) {
+                    this.needRelease = true;
+                    this.isKneeled = true;
+                    focusEditor(this);
                 }
             }
         }

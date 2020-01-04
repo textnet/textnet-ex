@@ -3,6 +3,7 @@ import { Game } from "../game"
 import { RadiusAroundActorStrategy } from "../scene"
 import { PositionEvent } from "./events"
 import { BaseActor } from "../actors/base"
+import { ArtifactActor } from "../actors/artifact"
 
 import { visualBounds } from "../../universe/const"
 import { deepCopy } from "../../universe/utils"
@@ -15,10 +16,12 @@ export function positionArtifact(game: Game, event: PositionEvent) {
         for (let a of scene.actors) {
             const actor = a as BaseActor;
             if (actor.artifact.id == event.artifactId) {
+                const playerActor = actor as ArtifactActor;
                 actor.pos.x = event.position.x;
                 actor.pos.y = event.position.y;
                 actor.dir   = event.position.dir;
                 actor.artifact.position = deepCopy(event.position)
+                playerActor.isKneeled = false;
                 repositionCamera(game, actor);
             }
         }

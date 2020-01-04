@@ -47,7 +47,8 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
         if (diff < -this.radius) {
             focus = focus.add(new ex.Vector(0, diff + this.radius));
         }
-        adjustEditor((target.scene as GameScene).editor, focus)
+        const scene = target.scene as GameScene
+        if (scene) adjustEditor(scene.editor, focus)
         return focus;
     }
 }

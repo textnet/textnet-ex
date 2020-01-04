@@ -3,20 +3,26 @@ import * as $ from "jquery";
 import * as ex from "excalibur"
 import * as ace from "brace"
 
-import { visualBounds, worldWidth } from "../universe/const"
+import { visualBounds, worldWidth, DIR } from "../universe/const"
+import { Position } from "../universe/interfaces"
 
 import { Game } from "./game"
 import { GameScene } from "./scene"
 import { ArtifactActor } from "./actors/artifact"
 
+import * as sendInterop from "./interop/send"
+
 export const FORMATS = ["lua", "markdown", "text" ]
 
-export interface Editor extends ace.Editor {}
+export interface Editor extends ace.Editor {
+    playerActor?: ArtifactActor;
+}
 
-const fontSize      = "15px";
-const prependRows   = 1000;
-const rowHeight     = 16;
-const labelHeight   = 24;
+const fontSize       = 15;
+const prependRows    = 1000;
+const lineHeight     = 20;
+const labelHeight    = 24;
+const characterWidth = 9;
 
 export function updateEditor(scene: GameScene) {
     if (!scene.editor) return;
@@ -25,13 +31,42 @@ export function updateEditor(scene: GameScene) {
     }
 }
 
+export function adjustEditor(editor: Editor, focus: ex.Vector) {
+    let home = visualBounds.height / 2 + visualBounds.margin;
+    let camera = focus.y;
+    let distance = camera-home;
+    distance += visualBounds.margin;
+    if (distance - editor["renderer"].getScrollTop() != 0) {
+        editor["renderer"].scrollToY(distance)
+    }
+}
+
+export function positionCursor(editor: Editor, actor: ArtifactActor) {
+    const height = actor.pos.y + visualBounds.margin + visualBounds.top;
+    const width  = actor.pos.x - visualBounds.left;
+    const col = Math.floor( width / characterWidth) -1;
+    const row = Math.floor( height/lineHeight )
+    editor.moveCursorTo(row, col);
+}
+
+export function positionFromCursor(editor: Editor) {
+    const cursor = editor.getCursorPosition()
+    const position: Position = {
+        x: (cursor.column+1) * characterWidth + visualBounds.left,
+        y: cursor.row    * lineHeight     - visualBounds.margin - visualBounds.top,
+        dir: DIR.DOWN,
+    } 
+    return position;
+}
+
 export function focusEditor(actor: ArtifactActor) {
     const scene: GameScene = actor.scene as GameScene;
     updateEditor(scene);
     const editor = scene.editor;
-    // TODO: ser cursor position
+    positionCursor(editor, actor);
+    editor.playerActor = actor;
     editor.setReadOnly(false);
-    editor.setOption("showGutter", true);   
+    editor.setOption("showGutter", true);
     editor.renderer["$cursorLayer"].element.style.display = "block"
     editor.focus();
     $("canvas").css({  opacity: 0.2 })
@@ -40,6 +75,7 @@ export function focusEditor(actor: ArtifactActor) {
 }
 
 export function blurEditor(editor) {
+    editor.playerActor = null;
     editor.setReadOnly(true);
     editor.blur();
     $("canvas").css({  opacity: 1 })
@@ -65,17 +101,23 @@ export function initEditor(game: Game) {
         ].join(""));
     customizeEditor()
     var editor: Editor = ace.edit('editor');
-    editor.setFontSize(fontSize);
+    editor.setFontSize(fontSize+"px");
     editor.setOption("printMargin", false);
     editor.setOption("fixedWidthGutter", true);
     editor.setOption("highlightActiveLine", false);
+    editor.container.style.lineHeight = lineHeight+"px";
 
     editor.getSession().setUseWrapMode(true);
     editor.getSession().setTabSize(4);
     editor.getSession().setUseSoftTabs(true);
-    function standup(editor: Editor) {
+    function standup() {
+        const scene = game.gameScene()
+        const text = editor.getValue()
+        const x = 100;
+        const y = 100;
+        const pos = positionFromCursor(editor);
+        sendInterop.stand(editor.playerActor, text, pos)
         blurEditor(editor);
-        // todo: send stand=up event
     }
     editor.commands.addCommand({
         name: "textnetStandup",
@@ -115,13 +157,4 @@ export function customizeEditor() {
     })
 }
 
-export function adjustEditor(editor: Editor, focus: ex.Vector) {
-    let home = visualBounds.height / 2 + visualBounds.margin;
-    let camera = focus.y;
-    let distance = camera-home;
-    distance += visualBounds.margin;
-    if (distance - editor["renderer"].getScrollTop() != 0) {
-        editor["renderer"].scrollToY(distance)
-    }
-}
 

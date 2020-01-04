@@ -52,7 +52,7 @@ export async function playerEnterWorld(P: Persistence) {
     let world: World = await P.worlds.load(worldId);
     if (accountBody.hostId != world.id) {
         console.log(`Player enter world: ${accountBody.hostId} => ${world.id}`)
-        mutateEnter.enterWorld(P, accountBody, world)
+        await mutateEnter.enterWorld(P, accountBody, world)
     } else {
         const pos = world.artifactPositions[accountBody.id];
         sendInterop.sendPlaceArtifact(P, accountBody, pos);
