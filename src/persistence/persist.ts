@@ -5,8 +5,6 @@ import { Artifact, Account, World, defaultsArtifact } from "../universe/interfac
 import { generateId, registerAccountId } from "./identity"
 import { deepCopy } from "../universe/utils"
 
-/* TODO: convert to ID-based entities */
-
 import { Repository } from "./repo"
 
 import { PersistenceObserver } from "./observe";
@@ -52,9 +50,7 @@ export class Persistence {
         
         // get account or create one if there is none.
         let localId = await this.config.get("localId");
-        console.log(await this.config.all())
         if (localId == undefined) {
-            console.log("reinstall")
             const account = await registerAccount(this);
             await this.config.set("localId", account.id);
             localId = account.id;
@@ -65,7 +61,8 @@ export class Persistence {
         this.observers = {};
         const artifacts = await this.artifacts.all()
         for (let id in artifacts) {
-            this.observers[id] = new PersistenceObserver(this, id);
+            this.observers[id] = new PersistenceObserver();
+            this.observers[id].init(this, id)
             await this.observers[id].attempt();
         }
     }

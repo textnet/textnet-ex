@@ -11,7 +11,6 @@ const PROXIMITY = 3; // how far is 'NEXT'
 export async function getArtifact_NextTo(P: Persistence, artifact: Artifact, dir?: Dir) {
     // no direction: try any
     if (!dir) {
-        console.log("any direction will do")
         for (let i of [DIR.UP, DIR.RIGHT, DIR.DOWN, DIR.LEFT]) {
             let a = getArtifact_NextTo(P, artifact, i);
             if (a) return a;

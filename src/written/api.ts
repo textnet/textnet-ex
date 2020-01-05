@@ -11,25 +11,30 @@ export interface FengariMap {
 
 export function fengari_load(L: LuaState, code:string) {
     const loadResult = lauxlib.luaL_loadstring(L, to_luastring(code));
-    if (loadResult != lua.LUA_OK) {
-        console.log("luaL_loadstring: ", loadResult, 
-            lua.LUA_OK, 
-            lua.LUA_ERRSYNTAX, lua.LUA_ERRMEM, lua.ERRGCMM,
-        );
-    }
+    log(L, "luaL_loadstring", loadResult);
     return loadResult == lua.LUA_OK;
 }
 
 export function fengari_call(L: LuaState) {
     const callResult = lua.lua_pcall(L, 0, 1, 0)
-        if (callResult != lua.LUA_OK) {
-            console.log("lua_pcall: ", callResult, 
-                lua.LUA_OK,
-                lua.LUA_ERRRUN, lua.LUA_ERRMEM, lua.LUA_ERRERR, lua.ERRGCMM,
-                )
-            console.log("Error message: " + to_jsstring(lauxlib.luaL_tolstring(L, -1)))            
-        }    
+    log(L, "lua_pcall", callResult);
     return callResult == lua.LUA_OK;
+}
+
+function log(L: LuaState, call:string, callResult:string) {
+    const _log = (text) => {
+        console.log(call+":", text);
+        console.log("Error message:", to_jsstring(lauxlib.luaL_tolstring(L, -1)))
+    };
+    switch (callResult) {
+        case lua.LUA_OK:        return;
+        case lua.LUA_ERRMEM:    return _log("Out of memory");
+        case lua.LUA_ERRERR:    return _log("WTF: Error of error");
+        case lua.LUA_ERRGCMM:   return _log("Garbage issue");
+        case lua.LUA_ERRSYNTAX: return _log("Syntax error" );
+        case lua.LUA_ERRRUN:    return _log("Runtime error" );
+    }
+    return _log("Unknown Error")
 }
 
 function fengari_register_function(CTX, L: LuaState, name: string, signature: string[], f)  {

@@ -32,7 +32,7 @@ export class Storage {
             SELECT id, data FROM items`);
     }
     set( key: string, value: any) {
-        console.log(`Write => ${this.kind} [${key}].`);
+        // console.log(`Write => ${this.kind} [${key}].`);
         const data = JSON.stringify(value);
         const result = this.statements["set"].run(key, data)
         return result;

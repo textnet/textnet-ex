@@ -9,7 +9,7 @@ import { pickupFromArtifact } from "./pickup"
 import { leaveOfArtifact, gotoOfArtifact } from "./goto"
 import { standArtifact } from "./text"
 
-const supportedChannels = [
+let supportedChannels = [
     "goto", "leave",
     "push",
     "position",
@@ -18,8 +18,10 @@ const supportedChannels = [
     "askForWorld",
     "stand",
 ]
+supportedChannels = []
 
 export function interopSetup(P: Persistence) {
+
     for (let c of supportedChannels) {
         ipcMain.on(c, (event, args) => {
             console.log(`OUTEROP: ${c}`, args)

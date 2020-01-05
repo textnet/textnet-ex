@@ -21,13 +21,13 @@ export async function registerAccount(P: Persistence) {
     // connections
     artifact.playerId = account.id;
     // ------ chairs ---------
-    const chair1 = await createArtifact(P, id, hostWorld.id, "Chair 1", "chair", "");
-    const chair2 = await createArtifact(P, id, hostWorld.id, "Chair 2", "chair", "");
-    hostWorld.artifactPositions[chair1.id] = { x: 370, y: 50, dir: DIR.DOWN } 
-    hostWorld.artifactPositions[chair2.id] = { x: 200, y: 100, dir: DIR.DOWN }
-    await P.artifacts.save(chair1);
-    await P.artifacts.save(chair2);
-    await P.worlds.save(hostWorld);
+    // const chair1 = await createArtifact(P, id, hostWorld.id, "Chair 1", "chair", "");
+    // const chair2 = await createArtifact(P, id, hostWorld.id, "Chair 2", "chair", "");
+    // hostWorld.artifactPositions[chair1.id] = { x: 370, y: 50, dir: DIR.DOWN } 
+    // hostWorld.artifactPositions[chair2.id] = { x: 200, y: 100, dir: DIR.DOWN }
+    // await P.artifacts.save(chair1);
+    // await P.artifacts.save(chair2);
+    // await P.worlds.save(hostWorld);
     // -----------------------
     // save
     await P.artifacts.save(artifact);
@@ -134,8 +134,8 @@ const artifacts: Record<string,Artifact> = {
     chair:           deepCopy(artifactChair),  // artifactChair
 }
 
-const startupText = `
-Welcome to Textnet Game v.0.2!
+const backup = `
+Welcome to Textnet Game v.0.3!
 ==============================
 
 The game is a sandbox where you can alter everything you see.
@@ -145,4 +145,48 @@ Use <Shift> to push objects while you move, e.g. chairs:
 Use <Alt> to pick objects up and to put them back down.
 Dive into objects by coming close to them and moving in while holding <Ctrl>.
 Last but not least, hit <Ctrl-Enter> to alter this text.
+
+Yes, this text is a fine example of what this game is about. Not only you can alter it, but you can also make this text affect the game. It is called *Written Word*, and it goes like this:
+
+    self{ name="Nikolay", speed=200 }
+
+    print("Message from the Written Word: here are your artifacts!")
+    local everything = get_artifacts{ world="upper" }
+    for i = 0, #everything-1 do
+        print ("Artifact: "..everything[i].name)
+    end
+
+    print( "Value of the #health = " .. get_text{anchor="health"})
+    local chair = get_closest{};
+    if (chair) then
+        function on_move(event) 
+            print("moving "..event.artifact.name, event.x, event.y)
+        end
+        on{ artifact=chair, event="move", handler=on_move }
+        update_text{ artifact=chair, text="    on{ event='pickup', handler=function() print('PICKED UP') end }"}
+        update{ artifact=chair, name="Nikolay's chair", passable=true }
+        place_at{ artifact=chair, x=750 }
+        move_by{ artifact=chair, direction="left", distance="300" }
+    end
+
+You see, once you indented a block of text by a couple spaces, it becomes a chunk of *Written Word*. Written word is LUA with some special sauce.
+
+Currently, there is no special sauce, as there are no more objects than those two sad chairs. There is no *Spoken Word* yet either. And for sure, there are no Gods.
+
+I bet you were hoping to find god inside here.
+Not just yet, chap.
+
+
+P.S.
+Here is a simple way to transfer any parameters around:
+#health 100
+`;
+
+
+
+const startupText = `
+This is a simple test of the Written Word implementation.
+
+    print("Message from the Written Word")
+
 `;

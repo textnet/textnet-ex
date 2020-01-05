@@ -8,7 +8,7 @@ import { Position, Artifact, World } from "../../universe/interfaces"
 import { deepCopy } from "../../universe/utils"
 
 export async function enterWorld(P: Persistence, artifact: Artifact, world: World) {
-    console.log(`Enter world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
+    // console.log(`Enter world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
     // adjust artifact
     if (!artifact.visits[ world.id ]) {
         artifact.visits[ world.id ] = deepCopy(spawnPosition);
@@ -17,12 +17,7 @@ export async function enterWorld(P: Persistence, artifact: Artifact, world: Worl
         artifact.visitsStack.push( world.id );
     }
     await P.artifacts.save(artifact);
-    // fit to the closest available place (always possible)
-    // event will be sent by rendering the world;
-
-    // console.log("Visits Enter:", artifact.visits, artifact.visitsStack)
     await fit(P, artifact, world, artifact.visits[ world.id ])
-    // await sendTopInventory(P, artifact);
 }
 
 export async function disconnect(P: Persistence, artifact: Artifact, world: World) {
@@ -31,7 +26,7 @@ export async function disconnect(P: Persistence, artifact: Artifact, world: Worl
 
 export async function leaveWorld(P: Persistence, artifact: Artifact, world: World, 
                                  disconnect?: boolean) {
-    console.log(`Leave world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
+    // console.log(`Leave world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
     if (disconnect) console.log("--- disconnect.")
     if (disconnect 
         || (artifact.visitsStack.length > 1 
@@ -42,9 +37,7 @@ export async function leaveWorld(P: Persistence, artifact: Artifact, world: Worl
         }
         const position = world.artifactPositions[artifact.id];
         artifact.visits[world.id] = deepCopy(position);
-        // console.log("Visits Leave:", artifact.visits, artifact.visitsStack)
         await P.artifacts.save(artifact);
-        // adjust world
         await removeFromWorld(P, artifact, world);
     }
 }

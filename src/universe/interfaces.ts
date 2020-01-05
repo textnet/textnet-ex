@@ -1,5 +1,3 @@
-import { WrittenEnvironment } from "../written/word"
-
 /**
  * Proper structures for all TextNet universe objects.
  *

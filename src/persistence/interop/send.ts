@@ -15,7 +15,7 @@ import { Artifact, World, Position } from "../../universe/interfaces"
 
 
 export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, position: Position) {
-    console.log(`INTEROP: position(placeArtifact)`, artifact.name, position)
+    // console.log(`INTEROP: position(placeArtifact)`, artifact.name, position)
     const event: PositionEvent = {
         artifactId: artifact.id,
         worldId:    artifact.hostId,
@@ -27,7 +27,7 @@ export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, posi
 export async function sendInsertArtifact(P: Persistence, artifact: Artifact, position: Position) {
     const world = await P.worlds.load(artifact.hostId);
     const worldOwner = await P.artifacts.load(world.ownerId);
-    console.log(`INTEROP: position(insertArtifact)`, artifact.name, "to", worldOwner.name, "at", position)
+    // console.log(`INTEROP: position(insertArtifact)`, artifact.name, "to", worldOwner.name, "at", position)
     const structure = await structureFromArtifact(P, artifact);
     const event: EnterEvent = {
         artifactStructure: structure,
@@ -44,7 +44,7 @@ export async function sendInsertArtifact(P: Persistence, artifact: Artifact, pos
 }
 
 export async function sendRemoveArtifact(P: Persistence, artifact: Artifact, world: World) {
-    console.log(`INTEROP: leave`, artifact.name)
+    // console.log(`INTEROP: leave`, artifact.name)
     const event: LeaveEvent = {
         worldId: world.id,
         artifactId: artifact.id
@@ -53,7 +53,7 @@ export async function sendRemoveArtifact(P: Persistence, artifact: Artifact, wor
 }
 
 export async function sendInventory(P: Persistence, artifact: Artifact, obj: Artifact) {
-    console.log(`INTEROP: inventory`, artifact.name, "=>", obj.name)
+    // console.log(`INTEROP: inventory`, artifact.name, "=>", obj.name)
     const hostWorld = await P.worlds.load(artifact.hostId);
     const structure = await structureFromArtifact(P, obj, hostWorld);
     const event: InventoryEvent = {
@@ -72,7 +72,7 @@ export async function sendTopInventory(P: Persistence, artifact: Artifact) {
 }
 
 export async function sendEmptyInventory(P: Persistence, artifact: Artifact) {
-    console.log(`INTEROP: inventory(empty)`, artifact.name);
+    // console.log(`INTEROP: inventory(empty)`, artifact.name);
     const event: InventoryEvent = {
         artifactId: artifact.id
     }
@@ -80,7 +80,7 @@ export async function sendEmptyInventory(P: Persistence, artifact: Artifact) {
 }
 
 export async function sendText(P: Persistence, world: World) {
-    console.log(`INTEROP: text`);
+    // console.log(`INTEROP: text`);
     const event: TextEvent = {
         worldId: world.id,
         text: world.text

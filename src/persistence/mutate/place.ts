@@ -13,7 +13,7 @@ import { sendPlaceArtifact, sendInsertArtifact, sendRemoveArtifact } from "../in
 // fit if there is space
 export async function place(P: Persistence,
                       artifact: Artifact, world: World, position: Position) {
-    console.log("mutate place", artifact.name, `(${artifact.id    })`, position)
+    // console.log("mutate place", artifact.name, `(${artifact.id    })`, position)
     if (await isPlaceable(P, artifact, world, position) 
             && isInBounds(position, artifact.body.size)) {
         await force(P, artifact, world, position);
@@ -94,7 +94,6 @@ export async function removeFromWorld(P: Persistence, artifact: Artifact, world:
     artifact.hostId = null;
     await P.worlds.save(world);
     await P.artifacts.save(artifact);
-    // console.log("Visits Remove:", artifact.visits, artifact.visitsStack)
     // sent event to renderer
     await sendRemoveArtifact(P, artifact, world);
 }
@@ -108,7 +107,6 @@ export async function insertIntoWorld(P: Persistence, artifact: Artifact,
     await P.worlds.save(world);
     await P.artifacts.save(artifact);
     // send event to renderer
-    // console.log("Visits Insert:", artifact.visits, artifact.visitsStack)
     await sendInsertArtifact(P, artifact, pos);
 }
 

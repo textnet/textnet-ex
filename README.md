@@ -69,6 +69,7 @@ Then here are options:
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
+- BUG: scrolling text down while typing.
 - excessive position submit (e.g. pickup)
 - Apple Developer certificate
 - another session of documentation
