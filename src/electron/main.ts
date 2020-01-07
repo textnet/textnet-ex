@@ -5,6 +5,8 @@ import { worldWidth, visualBounds } from "../universe/const"
 import { Persistence } from "../persistence/persist"
 import { interopSetup } from "../persistence/interop/setup"
 
+import { fengariTest } from "../written/test"
+
 
 let mainWindow: Electron.BrowserWindow
 
@@ -12,7 +14,6 @@ const localPersistence     = new Persistence("app/");
 const alternatePersistence = new Persistence("alt/");
 
 function onReady() {
-
     // another persistence to test multiplayer.
     // alternatePersistence.init().then(()=> {
     // })
@@ -37,6 +38,7 @@ function onReady() {
         mainWindow.webContents.openDevTools({ mode:"detach" })
         mainWindow.loadFile("dist/index.html")
     })
+
 }
 
 function onQuit() {

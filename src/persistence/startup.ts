@@ -21,13 +21,13 @@ export async function registerAccount(P: Persistence) {
     // connections
     artifact.playerId = account.id;
     // ------ chairs ---------
-    // const chair1 = await createArtifact(P, id, hostWorld.id, "Chair 1", "chair", "");
-    // const chair2 = await createArtifact(P, id, hostWorld.id, "Chair 2", "chair", "");
-    // hostWorld.artifactPositions[chair1.id] = { x: 370, y: 50, dir: DIR.DOWN } 
-    // hostWorld.artifactPositions[chair2.id] = { x: 200, y: 100, dir: DIR.DOWN }
-    // await P.artifacts.save(chair1);
-    // await P.artifacts.save(chair2);
-    // await P.worlds.save(hostWorld);
+    const chair1 = await createArtifact(P, id, hostWorld.id, "Chair 1", "chair", "");
+    const chair2 = await createArtifact(P, id, hostWorld.id, "Chair 2", "chair", "");
+    hostWorld.artifactPositions[chair1.id] = { x: 370, y: 50, dir: DIR.DOWN } 
+    hostWorld.artifactPositions[chair2.id] = { x: 200, y: 100, dir: DIR.DOWN }
+    await P.artifacts.save(chair1);
+    await P.artifacts.save(chair2);
+    await P.worlds.save(hostWorld);
     // -----------------------
     // save
     await P.artifacts.save(artifact);
@@ -187,6 +187,12 @@ Here is a simple way to transfer any parameters around:
 const startupText = `
 This is a simple test of the Written Word implementation.
 
-    print("Message from the Written Word")
+    print("Message from the Written Word: here are your artifacts!")
+    local everything = get_artifacts{}
+    for i = 0, #everything-1 do
+        print ("Artifact: "..everything[i].name)
+    end
+
+    
 
 `;

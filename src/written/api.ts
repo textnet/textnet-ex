@@ -21,6 +21,18 @@ export function fengari_call(L: LuaState) {
     return callResult == lua.LUA_OK;
 }
 
+export function fengari_resume(L: LuaState) {
+    const callResult = lua.lua_resume(L, null, 0);
+    log(L, "lua_resume", callResult);
+    return callResult == lua.LUA_YIELD || callResult == lua.LUA_OK;
+}
+
+export function fengari_yield(L: LuaState) {
+    const callResult = lua.lua_yield(L, 0);
+    log(L, "lua_yield", callResult);
+    return callResult == lua.LUA_YIELD || callResult == lua.LUA_OK;
+}
+
 function log(L: LuaState, call:string, callResult:string) {
     const _log = (text) => {
         console.log(call+":", text);
@@ -28,6 +40,7 @@ function log(L: LuaState, call:string, callResult:string) {
     };
     switch (callResult) {
         case lua.LUA_OK:        return;
+        case lua.LUA_YIELD:     return;
         case lua.LUA_ERRMEM:    return _log("Out of memory");
         case lua.LUA_ERRERR:    return _log("WTF: Error of error");
         case lua.LUA_ERRGCMM:   return _log("Garbage issue");
@@ -37,9 +50,39 @@ function log(L: LuaState, call:string, callResult:string) {
     return _log("Unknown Error")
 }
 
-function fengari_register_function(CTX, L: LuaState, name: string, signature: string[], f)  {
+
+export function fengari_register_async(CTX, L: LuaState, name: string, signature: string[], f)  {
     const fWrapper = function() {
-        const argCout = lua.lua_gettop(L);
+        const argCount = lua.lua_gettop(L);
+        const args = wrap(L, lua.lua_toproxy(L, 2));
+        const params = [CTX];
+        if (signature) {
+            for (let paramName of signature) {
+                params.push(args["get"](paramName));
+            } 
+        } else {
+            params.push(args)
+        }
+        const promise = f.apply(null, params);
+        promise.then(res => {
+            push(L, res)
+            lua.lua_resume(L, null, 1)
+        }).catch(err => {
+            console.log("ERROR!", err)
+            lua.lua_pushnil(L)
+            lua.lua_pushliteral(L, '' + err)
+            lua.lua_resume(L, null, 2)
+        })
+        return lua.lua_yield(L, 0)        
+    }
+    // console.log("registered function: "+name+"("+signature.join(", ")+")")
+    push(L, fWrapper);
+    lua.lua_setglobal(L, to_luastring(name));
+}
+
+export function fengari_register_function(CTX, L: LuaState, name: string, signature: string[], f)  {
+    const fWrapper = function() {
+        const argCount = lua.lua_gettop(L);
         const args = wrap(L, lua.lua_toproxy(L, 2));
         const params = [CTX];
         if (signature) {
@@ -71,7 +114,7 @@ export function fengari_init(CTX) {
     lua.lua_pop(L, 1);
     // register functions ---------------------------------------------------
     for (let i in supportedFunctions) {
-        fengari_register_function(CTX, L, i, supportedFunctions[i].signature, 
+        fengari_register_async(CTX, L, i, supportedFunctions[i].signature, 
                                              supportedFunctions[i].f)
     }
     return L;

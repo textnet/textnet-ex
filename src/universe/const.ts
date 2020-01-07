@@ -5,7 +5,8 @@ import { Dir, Position } from "./interfaces"
  */
 
 
- export const mundaneWorldName = "mundane";
+export const mundaneWorldName = "mundane";
+export const possibleWorlds = [ mundaneWorldName ];
 
 /**
  * Standard directions (structure matches [[Dir]]).

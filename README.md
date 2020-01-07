@@ -27,8 +27,8 @@ This is an Excalibur+Electron prototype of the TXTNET.
 
 # THIS ITERATION
 - Make Written Word work again
-    - compile on start
-    - compile on text-event
+    + compile on start
+    + compile on text-event
     - resupport all commands
         - move_to, move_by
         - get_artifact(s), get_myself

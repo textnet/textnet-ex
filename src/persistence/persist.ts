@@ -7,7 +7,7 @@ import { deepCopy } from "../universe/utils"
 
 import { Repository } from "./repo"
 
-import { PersistenceObserver } from "./observe";
+import { PersistenceObserver } from "./observe/observer";
 import { interopSetup } from "./interop/setup"
 
 import * as mutateEnter from "./mutate/enter"
