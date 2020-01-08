@@ -2,10 +2,14 @@ import { lua, lauxlib, ldebug, lualib, to_luastring, to_jsstring, LuaState } fro
 import { push, luaopen_js, wrap, jscall } from "./interop"
 import { supportedFunctions } from "./library"
 
+import { defaultsArtifact } from "../universe/interfaces"
+import { deepCopy } from "../universe/utils"
+
 export interface FengariMap {
     get(key),
     set(key, value),
-    has(key)
+    has(key),
+    ownKeys()
 }
 
 
@@ -50,6 +54,21 @@ function log(L: LuaState, call:string, callResult:string) {
     return _log("Unknown Error")
 }
 
+function extract_no_signature_params(args) {
+    const params = {}
+    let API = defaultsArtifact.API;
+    if (args.has("API")) {
+        API = args.get("API")
+        params["API"] = deepCopy(API);
+    }
+    for (let item of API) {
+        if (args.has(item) && item != "id") {
+            params[item] = args.get(item);
+        }
+    }
+    return params;
+
+}
 
 export function fengari_register_async(CTX, L: LuaState, name: string, signature: string[], f)  {
     const fWrapper = function() {
@@ -61,7 +80,10 @@ export function fengari_register_async(CTX, L: LuaState, name: string, signature
                 params.push(args["get"](paramName));
             } 
         } else {
-            params.push(args)
+            params.push(extract_no_signature_params(args));
+            if (args["has"]("artifact")) {
+                params[params.length-1]["artifact"] = args["get"]("artifact");
+            }
         }
         const promise = f.apply(null, params);
         promise.then(res => {

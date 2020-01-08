@@ -39,6 +39,7 @@ export async function get_artifact( O: PersistenceObserver,
                       world?: string, id?: string, name?: string) {
     const result = await get_artifacts(O, world, id, name);
     if (result.length > 0) return result[0];
+    else return false;
 }
 
 export async function get_myself( O: PersistenceObserver ) {

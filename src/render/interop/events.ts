@@ -1,6 +1,13 @@
 
 import { Dir, Position } from "../../universe/interfaces";
-import { ArtifactStructure } from "../data_structures";
+import { ArtifactStructure, WorldStructure } from "../data_structures";
+
+export interface ArtifactPropertiesEvent {
+    artifactStructure: ArtifactStructure;
+}
+export interface WorldPropertiesEvent {
+    worldStructure: WorldStructure;
+}
 
 export interface PositionEvent {
     artifactId: string;

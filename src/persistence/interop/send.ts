@@ -7,12 +7,34 @@ import { Persistence } from "../persist"
 
 import { structureFromAccount, structureFromArtifact, structureFromWorld } from "./structures"
 
-import { PositionEvent, EnterEvent, LeaveEvent, 
+import { PositionEvent, EnterEvent, LeaveEvent,
+         ArtifactPropertiesEvent, WorldPropertiesEvent,
          InventoryEvent, TextEvent } from "../../render/interop/events"
 import { ArtifactStructure } from "../../render/data_structures"
 
 import { Artifact, World, Position } from "../../universe/interfaces"
 
+
+export async function sendProperties(P: Persistence, artifact: Artifact) {
+    // console.log(`INTEROP: properties`);
+    const structure = await structureFromArtifact(P, artifact);
+    const worldEvents = [];
+    for (let i in artifact.worldIds) {
+        const world = await P.worlds.load(artifact.worldIds[i]);
+        worldEvents.push({
+            worldStructure: await structureFromWorld(P, world),
+        } as WorldPropertiesEvent);
+    }
+    const eventArtifact: ArtifactPropertiesEvent = {
+        artifactStructure: structure,
+    }
+    if (P.window) {
+        P.window.webContents.send('properties',  eventArtifact);
+        for (let event of worldEvents) {
+            P.window.webContents.send('environment', event);
+        }
+    }
+}
 
 export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, position: Position) {
     // console.log(`INTEROP: position(placeArtifact)`, artifact.name, position)

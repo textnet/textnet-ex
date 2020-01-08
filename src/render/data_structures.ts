@@ -6,6 +6,7 @@ export interface WorldStructure {
     ownerId: string;
     name: string;
     text: string;
+    format: string;
     colors: {
         world: { fg: string, bg: string };
         title: { fg: string, bg: string };
@@ -18,10 +19,13 @@ export interface AccountStructure {
     isLocal: boolean;
 }
 
+export const artifactPrivateProperties = [ "isInventory", "isLocal", "isPlayer", 
+                                           "sprite", "body", "id", "position", ];
+
 export interface ArtifactStructure {
     id: string;
     name: string;
-    position: Position;
+    position?: Position;
     speed: number;
     passable: boolean;
     sprite: { 

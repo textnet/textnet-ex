@@ -13,6 +13,7 @@ export class GameScene extends ex.Scene {
     hasCamera?: boolean;
     worldData?: WorldStructure;
     artifacts?: Record<string, ArtifactStructure>;
+    environmentActors?: Record<string, ex.Actor>;
 
     public onInitialize(engine: Game) {}
     public onActivate() {}

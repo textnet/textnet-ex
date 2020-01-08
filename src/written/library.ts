@@ -1,6 +1,7 @@
 
 import { get_artifacts, get_artifact, 
          get_myself, get_closest, get_next } from "./library/get"
+import { update } from "./library/properties"
 
 export const supportedFunctions = {
 
@@ -10,8 +11,8 @@ export const supportedFunctions = {
     "get_next":      { signature: ["direction"],           f: get_next      },
     "get_closest":   { signature: ["name"],                f: get_closest   },
 
-//     "update":        { signature: false,                   f: update        },
-//     "self":          { signature: false,                   f: update        },
+    "update":        { signature: false,                   f: update        },
+    "self":          { signature: false,                   f: update        },
 
 //     "get_text":    { signature: ["artifact", "line", "anchor"         ], f: get_text    },
 //     "update_text": { signature: ["artifact", "text",                  ], f: update_text },

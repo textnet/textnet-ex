@@ -14,6 +14,7 @@ export async function structureFromWorld(P: Persistence, world: World) {
         ownerId: owner.id,
         name: owner.name,
         text: world.text,
+        format: owner.format,
         colors: deepCopy(owner.colors)
     }
     return data;
@@ -21,17 +22,19 @@ export async function structureFromWorld(P: Persistence, world: World) {
 
 export async function structureFromArtifact(P: Persistence, artifact: Artifact, host?: World) {
     if (!host) host = await P.worlds.load(artifact.hostId);
-    const data: ArtifactStructure = {
+    let data: ArtifactStructure = {
         id: artifact.id,
         name: artifact.name,
         passable: artifact.passable,
         speed: artifact.speed,
-        position: host.artifactPositions[artifact.id],
         sprite: deepCopy(artifact.sprite),
         body: deepCopy(artifact.body),
         isInventory: false,
         isLocal: true, // TODO
         isPlayer: P.account.bodyId == artifact.id, 
+    }
+    if (host) {
+        data["position"] =host.artifactPositions[artifact.id];
     }
     return data
 }
