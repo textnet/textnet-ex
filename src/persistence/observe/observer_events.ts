@@ -9,16 +9,23 @@ export enum ObserverCommand {
     None = "None",
     Move = "Move",
 }
+export enum ObserverEventType {
+    Timer = "timer",
+}
 
-const observerSpeed     = 0.01;
-const observerThreshold = 0.01;
-const observerInterval =  10; // ms
+export const observerSpeed     = 0.01;
+export const observerInterval  =  10; // ms
+export const observerThreshold = 0.1;
 
 export interface MoveEvent {
     artifact: string;
     x: number;
     y: number;
     dir: string;
+}
+
+export interface TimeEvent {
+    delta: number;
 }
 
 export async function moveAction(O: PersistenceObserver, event: MoveEvent) {
@@ -49,10 +56,13 @@ export async function moveAction(O: PersistenceObserver, event: MoveEvent) {
         if (event.dir && event.dir != DIR.NONE.name) {
             newPos.dir = DIRfrom({x:0, y:0, name: event.dir});
         }
-        if (lengthDir(delta) >= observerThreshold) {
+        
+        if (lengthDir(delta) <= observerThreshold) {
+            return ObserverCommand.None;
+        } else {
             const success = await mutatePlace.place(P, artifact, hostWorld, newPos);
-            return;
+            return ObserverCommand.Move;    
         }
-        return ObserverCommand.Move;
+        
     }
 }

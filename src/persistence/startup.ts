@@ -187,11 +187,11 @@ Here is a simple way to transfer any parameters around:
 const startupText = `
 This is a simple test of the Written Word implementation.
 
-    self{ name="P2" }
-    print("Message from the Written Word: here are your artifacts!")
-    local everything = get_artifacts{}
-    for i = 0, #everything-1 do
-        print ("Artifact: "..everything[i].name)
+    self{ name="P2", speed=200 }
+    local chair = get_artifact{ name="Chair 1" }
+    if (chair) then
+        place_at{ artifact=chair, x=10, y=10 }
+        move_by{ artifact=chair, x=100, y=100 }
     end
 
     

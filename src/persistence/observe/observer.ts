@@ -9,7 +9,7 @@ import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "../../writ
 
 
 import * as observerEvents from "./observer_events";
-import { ObserverCommand } from "./observer_events";
+import { ObserverCommand, ObserverEventType } from "./observer_events";
 
 
 
@@ -26,18 +26,38 @@ export class PersistenceObserver extends events.EventEmitter {
     env?: WrittenEnvironment;
     
     init(P: Persistence, artifactId: string) {
+        const that = this;
         this.P = P;
         this.ownerId = artifactId;
-        this.free();
+        this.on(ObserverEventType.Timer, function( event: observerEvents.TimeEvent){
+            // console.log(`<${that.ownerId}># timer: ${event.delta}, command=${that.command}`)
+            that.iterateCommand();
+        })
     }
 
-
     free() {
-        if (this.interval) clearInterval(this.interval);
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = undefined;
+        }
         if (this.env) {
             freeWrittenWord(this.env);
             delete this.env;
         }
+    }
+    intervalSetup() {
+        const that = this;
+        if (this.interval) {
+            clearInterval(this.interval)
+            this.interval = undefined;
+        }
+        let prevTime = Date.now();
+        this.interval = setInterval(function(){
+            const nowTime = Date.now();
+            const delta = nowTime - prevTime;
+            prevTime = nowTime;
+            that.emit(ObserverEventType.Timer, { delta: delta } as observerEvents.TimeEvent)
+        }, observerEvents.observerInterval)
     }
 
     subscribe(artifact: Artifact, event: string, role: string, handler: any) {
@@ -64,11 +84,13 @@ export class PersistenceObserver extends events.EventEmitter {
                         this.commandFunc = await observerEvents.moveAction(this, 
                                            params as observerEvents.MoveEvent);
                         break;
-        }                      
+        }  
+        return ObserverCommand.None;                    
     }
 
     async attempt() {
         this.free();
+        this.intervalSetup()
         const texts = [];
         const owner = await this.P.artifacts.load(this.ownerId);
         for (let i in owner.worldIds) {

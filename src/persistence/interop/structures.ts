@@ -35,7 +35,7 @@ export async function structureFromArtifact(P: Persistence, artifact: Artifact, 
     }
     if (host) {
         data["position"] =host.artifactPositions[artifact.id];
-    }
+    }    
     return data
 }
 

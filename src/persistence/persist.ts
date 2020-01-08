@@ -65,6 +65,7 @@ export class Persistence {
             this.observers[id].init(this, id)
             await this.observers[id].attempt();
         }
+        //
     }
 
     async free() {

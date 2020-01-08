@@ -30,10 +30,10 @@ This is an Excalibur+Electron prototype of the TXTNET.
     + compile on start
     + compile on text-event
     - resupport all commands
-        - move_to, move_by
-        - get_artifact(s), get_myself
-        - get_closest, get_next
-        - update, self
+        + move_to, move_by
+        + get_artifact(s), get_myself
+        + get_closest, get_next
+        + update, self
         - text, line
     - Redo events
         - introduce roles
@@ -85,6 +85,7 @@ Then here are options:
 - WW: supporting enter/leave events (complex)
 - beautiful sprites
 - good naming
+- WW: chaining move commands, iterate in the recipient of the command?
 
 
 

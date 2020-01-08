@@ -13,7 +13,7 @@
 // }
 // const observerSpeed     = 0.01;
 // const observerThreshold = 0.01;
-// const observerInterval =  10; // ms
+// const observerInterval =  100; // 10 ms
 
 // export function initObservance(dispatcher: ex.EventDispatcher) {
 //     setInterval(function(){
