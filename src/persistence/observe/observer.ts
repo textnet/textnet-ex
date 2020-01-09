@@ -6,6 +6,7 @@ import { Persistence } from "../persist"
 
 import { Dir, Artifact, World, Position } from "../../universe/interfaces"
 import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "../../written/word"
+import { SyncWrittenPersistence } from "../../written/persistence"
 
 
 import * as observerEvents from "./observer_events";
@@ -21,6 +22,7 @@ import { ObserverCommand, ObserverEventType } from "./observer_events";
     
 export class PersistenceObserver extends events.EventEmitter {
     P?: Persistence;
+    writtenP: SyncWrittenPersistence;
     ownerId?: string;
     interval: any; // to be used for timer events?
     env?: WrittenEnvironment;
@@ -28,7 +30,10 @@ export class PersistenceObserver extends events.EventEmitter {
     init(P: Persistence, artifactId: string) {
         const that = this;
         this.P = P;
+        this.writtenP = new SyncWrittenPersistence(this);
         this.ownerId = artifactId;
+        this.cleanCommands();
+        this.command = ObserverCommand.None;
         this.on(ObserverEventType.Timer, function( event: observerEvents.TimeEvent){
             // console.log(`<${that.ownerId}># timer: ${event.delta}, command=${that.command}`)
             that.iterateCommand();
@@ -68,24 +73,53 @@ export class PersistenceObserver extends events.EventEmitter {
     unsubscribe(artifact: Artifact, event: string, role: string, key:any) {
     }
 
+    cleanCommands() {
+        this._commands = [];
+        this._commandFuncs = [];
+    }
+    async nextCommand() {
+        if (this._commands.length == 0) {
+            this.command = ObserverCommand.None;
+            this.commandFunc = undefined;
+        } else {
+            this.command = this._commands.shift();
+            this.commandFunc = this._commandFuncs.shift();
+        }
+    }
+    _commands: ObserverCommand[]; 
+    _commandFuncs: any[];
     command: ObserverCommand;
     commandFunc: any;
     async iterateCommand() { 
         if (this.command != ObserverCommand.None && this.commandFunc) {
-            const nextCommand = await this.commandFunc();
-            if (nextCommand) { this.command = nextCommand }
-            else             { this.command = ObserverCommand.None }
+            const repeat = await this.commandFunc();
+            if (!repeat) {
+                await this.nextCommand();
+            }
         }
     }
     async executeCommand(command: ObserverCommand, params: object) {
-        this.command = command;
+        let commandFunc;
         switch (command) {
             case ObserverCommand.Move:
-                        this.commandFunc = await observerEvents.moveAction(this, 
-                                           params as observerEvents.MoveEvent);
+                        commandFunc = await observerEvents.moveAction(this, 
+                                      params as observerEvents.MoveEvent);
                         break;
-        }  
-        return ObserverCommand.None;                    
+            case ObserverCommand.Place:
+                        commandFunc = await observerEvents.placeAction(this, 
+                                      params as observerEvents.PlaceEvent);
+                        break;
+            case ObserverCommand.Halt:
+                        this.cleanCommands()
+                        break;
+        }
+        if (commandFunc) {
+            this._commands.push(command);
+            this._commandFuncs.push(commandFunc);
+        }
+        if (this.command == ObserverCommand.None) {
+            this.nextCommand()
+        }
     }
 
     async attempt() {
@@ -101,6 +135,48 @@ export class PersistenceObserver extends events.EventEmitter {
         }
         const text = texts.join("\n\n");
         if (text == "") return;
+        await this.prepareWrittenPersistence();
         this.env = initWrittenWord(this, this.ownerId, text);
+    }
+
+    async prepareWrittenPersistence() {
+        const artifacts: Record<string,Artifact> = {};
+        const worlds:    Record<string,World> = {};
+        // artifacts - 1
+        const artifact = await this.P.artifacts.load(this.ownerId);
+        artifacts[artifact.id] = artifact;
+        // outer world
+        if (artifact.hostId) {
+            const hostWorld = await this.P.worlds.load(artifact.hostId)
+            worlds[hostWorld.id] = hostWorld;
+            for (let id in hostWorld.artifactPositions) {
+                const a = await this.P.artifacts.load(id);
+                artifacts[id] = a;
+            }
+        }
+        // inner worlds - 1
+        for (let id in artifacts) {
+            for (let worldName in artifact.worldIds) {
+                const innerWorld = await this.P.worlds.load(artifact.worldIds[worldName])
+                worlds[innerWorld.id] = innerWorld;
+            }
+        }   
+        // artifacts - 2 (with their worlds)
+        for (let worldId in worlds) {
+            if (worldId != artifact.hostId) {
+                for (let artifactId in worlds[worldId].artifactPositions) {
+                    const innerArtifact = await this.P.artifacts.load(artifactId);
+                    artifacts[artifactId] = innerArtifact;
+                    for (let worldName in innerArtifact.worldIds) {
+                        const innerWorld = await this.P.worlds.load(
+                                           innerArtifact.worldIds[worldName]);
+                        worlds[innerWorld.id] = innerWorld;
+                    }
+                }
+            }
+        }
+        // setup from scratch, yeah.
+        this.writtenP.artifacts.setup(artifacts);
+        this.writtenP.worlds.setup(worlds);
     }
 }

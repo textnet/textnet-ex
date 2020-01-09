@@ -16,6 +16,7 @@ import * as mutateEnter from "./mutate/enter"
 import { registerAccount } from "./startup"
 
 
+
 export class Persistence {
     prefix: string;
     artifacts: Repository<Artifact>;

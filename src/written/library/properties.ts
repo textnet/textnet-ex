@@ -1,18 +1,20 @@
 
+import { Artifact, World } from "../../universe/interfaces"
 import { PersistenceObserver } from "../../persistence/observe/observer"
 import { FengariMap } from "../api"
 
 import { updateProperties } from "../../persistence/mutate/properties"
 
 
-export async function update( O: PersistenceObserver, properties) {
-    let artifactId;
-    if (properties["artifact"]) {
-        artifactId = properties["artifact"]["id"];
-    } else {
-        artifactId = O.ownerId;
+export function update( O: PersistenceObserver, params: FengariMap) {
+    let artifact = params.get("artifact") as Artifact;
+    if (!artifact) {
+        artifact = O.writtenP.artifacts.load(O.ownerId);
     }
-    const artifact = await O.P.artifacts.load(artifactId);
-    await updateProperties(O.P, artifact, properties);
+    const properties = {}
+    for (let key of artifact.API) {
+        properties[key] = params.get(key)
+    }
+    updateProperties(O.P, artifact, properties); // nb: async
     return true;
 }

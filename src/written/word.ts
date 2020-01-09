@@ -4,8 +4,7 @@
 
 
 import { getChunks } from "./parser"
-import { fengari_init, fengari_load, fengari_call, 
-         fengari_free, fengari_resume } from "./api"
+import { fengari_init, fengari_load, fengari_call, fengari_free } from "./api"
 
 /*
 
@@ -36,12 +35,14 @@ export function initWrittenWord(CTX, id: string, text: string) {
         resultList.push(chunk.data);
     }
     const resultText = resultList.join("\n")
-    let success = fengari_load(env.L, resultText);
-    if (!success) return;
-    success = fengari_resume(env.L);
-    if (!success) return;
-    // console.log(`<Written Word>(${id}) Ready.`)
-    return env;
+    if (resultText != "") {
+        let success = fengari_load(env.L, resultText);
+        if (!success) return;
+        success = fengari_call(env.L);
+        if (!success) return;
+        console.log(`<Written Word>(${id}) Ready.`)
+        return env;
+    }
 }
 
 export function freeWrittenWord(env: WrittenEnvironment) {

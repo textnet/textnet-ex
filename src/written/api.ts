@@ -54,53 +54,6 @@ function log(L: LuaState, call:string, callResult:string) {
     return _log("Unknown Error")
 }
 
-function extract_no_signature_params(args) {
-    const params = {}
-    let API = defaultsArtifact.API;
-    if (args.has("API")) {
-        API = args.get("API")
-        params["API"] = deepCopy(API);
-    }
-    for (let item of API) {
-        if (args.has(item) && item != "id") {
-            params[item] = args.get(item);
-        }
-    }
-    return params;
-
-}
-
-export function fengari_register_async(CTX, L: LuaState, name: string, signature: string[], f)  {
-    const fWrapper = function() {
-        const argCount = lua.lua_gettop(L);
-        const args = wrap(L, lua.lua_toproxy(L, 2));
-        const params = [CTX];
-        if (signature) {
-            for (let paramName of signature) {
-                params.push(args["get"](paramName));
-            } 
-        } else {
-            params.push(extract_no_signature_params(args));
-            if (args["has"]("artifact")) {
-                params[params.length-1]["artifact"] = args["get"]("artifact");
-            }
-        }
-        const promise = f.apply(null, params);
-        promise.then(res => {
-            push(L, res)
-            lua.lua_resume(L, null, 1)
-        }).catch(err => {
-            console.log("ERROR!", err)
-            lua.lua_pushnil(L)
-            lua.lua_pushliteral(L, '' + err)
-            lua.lua_resume(L, null, 2)
-        })
-        return lua.lua_yield(L, 0)        
-    }
-    // console.log("registered function: "+name+"("+signature.join(", ")+")")
-    push(L, fWrapper);
-    lua.lua_setglobal(L, to_luastring(name));
-}
 
 export function fengari_register_function(CTX, L: LuaState, name: string, signature: string[], f)  {
     const fWrapper = function() {
@@ -136,7 +89,7 @@ export function fengari_init(CTX) {
     lua.lua_pop(L, 1);
     // register functions ---------------------------------------------------
     for (let i in supportedFunctions) {
-        fengari_register_async(CTX, L, i, supportedFunctions[i].signature, 
+        fengari_register_function(CTX, L, i, supportedFunctions[i].signature, 
                                              supportedFunctions[i].f)
     }
     return L;

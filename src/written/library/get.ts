@@ -6,28 +6,29 @@ import { PersistenceObserver } from "../../persistence/observe/observer"
 import { FengariMap } from "../api"
 import { normalizeDir } from "../../universe/utils"
 
-import { getArtifact_NextTo } from "../../persistence/mutate/spatial"
+import { sync_getArtifact_NextTo } from "../../persistence/mutate/spatial"
 
 
-export async function get_artifacts( O: PersistenceObserver, 
-                      world?: string, id?: string, name?: string) {
-    const artifact = await O.P.artifacts.load(O.ownerId);
+export function get_artifacts( O: PersistenceObserver, 
+                               world?: string, id?: string, name?: string) {
+    console.log(`get_artifacts( world="${world}", name="${name}", id="${id}" )`)
+    const artifact = O.writtenP.artifacts.load(O.ownerId);
     let _world: World;
     if (world == "upper") {
-        _world = await O.P.worlds.load(artifact.hostId);
+        _world = O.writtenP.worlds.load(artifact.hostId);
     } else {
         if (possibleWorlds.indexOf(world) < 0) {
             world = mundaneWorldName;
         }
-        _world = await O.P.worlds.load(artifact.worldIds[world]);
+        _world = O.writtenP.worlds.load(artifact.worldIds[world]);
     }
     let result = [];
     if (_world) {
         for (let _id in _world.artifactPositions) {
-            const _artifact = await O.P.artifacts.load(_id);
+            const _artifact = O.writtenP.artifacts.load(_id);
             if (!name || _artifact.name == name) {
                 if (!id || _id == id) {
-                    result.push(await prepArtifact(O, _artifact));
+                    result.push(prepArtifact(O, _artifact));
                 }
             }
         }
@@ -35,27 +36,27 @@ export async function get_artifacts( O: PersistenceObserver,
     return result;
 }
 
-export async function get_artifact( O: PersistenceObserver, 
-                      world?: string, id?: string, name?: string) {
-    const result = await get_artifacts(O, world, id, name);
+export function get_artifact( O: PersistenceObserver, 
+                              world?: string, id?: string, name?: string) {
+    const result = get_artifacts(O, world, id, name);
     if (result.length > 0) return result[0];
     else return false;
 }
 
-export async function get_myself( O: PersistenceObserver ) {
-    const artifact = await O.P.artifacts.load(O.ownerId);
-    return await prepArtifact(O, artifact);
+export function get_myself( O: PersistenceObserver ) {
+    const artifact = O.writtenP.artifacts.load(O.ownerId);
+    return prepArtifact(O, artifact);
 }
 
-export async function get_next( O: PersistenceObserver, direction: string) {
-    const artifact = await O.P.artifacts.load(O.ownerId);
+export function get_next( O: PersistenceObserver, direction: string) {
+    const artifact = O.writtenP.artifacts.load(O.ownerId);
     const dir = DIRfrom({name:direction} as Dir);
-    return await prepArtifact(O, getArtifact_NextTo(O.P, artifact, dir))
+    return prepArtifact(O, sync_getArtifact_NextTo(O.writtenP, artifact, dir))
 }
 
-export async function get_closest( O: PersistenceObserver, name?: string) {
-    let all = await get_artifacts(O, "upper", null, name);
-    let myself = await get_myself(O);
+export function get_closest( O: PersistenceObserver, name?: string) {
+    let all = get_artifacts(O, "upper", null, name);
+    let myself = get_myself(O);
     let closestDist = -1;
     let closest = false;
     for (let a of all) {
@@ -79,8 +80,8 @@ function dist(a, b) {
 }
 
 
-async function prepArtifact(O: PersistenceObserver, artifact: Artifact) {
-    const hostWorld = await O.P.worlds.load(artifact.hostId);
+function prepArtifact(O: PersistenceObserver, artifact: Artifact) {
+    const hostWorld = O.writtenP.worlds.load(artifact.hostId);
     const result = {}
     for (let i of artifact.API) {
         result[i] = artifact[i];

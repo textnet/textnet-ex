@@ -5,9 +5,6 @@ import { worldWidth, visualBounds } from "../universe/const"
 import { Persistence } from "../persistence/persist"
 import { interopSetup } from "../persistence/interop/setup"
 
-import { fengariTest } from "../written/test"
-
-
 let mainWindow: Electron.BrowserWindow
 
 const localPersistence     = new Persistence("app/");

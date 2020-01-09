@@ -1,6 +1,6 @@
 
 import { PersistenceObserver } from "../../persistence/observe/observer"
-import { ObserverCommand, MoveEvent } from "../../persistence/observe/observer_events"
+import { ObserverCommand, MoveEvent, PlaceEvent } from "../../persistence/observe/observer_events"
 import { DIR, DIRfrom, spawnPosition } from "../../universe/const"
 import { Artifact, World, Dir, Position } from "../../universe/interfaces"
 import { deepCopy, normalizeDir } from "../../universe/utils"
@@ -10,90 +10,100 @@ import { updateProperties } from "../../persistence/mutate/properties"
 import * as mutatePlace from "../../persistence/mutate/place"
 
 
-export async function move_to( O: PersistenceObserver, 
-                               artifactData?: object, 
-                               x?: number, y?: number, direction?: string ) {
+export function move_to( O: PersistenceObserver, 
+                         artifactData?: object, 
+                         x?: number, y?: number, direction?: string, 
+                         isDelta?: boolean ) {
     console.log(`<${artifactData["name"]}>.move_to( x=${x}, y=${y} )`)
-    const artifact = await getArtifactFromData(O, artifactData);
+    const artifact = getArtifactFromData(O, artifactData);
     const dir = DIRfrom({name:direction} as Dir);
-    const artifactPos = await getArtifactPos(O, artifact);
+    const artifactPos = getArtifactPos(O, artifact);
     if (x === undefined) x = artifactPos.x;
     if (y === undefined) y = artifactPos.y;
-    await O.executeCommand(ObserverCommand.Move, {
+    O.executeCommand(ObserverCommand.Move, {
         artifact: artifact.id,
         x: x, 
         y: y, 
-        dir: dir.name
-    } as MoveEvent)
+        dir: dir.name,
+        isDelta: isDelta
+    } as MoveEvent) // nb: async
     return true;
 }
 
-export async function move_by( O: PersistenceObserver, 
-                               artifactData?: object, 
-                               x?: number, y?: number, 
-                               direction?: string, distance?:number ) {
-    const artifact = await getArtifactFromData(O, artifactData);
+export function move_by(O: PersistenceObserver, 
+                        artifactData?: object, 
+                        x?: number, y?: number, 
+                        direction?: string, distance?:number ) {
+    const artifact = getArtifactFromData(O, artifactData);
     const dir = DIRfrom({name:direction} as Dir);
-    const artifactPos = await getArtifactPos(O, artifact);
-    if (x === undefined) x = 0;
-    if (y === undefined) y = 0;
-    x += artifactPos.x;
-    y += artifactPos.y;
+    const artifactPos = getArtifactPos(O, artifact);
     if (distance != undefined) {
         const nDir = normalizeDir(dir, distance);
         x += nDir.x;
         y += nDir.y;
     }
-    return await move_to(O, artifactData, x, y, direction)
+    return move_to(O, artifactData, x, y, direction, true) // isDelta
 }
 
-export async function place_at( O: PersistenceObserver, 
-                               artifactData?: object, 
-                               x?: number, y?: number, 
-                               direction?: string,
-                               isFit?:boolean) {
+export function halt(O: PersistenceObserver, 
+                     artifactData?: object) {
+    console.log(`<${artifactData["name"]}>.halt()`)
     let success = false;
-    const artifact = await getArtifactFromData(O, artifactData);
-    const world = await O.P.worlds.load(artifact.hostId);
+    const artifact = getArtifactFromData(O, artifactData);
+    O.executeCommand(ObserverCommand.Halt, {}); // nb: async
+    return true; 
+}
+
+export function place_at(O: PersistenceObserver, 
+                         artifactData?: object, 
+                         x?: number, y?: number, 
+                         direction?: string,
+                         isFit?:boolean) {
+    const mode = isFit?"fit":"place";
+    console.log(`<${artifactData["name"]}>.${mode}( x=${x}, y=${y} )`)
+    let success = false;
+    const artifact = getArtifactFromData(O, artifactData);
+    const world = O.writtenP.worlds.load(artifact.hostId);
     const dir = DIRfrom({name:direction} as Dir);
-    const artifactPos = await getArtifactPos(O, artifact);
+    const artifactPos = getArtifactPos(O, artifact);
     if (x === undefined) x = artifactPos.x;
     if (y === undefined) y = artifactPos.y;
     const newPos: Position = { x:x, y:y, dir:dir };
     //
     if (world) {
-        if (isFit) {
-            success = await mutatePlace.fit(O.P, artifact, world, newPos);
-        } else {
-            success = await mutatePlace.place(O.P, artifact, world, newPos);    
-        }
-        
+        O.executeCommand(ObserverCommand.Place, {
+            artifact: artifact.id,
+            x: x, 
+            y: y, 
+            dir: dir.name,
+            isFit: isFit,
+        } as PlaceEvent) // nb: async
     }
-    return success;
+    return true; 
 }
 
-export async function fit_at( O: PersistenceObserver, 
-                               artifactData?: object, 
-                               x?: number, y?: number, 
-                               direction?: string ) {
-    return await place_at(O, artifactData, x, y, direction, true);
+export function fit_at(O: PersistenceObserver, 
+                       artifactData?: object, 
+                       x?: number, y?: number, 
+                       direction?: string ) {
+    return place_at(O, artifactData, x, y, direction, true);
 }
 
 
-async function getArtifactFromData(O: PersistenceObserver, artifactData?: object) {
+function getArtifactFromData(O: PersistenceObserver, artifactData?: object) {
     let artifactId;
     if (artifactData) {
         artifactId = artifactData["id"];
     } else {
         artifactId = O.ownerId;
     }
-    const artifact = await O.P.artifacts.load(artifactId);
+    const artifact = O.writtenP.artifacts.load(artifactId);
     return artifact;    
 }
 
-async function getArtifactPos(O: PersistenceObserver, artifact: Artifact) {
+function getArtifactPos(O: PersistenceObserver, artifact: Artifact) {
     if (artifact.hostId) {
-        const hostWorld = await O.P.worlds.load(artifact.hostId);
+        const hostWorld = O.writtenP.worlds.load(artifact.hostId);
         return hostWorld.artifactPositions[artifact.id];
     } else {
         return deepCopy(spawnPosition);

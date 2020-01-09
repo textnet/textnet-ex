@@ -2,7 +2,7 @@
 import { get_artifacts, get_artifact, 
          get_myself, get_closest, get_next } from "./library/get"
 import { update } from "./library/properties"
-import { move_to, move_by, place_at, fit_at } from "./library/spatial"
+import { move_to, move_by, place_at, fit_at, halt } from "./library/spatial"
 
 export const supportedFunctions = {
 
@@ -27,6 +27,7 @@ export const supportedFunctions = {
     "turn_to":  { signature: ["artifact", "directon"            ], f: move_by  },
     "place_at": { signature: ["artifact", "x", "y", "direction" ], f: place_at },
     "fit_at":   { signature: ["artifact", "x", "y", "direction" ], f: fit_at },
+    "halt":     { signature: ["artifact",                       ], f: halt },
 
 //     "on":  { signature: false, f: event_on }, // artifact, event, handler
 //     "off": { signature: ["artifact", "event", "key",     ], f: event_off },

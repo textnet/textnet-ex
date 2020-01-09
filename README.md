@@ -26,17 +26,22 @@ This is an Excalibur+Electron prototype of the TXTNET.
 
 
 # THIS ITERATION
-- Make Written Word work again
-    + compile on start
-    + compile on text-event
-    - resupport all commands
-        + move_to, move_by
-        + get_artifact(s), get_myself
-        + get_closest, get_next
-        + update, self
-        - text, line
-    - Redo events
-        - introduce roles
++ Make Written Word **sync** again
+    + ObserverSyncPersistence
+    + build persistence before entering LUA every time
+        + properly work on startup
+    + reimplement in sync
+        + get
+        + properties
+        + spatial basics
+    - chain specials
+        + move
+        + place/fit
+        + halt
+
+# NEXT ITERATION
+- Events
+    - introduce roles
         - on: timer
         - on: move 
         - on: push/push-target (both actors)
