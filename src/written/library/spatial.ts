@@ -90,7 +90,7 @@ export function fit_at(O: PersistenceObserver,
 }
 
 
-function getArtifactFromData(O: PersistenceObserver, artifactData?: object) {
+export function getArtifactFromData(O: PersistenceObserver, artifactData?: object) {
     let artifactId;
     if (artifactData) {
         artifactId = artifactData["id"];
@@ -101,7 +101,7 @@ function getArtifactFromData(O: PersistenceObserver, artifactData?: object) {
     return artifact;    
 }
 
-function getArtifactPos(O: PersistenceObserver, artifact: Artifact) {
+export function getArtifactPos(O: PersistenceObserver, artifact: Artifact) {
     if (artifact.hostId) {
         const hostWorld = O.writtenP.worlds.load(artifact.hostId);
         return hostWorld.artifactPositions[artifact.id];

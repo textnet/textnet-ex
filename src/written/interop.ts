@@ -190,6 +190,7 @@ const invoke = function(L, p, thisarg, args, n_results) {
     if (!(length >= 0)) length = 0; /* Keep NaN in mind */
     lua.lua_checkstack(L, 2+length, null);
     let base = lua.lua_gettop(L);
+    p(L);
     push(L, thisarg);
     for (let i=0; i<length; i++) {
         push(L, args[i]);

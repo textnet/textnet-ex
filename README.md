@@ -26,29 +26,15 @@ This is an Excalibur+Electron prototype of the TXTNET.
 
 
 # THIS ITERATION
-+ Make Written Word **sync** again
-    + ObserverSyncPersistence
-    + build persistence before entering LUA every time
-        + properly work on startup
-    + reimplement in sync
-        + get
-        + properties
-        + spatial basics
-    - chain specials
-        + move
-        + place/fit
-        + halt
-
-# NEXT ITERATION
 - Events
-    - introduce roles
-        - on: timer
-        - on: move 
-        - on: push/push-target (both actors)
-        - on: pickup/pickup-target
-        - on: putdown/putdown-target
-        - on: enter/leave for world
-        - on: enter/leave for artifact
+    + introduce roles
+    + on: timer
+    - on: move 
+    - on: push/push-target (both actors)
+    - on: pickup/pickup-target
+    - on: putdown/putdown-target
+    - on: enter/leave for world
+    - on: enter/leave for artifact
 - Redocument Written Word   
 
 0. TIMER:   event happens all <objects>.

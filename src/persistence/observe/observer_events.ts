@@ -12,9 +12,7 @@ export enum ObserverCommand {
     Place = "Place",
     Halt = "Halt",
 }
-export enum ObserverEventType {
-    Timer = "timer",
-}
+
 
 export const observerSpeed     = 0.01;
 export const observerInterval  =  10; // ms

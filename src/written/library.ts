@@ -3,6 +3,7 @@ import { get_artifacts, get_artifact,
          get_myself, get_closest, get_next } from "./library/get"
 import { update } from "./library/properties"
 import { move_to, move_by, place_at, fit_at, halt } from "./library/spatial"
+import { event_on, event_off } from "./library/events"
 
 export const supportedFunctions = {
 
@@ -29,6 +30,6 @@ export const supportedFunctions = {
     "fit_at":   { signature: ["artifact", "x", "y", "direction" ], f: fit_at },
     "halt":     { signature: ["artifact",                       ], f: halt },
 
-//     "on":  { signature: false, f: event_on }, // artifact, event, handler
-//     "off": { signature: ["artifact", "event", "key",     ], f: event_off },
+    "on":  { signature: false, /* artifact, event, role, handler */ f: event_on }, 
+    "off": { signature: ["artifact", "event", "role", "key"     ,], f: event_off },
 }

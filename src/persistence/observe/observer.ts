@@ -1,8 +1,7 @@
 import * as events from "events"
 
-/* TODO: convert to ID-based entities */
-
 import { Persistence } from "../persist"
+import { deepCopy } from "../../universe/utils"
 
 import { Dir, Artifact, World, Position } from "../../universe/interfaces"
 import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "../../written/word"
@@ -10,15 +9,11 @@ import { SyncWrittenPersistence } from "../../written/persistence"
 
 
 import * as observerEvents from "./observer_events";
-import { ObserverCommand, ObserverEventType } from "./observer_events";
+import { ObserverCommand } from "./observer_events";
 
 
 
 
-// export interface TimerEvent {}
-// export function initObservance() {
-//     /// how to do timer events
-// }
     
 export class PersistenceObserver extends events.EventEmitter {
     P?: Persistence;
@@ -34,10 +29,8 @@ export class PersistenceObserver extends events.EventEmitter {
         this.ownerId = artifactId;
         this.cleanCommands();
         this.command = ObserverCommand.None;
-        this.on(ObserverEventType.Timer, function( event: observerEvents.TimeEvent){
-            // console.log(`<${that.ownerId}># timer: ${event.delta}, command=${that.command}`)
-            that.iterateCommand();
-        })
+        this.subscribe(undefined, "timer", "object", 
+            (event: observerEvents.TimeEvent) => { that.iterateCommand() })
     }
 
     free() {
@@ -61,17 +54,60 @@ export class PersistenceObserver extends events.EventEmitter {
             const nowTime = Date.now();
             const delta = nowTime - prevTime;
             prevTime = nowTime;
-            that.emit(ObserverEventType.Timer, { delta: delta } as observerEvents.TimeEvent)
+            that.sendEvent("timer", { delta: delta } as observerEvents.TimeEvent)
         }, observerEvents.observerInterval)
     }
 
+    sendEvent(event: string, data,
+              targets?: Record<string,Artifact>){
+        let targetIds: Record<string,string> = {}
+        if (targets) {
+            for (let targetRole in targets) {
+                targetIds[targetRole] = targets[targetRole].id
+            }
+        } else {
+            targetIds = undefined;
+        }
+        this.emit(event, {
+            data: deepCopy(data),
+            targetIds: targetIds,
+        });
+    }
     subscribe(artifact: Artifact, event: string, role: string, handler: any) {
-        let h;
-        // ---- ..... ----------------------------------------------------
-        return h;
+        const that = this;
+        const key = this.on(event, (fullData) => {
+            let caught = false;
+            if (fullData.targetIds) {
+                if (fullData.targetIds[role]) {
+                    if (fullData.targetIds[role] == artifact.id) {
+                        caught = true;
+                    }
+                }
+            } else {
+                caught = true;
+            }
+            if (caught) {
+                const eventData = {
+                    event: event,
+                    role: role,
+                    data: fullData.data
+                }
+                if (handler.invoke) {
+                    handler.invoke(eventData, {})
+                } else {
+                    handler.call(this, eventData);
+                }
+            }
+        });
+        if (artifact) console.log(`SUBSCRIBE <${artifact.name}> #${event}:${role}`)
+        else          console.log(`SUBSCRIBE <> #${event}:${role}`)
+        return key;
     }
     unsubscribe(artifact: Artifact, event: string, role: string, key:any) {
-    }
+        this.off(event, key);
+        if (artifact) console.log(`unsubscribe <${artifact.name}> #${event}:${role}`)
+        else          console.log(`unsubscribe <> #${event}:${role}`)
+    }    
 
     cleanCommands() {
         this._commands = [];
