@@ -26,6 +26,60 @@ This is an Excalibur+Electron prototype of the TXTNET.
 
 
 # THIS ITERATION
+
+
+
+# SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
+- BUG: scrolling text down while typing.
+- excessive position submit (e.g. pickup)
+- another session of documentation
+- refactor positions, coords, and vector stuff
+- embed lua highlighting into markdown
+
+# MAKE IT PRETTY!
+- Apple Developer certificate
+- animate entering the artifact
+- animate leaving the artifact
+- animate holding the artifact
+- background & text colour overrides
+- beautiful sprites
+- good naming
+
+
+
+# 3 YEAR PROJECT PLAN (2019–2021)
+
+1.  [x] Universe basis                       2019 Q4 Nov +
+2.  [x] Basic Written world                  2019 Q4 Dec +
+3.  [x] Persistence                          2020 Q1 Jan +
+4.  [ ] Hosted universes and multiplayer     2020 Q1 Feb
+5.  [ ] Spoken word / gods (commands)        2020 Q1 Mar
+6.  [ ] Full events support.                 2020 Q2 Apr
+7.  [ ] Make a reasonably interesting game   2020 H2 Sep
+8.  [ ] Integrated editor with text flow     2021 H1 May
+9.  [ ] Advanced objects like images etc.    2021 H2 Sep
+10. [ ] Advanced concepts like <health>      2021 H2 Oct
+
+
+# 3. Persistence
+
+- [x] Electron distro
+- [x] Serverside universe
+- [x] Client-server protocol
+- [x] Rightful observers and WW
+
+
+# 4. Multiplayer
+
+- [ ] Messaging library
+- [ ] Address space
+- [ ] Simultaneous multiplayer
+
+# 5. Spoken word and gods
+- [ ] Artifact libraries
+- ... (plan further)
+
+# 6. Full support for events
 - Events
     + introduce roles
     + on: timer
@@ -35,7 +89,11 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - on: putdown/putdown-target
     - on: enter/leave for world
     - on: enter/leave for artifact
+    - on: stop (=closures in spatial commands)
 - Redocument Written Word   
+- WW: `move_by{ distance=10, angle=45 }`
+- WW: travel in chairs <- learn how to put code into chairs, make bouncing chair
+- WW: supporting enter/leave events (complex)
 
 0. TIMER:   event happens all <objects>.
 1. MOVE:    <object> is being moved (by another code, for example) in the <world>
@@ -57,59 +115,6 @@ Then here are options:
         -- body
     end
 
-
-
-# SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
-- BUG: scrolling text down while typing.
-- excessive position submit (e.g. pickup)
-- Apple Developer certificate
-- another session of documentation
-- refactor positions, coords, and vector stuff
-- animate entering the artifact
-- animate leaving the artifact
-- animate holding the artifact
-- embed lua highlighting into markdown
-- background & text colour overrides
-- WW: support closures in spatial commands
-- WW: `move_by{ distance=10, angle=45 }`
-- WW: travel in chairs <- learn how to put code into chairs, make bouncing chair
-- WW: supporting enter/leave events (complex)
-- beautiful sprites
-- good naming
-- WW: chaining move commands, iterate in the recipient of the command?
-
-
-
-# 3 YEAR PROJECT PLAN (2019–2021)
-
-1. [x] Universe basis                       2019 Q4 Nov +
-2. [x] Basic Written world                  2019 Q4 Dec +
-3. [>] Persistence                          2020 Q1 Jan
-4. [ ] Spoken word / gods (commands)        2020 Q1 Feb
-5. [ ] Hosted universes and multiplayer     2020 Q2 Apr
-6. [ ] Make a reasonably interesting game   2020 H2 Sep
-7. [ ] Integrated editor with text flow     2021 H1 May
-8. [ ] Advanced objects like images etc.    2021 H2 Sep
-9. [ ] Advanced concepts like <health>      2021 H2 Oct
-
-
-# 3. Persistence
-
-- [x] Electron distro
-- [x] Serverside universe
-- [x] Client-server protocol
-- [>] Rightful observers and WW
-
-
-# 4. Spoken word and gods
-- [ ] Artifact libraries
-- ... (plan further)
-
-# 5. Multiplayer
-
-- [ ] Messaging library
-- [ ] Address space
-- [ ] Simultaneous multiplayer
 
 
 
