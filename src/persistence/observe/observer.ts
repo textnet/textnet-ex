@@ -1,20 +1,29 @@
+/**
+ * Observer module to handle Written Word in the context of Textnet.
+ */
 import * as events from "events"
 
-import { Persistence } from "../persist"
-import { deepCopy } from "../../utils"
-
+import { deepCopy                       } from "../../utils"
 import { Dir, Artifact, World, Position } from "../../interfaces"
-import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "../../written/word"
-import { SyncWrittenPersistence } from "../../written/persistence"
-
+import { Persistence                    } from "../persist"
+import { initWrittenWord, 
+         freeWrittenWord, 
+         WrittenEnvironment             } from "../../written/word"
+import { SyncWrittenPersistence         } from "../../written/persistence"
 
 import * as observerEvents from "./observer_events";
 import { ObserverCommand } from "./observer_events";
 
 
-
-
-    
+/**
+ * Persistent Observer is responsible for executing Written Word
+ * and receiving events in the vicinity of an artifact with
+ * Written Word inside.
+ *
+ * Each artifact that has some Written Word in it, will spawn
+ * an observer which will keep an eye on things happenning around.
+ * 
+ */    
 export class PersistenceObserver extends events.EventEmitter {
     P?: Persistence;
     writtenP: SyncWrittenPersistence;
@@ -22,7 +31,17 @@ export class PersistenceObserver extends events.EventEmitter {
     interval: any; // to be used for timer events?
     subscribedKeys: any[];
     env?: WrittenEnvironment;
+
+    _commands: ObserverCommand[]; 
+    _commandFuncs: any[];
+    command: ObserverCommand;
+    commandFunc: any;
     
+    /**
+     * Create an observer and link it to an artifact by id.
+     * @param {Persistence} P
+     * @param {string}      artifactId
+     */
     init(P: Persistence, artifactId: string) {
         const that = this;
         this.P = P;
@@ -35,6 +54,9 @@ export class PersistenceObserver extends events.EventEmitter {
             (event: observerEvents.TimeEvent) => { that.iterateCommand() })
     }
 
+    /**
+     * Shut down the observer, dismissing intervals, VM environment, event listeners.
+     */
     free() {
         if (this.interval) {
             clearInterval(this.interval);
@@ -50,6 +72,11 @@ export class PersistenceObserver extends events.EventEmitter {
         }
         this.subscribedKeys = [];
     }
+
+    /**
+     * Setup the base interval that creates "timer" events.
+     * Those events are also used to execute on spatial commands.
+     */
     intervalSetup() {
         const that = this;
         if (this.interval) {
@@ -65,6 +92,13 @@ export class PersistenceObserver extends events.EventEmitter {
         }, observerEvents.observerInterval)
     }
 
+    /**
+     * Emit an event (and convey it to all targets mentioned).
+     * More on events in Written Word documentation.
+     * @param {string} event
+     * @param {any}    data
+     * @param {Record<string,Artifact>} targets @optional
+     */
     sendEvent(event: string, data,
               targets?: Record<string,Artifact>){
         let targetIds: Record<string,string> = {}
@@ -80,6 +114,17 @@ export class PersistenceObserver extends events.EventEmitter {
             targetIds: targetIds,
         });
     }
+
+    /**
+     * Subscribe on an event for an artifact with a given role.
+     * E.g. <Subject> PUSHES <object> in the <world>.
+     * More on events in Written Word documentation.
+     * @param {Artifact} artifact
+     * @param {string}   event
+     * @param {string}   role (subject, object, world)
+     * @param {function} handler
+     * @returns {any}    key to 'unsubscribe'
+     */
     subscribe(artifact: Artifact, event: string, role: string, handler: any) {
         const that = this;
         const key = (fullData) => {
@@ -112,16 +157,32 @@ export class PersistenceObserver extends events.EventEmitter {
         else          console.log(`SUBSCRIBE <> #${event}:${role}`)
         return key;
     }
+
+    /**
+     * Remove a subscription.
+     * More on events in Written Word documentation.
+     * @param {Artifact} artifact
+     * @param {string}   event
+     * @param {string}   role (subject, object, world)
+     * @param {any}      key
+     */
     unsubscribe(artifact: Artifact, event: string, role: string, key:any) {
         this.off(event, key);
         if (artifact) console.log(`unsubscribe <${artifact.name}> #${event}:${role}`)
         else          console.log(`unsubscribe <> #${event}:${role}`)
     }    
 
+    /**
+     * Clean the chained command stack.
+     */
     cleanCommands() {
         this._commands = [];
         this._commandFuncs = [];
     }
+
+    /**
+     * Move on to the next command in the command stack.
+     */
     nextCommand() {
         if (this._commands.length == 0) {
             this.command = ObserverCommand.None;
@@ -131,10 +192,12 @@ export class PersistenceObserver extends events.EventEmitter {
             this.commandFunc = this._commandFuncs.shift();
         }
     }
-    _commands: ObserverCommand[]; 
-    _commandFuncs: any[];
-    command: ObserverCommand;
-    commandFunc: any;
+
+    /**
+     * Function that is called on timer to make sure we are iterating
+     * inn a command. E.g. while 'move' requires multiple iterations
+     * until it gets to its designated point.
+     */
     async iterateCommand() { 
         if (this.command != ObserverCommand.None && this.commandFunc) {
             const repeat = await this.commandFunc();
@@ -143,6 +206,11 @@ export class PersistenceObserver extends events.EventEmitter {
             }
         }
     }
+
+    /**
+     * Call this when you want to command an observer to do something.
+     * We might need to rewrite that later. TODO
+     */
     async executeCommand(command: ObserverCommand, params: object) {
         let commandFunc;
         switch (command) {
@@ -167,6 +235,10 @@ export class PersistenceObserver extends events.EventEmitter {
         }
     }
 
+    /**
+     * The Observer attempts to set itself up.
+     * If successful, the VM is ready and Written Word has been executed.
+     */
     async attempt() {
         this.free();
         this.intervalSetup()
@@ -184,6 +256,10 @@ export class PersistenceObserver extends events.EventEmitter {
         this.env = initWrittenWord(this, this.ownerId, text);
     }
 
+    /**
+     * A straightforward way of creating synchronous Written Persistence
+     * for running the Written Word.
+     */
     async prepareWrittenPersistence() {
         const artifacts: Record<string,Artifact> = {};
         const worlds:    Record<string,World> = {};

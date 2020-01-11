@@ -1,11 +1,24 @@
-import { mundaneWorldName } from "../const"
+/**
+ * Helper module that creates the local account.
+ */
+
+import { deepCopy , pushDefaults                    } from "../utils"
+import { DIR, mundaneWorldName                      } from "../const"
 import { Artifact, World, Account, defaultsArtifact } from "../interfaces"
-import { generateId, registerAccountId } from "./identity"
-import { deepCopy , pushDefaults} from "../utils"
-import { DIR } from "../const"
+import { generateId, registerAccountId              } from "./identity"
+import { Persistence                                } from "./persist"
 
-import { Persistence } from "./persist"
 
+/**
+ * Top-level function that manipulates Persistence to create
+ * all necessary entities for a good start:
+ * - {Account} object
+ * - {Artifact} for the player herself
+ * - two more {Artifact} chairs
+ * 
+ * @param   {Persistence} P
+ * @returns {Account}
+ */
 export async function registerAccount(P: Persistence) {
     const id = registerAccountId()
     // player artifact
@@ -35,6 +48,16 @@ export async function registerAccount(P: Persistence) {
     return account as Account;
 }
 
+/**
+ * Helper function that creates an {Artifact} with corresponding set of {Worlds}
+ * @param   {Persistence} P
+ * @param   {string}      accountId (who'll own it?)
+ * @param   {string}      hostId (which world to place it?)
+ * @param   {string}      name
+ * @param   {string}      setupSpriteName (from the sprite library below)
+ * @param   {string}      text (to put on the world's surface)
+ * @returns {Artifact}
+ */
 async function createArtifact(P: Persistence, accountId: string, hostId: string, 
                         name:string, setupSpriteName:string,
                         text:string ) {
@@ -61,7 +84,9 @@ async function createArtifact(P: Persistence, accountId: string, hostId: string,
 }
 
 
-
+/**
+ * Randomized colour sets for the static artifact database.
+ */
 const titleColors = [
     { bg: "#1E76EC", fg: "#FFFFFF" },
     { bg: "#50A51F", fg: "#FFFFFF" },
@@ -82,7 +107,9 @@ function rnd(list) {
     }
 }
 
-/// TEMP ARTIFACTS
+/**
+ * Default artifact, useful for debugging: visible collider body, asymmetric margins/offsets.
+ */
 const artifactDefault: Artifact = {
     name: "Default", id: "<id>", worldIds: {}, colors: { world: rnd(worldColors), title: rnd(titleColors), },
     hostId: "", inventoryIds: [], visits: {}, visitsStack: [], 
@@ -97,6 +124,9 @@ const artifactDefault: Artifact = {
     },
 }
 
+/**
+ * Default player figure. Animated walking and turning in four directions.
+ */
 const artifactPlayer: Artifact = {   
     name: "<name>", id: "<id>", worldIds: {}, colors: { world: rnd(worldColors), title: rnd(titleColors), },
     hostId: "", inventoryIds: [], visits: {}, visitsStack: [], 
@@ -110,6 +140,10 @@ const artifactPlayer: Artifact = {
         offset: [  5,  15],
     },
 }
+
+/**
+ * Default non-player artifact: chair. Not animated, non-turnable.
+ */
 const artifactChair: Artifact = {
     name: "<name>", id: "<id>", worldIds: {}, colors: { world: rnd(worldColors), title: rnd(titleColors), },
     hostId: "", inventoryIds: [], visits: {}, visitsStack: [], 
@@ -124,10 +158,9 @@ const artifactChair: Artifact = {
     },
 }
 
-let a2 = deepCopy(artifactDefault);
-a2.body.size = [64,64];
-a2.body.offset = [0,0];
-
+/**
+ * Map of the artifacts to be used by `createArtifact`.
+ */
 const artifacts: Record<string,Artifact> = {
     _:               deepCopy(artifactDefault),
     human_professor: deepCopy(artifactPlayer), // artifactPlayer,

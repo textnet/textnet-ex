@@ -40,6 +40,10 @@ if (DEBUG) {
     worldWidth = 634;
     visualBounds.height = 320-24;
 }
+
+export const spatialProximity = 3; // how far is 'NEXT'
+export const spatialThreshold = 0.0001; // for dirrection
+
 /**
  * When an avatar enters a world in the first time, it is positioned here.
  */

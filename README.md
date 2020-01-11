@@ -25,39 +25,15 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - Enter yourself: CTRL + ESCAPE
 
 
-# BUGS
+# BUGS & etc
 + BUG: scrolling text down while typing.
 + excessive position submit (e.g. pickup)
 + WW (events?) resubscribe after recompile or smth.
-
-# DOCUMENTATION ITERATION
-- Refactoring utils
-    - collect all non-specific utils
-        - render
-        - persistence
-        - written
-    - spatial utils
-- Refactoring const
-    - collect all
-        - persistence
-        - render
-        - written
-- Written clean up
-    - approach making it separate from observing
-- Document
-    + electron
-    + written
-    - universe
-    + render
-    - persistence
-        - interop
-        - mutate
-        - observe
-        - the rest
++ some more documentation
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
 - another session of documentation
-- refactor positions, coords, and vector stuff
+- even more refactor positions, coords, and vector stuff
 - embed lua highlighting into markdown
 
 # MAKE IT PRETTY!

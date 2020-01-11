@@ -1,6 +1,12 @@
-import * as storage from "node-persist"
+/**
+ * Abstraction layer for a persistent storage.
+ */
 import * as Database from "better-sqlite3"
 
+/**
+ * Simple key-value storage, allows to get/set/remove/get-all.
+ * Current implementation is SQLite3.
+ */
 export class Storage {
     private db;
     private kind: string;
@@ -8,10 +14,13 @@ export class Storage {
     private statements: Record<string, Database.Statement>;
     constructor(kind: string) {
         this.kind = kind;
-        this.db = new Database("./.persistence/"+kind+".db", {
-            // verbose: console.log
-        })
+        this.db = new Database("./.persistence/"+kind+".db", {});
+        // verbose: console.log
     }
+
+    /**
+     * Init storage: create database if it was not there, prepare queries.
+     */
     init() {
         this.statements = {};
         this.statements["create"] = this.db.prepare(`
@@ -31,12 +40,24 @@ export class Storage {
         this.statements["all"] = this.db.prepare(`
             SELECT id, data FROM items`);
     }
+
+    /**
+     * Store `value` under `key`.
+     * @param {string} key
+     * @param {any}    value
+     */
     set( key: string, value: any) {
         // console.log(`Write => ${this.kind} [${key}].`);
         const data = JSON.stringify(value);
         const result = this.statements["set"].run(key, data)
         return result;
     }
+
+    /**
+     * Get value under `key`.
+     * @param   {string} key
+     * @returns {any}    value
+     */
     get( key: string ) {
         // console.log(`Load  <= ${this.kind} [${key}].`);
         const raw = this.statements["get"].get(key)
@@ -44,12 +65,26 @@ export class Storage {
         const result = JSON.parse(raw.data);
         return result;
     }
+
+    /**
+     * Remove `key` from the storage
+     * @param   {string} key
+     */    
     remove( key: string ) {
         return this.statements["remove"].run(key);
     }
+
+    /**
+     * Clear storage, start from scratch.
+     */    
     clear() {
         return this.statements["clear"].run();
     }
+
+    /**
+     * Get all key-value pairs from the storage.
+     * @return {Record<string, any>}
+     */    
     all() {
         const raw = this.statements["all"].all();
         let result = {};
@@ -58,6 +93,10 @@ export class Storage {
         }
         return result;
     }
+
+    /**
+     * Shutdown the storage engine.
+     */    
     free() {
         this.db.close();
     }

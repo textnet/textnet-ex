@@ -35,8 +35,6 @@ export async function playerPrepareWorld(P: Persistence) {
             inventoryEvents.push(inventoryEvent)
         }
     }
-
-
     const result = {
         account: await structureFromAccount(P, P.account), 
         world: await structureFromWorld(P,world), 

@@ -1,5 +1,5 @@
 import { Position, Dir } from "./interfaces"
-import { DIR } from "./const"
+import { DIR, spatialThreshold } from "./const"
 
 /**
  * Miscellaneous utility function.
@@ -16,13 +16,6 @@ import { DIR } from "./const"
 export function pushDefaults(to,defaults) 
 { for (let i in defaults) if (!to[i]) to[i] = defaults[i]; }
 
-/**
- * Simplest ID generator; should be replaced with something better.
- * @param {string} prefix
- * @returns {string} like 'artifact:23'.
- */
-export function numerate(prefix: string) { return prefix + ":" + ++_num; }
-let _num = 0;
 
 /**
  * Make a copy of a Position. Uses `deepcopy`.
@@ -34,10 +27,6 @@ export function cpPosition(position: Position) {
 }
 
 
-/**
- * Threshold for standartisation of directions.
- */
-const THRESHOLD = 0.0001;
 
 /**
  * Adds two directions into one.
@@ -51,7 +40,7 @@ export function addDir(dir1: Dir, dir2: Dir) {
     dir.x = dir1.x + dir2.x;
     dir.y = dir1.y + dir2.y;
     // establish direction.
-    if (Math.abs(dir.x) <= THRESHOLD && Math.abs(dir.y) <= THRESHOLD) {
+    if (Math.abs(dir.x) <= spatialThreshold && Math.abs(dir.y) <= spatialThreshold) {
         dir.name = DIR.NONE.name;
     } else {
         if (Math.abs(dir.x) > Math.abs(dir.y)) {

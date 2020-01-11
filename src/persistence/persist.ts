@@ -1,22 +1,23 @@
+/**
+ * Local persistence module.
+ */
 import { BrowserWindow } from "electron"
 
-import { Storage } from "./storage"
+import { deepCopy                                   } from "../utils"
 import { Artifact, Account, World, defaultsArtifact } from "../interfaces"
-import { generateId, registerAccountId } from "./identity"
-import { deepCopy } from "../utils"
-
-import { Repository } from "./repo"
-
-import { PersistenceObserver } from "./observe/observer";
-import { interopSetup } from "./interop/setup"
+import { Storage                                    } from "./storage"
+import { generateId, registerAccountId              } from "./identity"
+import { Repository                                 } from "./repo"
+import { registerAccount                            } from "./startup"
+import { PersistenceObserver                        } from "./observe/observer";
 
 import * as mutateEnter from "./mutate/enter"
+import { interopSetup } from "./interop/setup"
 
-
-import { registerAccount } from "./startup"
-
-
-
+/**
+ * Asynchronous Local Persistence. 
+ * Provides local persistent storage for artifacts, worlds, and accounts.
+ */
 export class Persistence {
     prefix: string;
     artifacts: Repository<Artifact>;
@@ -37,6 +38,12 @@ export class Persistence {
         this.config    = new Storage(this.prefix+"storage");
     }
 
+    /**
+     * Make a connection between persistence and window.
+     * If there is a connection, then persistence shoots
+     * events to update renderer in that window.
+     * @param {BrowserWindow} window
+     */
     attachWindow(window: BrowserWindow) {
         this.window = window;
     }
@@ -46,9 +53,8 @@ export class Persistence {
         this.accounts.init();
         this.worlds.init();
         this.config.init();
-
+        // 
         interopSetup(this);
-        
         // get account or create one if there is none.
         let localId = await this.config.get("localId");
         if (localId == undefined) {
@@ -57,7 +63,6 @@ export class Persistence {
             localId = account.id;
         }
         this.account = await this.accounts.load(localId);
-
         // get all available (local) artifacts and make observers for them
         this.observers = {};
         const artifacts = await this.artifacts.all()
@@ -66,7 +71,6 @@ export class Persistence {
             this.observers[id].init(this, id)
             await this.observers[id].attempt();
         }
-        //
     }
 
     async free() {

@@ -2,12 +2,11 @@
 import { Persistence } from "../persist"
 import { SyncWrittenPersistence } from "../../written/persistence"
 import { Dir, Position, Artifact, World } from "../../interfaces"
-import { DIR, visualBounds, worldWidth } from "../../const"
+import { DIR, visualBounds, worldWidth, spatialProximity } from "../../const"
 import { deepCopy } from "../../utils"
 /**
  * How far artifacts should be to be considered 'next to each other'.
  */
-const PROXIMITY = 3; // how far is 'NEXT'
 
 export async function getArtifact_NextTo(P: Persistence, artifact: Artifact, dir?: Dir) {
     if (!dir) {
@@ -83,7 +82,7 @@ export async function isNext(P: Persistence, a: Artifact, b: Artifact, dir: Dir)
         if (dir.name == DIR.DOWN.name) distance = bBox[1]-aBox[3];
         // console.log("overlapX", distance, dir.name)
     }
-    return (distance >= -PROXIMITY && distance <= PROXIMITY);
+    return (distance >= -spatialProximity && distance <= spatialProximity);
 }
 
 export function sync_isNext(P: SyncWrittenPersistence, a: Artifact, b: Artifact, dir: Dir) {
@@ -112,7 +111,7 @@ export function sync_isNext(P: SyncWrittenPersistence, a: Artifact, b: Artifact,
         if (dir.name == DIR.DOWN.name) distance = bBox[1]-aBox[3];
         // console.log("overlapX", distance, dir.name)
     }
-    return (distance >= -PROXIMITY && distance <= PROXIMITY);
+    return (distance >= -spatialProximity && distance <= spatialProximity);
 }
 
 export async function isPlaceable(P: Persistence, artifact: Artifact, 
