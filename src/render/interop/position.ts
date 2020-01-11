@@ -1,17 +1,23 @@
-
-import { Game } from "../game"
+/**
+ * INTEROP: Artifacts and camera changing positions.
+ */
+import { visualBounds              } from "../../const"
+import { deepCopy                  } from "../../utils"
+import { Game                      } from "../game"
 import { RadiusAroundActorStrategy } from "../scene"
-import { PositionEvent } from "./events"
-import { BaseActor } from "../actors/base"
-import { ArtifactActor } from "../actors/artifact"
+import { BaseActor                 } from "../actors/base"
+import { ArtifactActor             } from "../actors/artifact"
 
-import { visualBounds } from "../../universe/const"
-import { deepCopy } from "../../universe/utils"
+import { PositionEvent             } from "./events"
 
-
+/**
+ * INTEROP: Artifact changes position on stage
+ * @param {Game}       game
+ * @param {PositionEvent} event
+ */
 export function positionArtifact(game: Game, event: PositionEvent) {
     var scene = game.gameScene();
-    // console.log("reposition", event.artifactId, "in", event.worldId, "at", event.position)
+    console.log("reposition", event.artifactId, "in", event.worldId, "at", event.position)
     if (scene.worldData.id == event.worldId) {
         for (let a of scene.actors) {
             const actor = a as BaseActor;
@@ -28,6 +34,11 @@ export function positionArtifact(game: Game, event: PositionEvent) {
     }
 }
 
+/**
+ * Internal: Adjust camera if the player's actor has moved.
+ * @param {Game}      game
+ * @param {BaseActor} actor
+ */
 export function repositionCamera(game: Game, actor: BaseActor) {
     var scene = game.gameScene();
     if (actor.artifact.isPlayer && !scene.hasCamera) {

@@ -10,8 +10,8 @@ import { DIR } from "./const"
 
 /**
  * Push values from B to A if there are no values present in A
- * @to {object} destination
- * @defaults {object} object with default values
+ * @param {object} to       — destination
+ * @param {object} defaults - object with default values
  */
 export function pushDefaults(to,defaults) 
 { for (let i in defaults) if (!to[i]) to[i] = defaults[i]; }

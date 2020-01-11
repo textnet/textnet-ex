@@ -1,9 +1,9 @@
 import * as events from "events"
 
 import { Persistence } from "../persist"
-import { deepCopy } from "../../universe/utils"
+import { deepCopy } from "../../utils"
 
-import { Dir, Artifact, World, Position } from "../../universe/interfaces"
+import { Dir, Artifact, World, Position } from "../../interfaces"
 import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "../../written/word"
 import { SyncWrittenPersistence } from "../../written/persistence"
 
@@ -20,6 +20,7 @@ export class PersistenceObserver extends events.EventEmitter {
     writtenP: SyncWrittenPersistence;
     ownerId?: string;
     interval: any; // to be used for timer events?
+    subscribedKeys: any[];
     env?: WrittenEnvironment;
     
     init(P: Persistence, artifactId: string) {
@@ -29,6 +30,7 @@ export class PersistenceObserver extends events.EventEmitter {
         this.ownerId = artifactId;
         this.cleanCommands();
         this.command = ObserverCommand.None;
+        this.subscribedKeys = [];
         this.subscribe(undefined, "timer", "object", 
             (event: observerEvents.TimeEvent) => { that.iterateCommand() })
     }
@@ -42,6 +44,11 @@ export class PersistenceObserver extends events.EventEmitter {
             freeWrittenWord(this.env);
             delete this.env;
         }
+        for (let item of this.subscribedKeys) {
+            console.log(item)
+            this.off(item["event"], item["key"]);
+        }
+        this.subscribedKeys = [];
     }
     intervalSetup() {
         const that = this;
@@ -75,7 +82,7 @@ export class PersistenceObserver extends events.EventEmitter {
     }
     subscribe(artifact: Artifact, event: string, role: string, handler: any) {
         const that = this;
-        const key = this.on(event, (fullData) => {
+        const key = (fullData) => {
             let caught = false;
             if (fullData.targetIds) {
                 if (fullData.targetIds[role]) {
@@ -98,7 +105,9 @@ export class PersistenceObserver extends events.EventEmitter {
                     handler.call(this, eventData);
                 }
             }
-        });
+        };
+        this.on(event, key);
+        this.subscribedKeys.push({event:event, key:key})
         if (artifact) console.log(`SUBSCRIBE <${artifact.name}> #${event}:${role}`)
         else          console.log(`SUBSCRIBE <> #${event}:${role}`)
         return key;
@@ -113,7 +122,7 @@ export class PersistenceObserver extends events.EventEmitter {
         this._commands = [];
         this._commandFuncs = [];
     }
-    async nextCommand() {
+    nextCommand() {
         if (this._commands.length == 0) {
             this.command = ObserverCommand.None;
             this.commandFunc = undefined;
@@ -130,7 +139,7 @@ export class PersistenceObserver extends events.EventEmitter {
         if (this.command != ObserverCommand.None && this.commandFunc) {
             const repeat = await this.commandFunc();
             if (!repeat) {
-                await this.nextCommand();
+                this.nextCommand();
             }
         }
     }

@@ -1,10 +1,13 @@
-
-import { Dir, Position } from "../../universe/interfaces";
+/**
+ * INTEROP: All events that happen between Renderer and Main processes.
+ */
+import { Dir, Position                     } from "../../interfaces";
 import { ArtifactStructure, WorldStructure } from "../data_structures";
 
 export interface ArtifactPropertiesEvent {
     artifactStructure: ArtifactStructure;
 }
+
 export interface WorldPropertiesEvent {
     worldStructure: WorldStructure;
 }

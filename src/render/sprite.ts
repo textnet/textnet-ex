@@ -1,15 +1,14 @@
-import * as ex from 'excalibur';
-
-import { b64toBlob } from "../universe/utils"
-
-import { BaseActor } from "./actors/base"
-import { ArtifactStructure } from "./data_structures"
-import { Game } from "./game"
-
 /** 
  * Module for sprite rendering.
  * Uses `sprite` part of the Artifact structure to create Excalibur sprites.
  */
+
+import * as ex from 'excalibur';
+import { b64toBlob         } from "../utils"
+import { BaseActor         } from "./actors/base"
+import { ArtifactStructure } from "./data_structures"
+import { Game              } from "./game"
+
 
 /**
  * Recognised names for animations: move/idle and 4 directions

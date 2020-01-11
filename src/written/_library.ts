@@ -1,16 +1,20 @@
-export const supportedFunctions = {}
+/**
+ * TEMP reminder on how events were implemented earlier.
+ */
 
-// import { Artifact, Dir, World } from "../universe/interfaces"
-// import { DIRfrom } from "../universe/const"
+ export const supportedFunctions = {}
+
+// import { Artifact, Dir, World } from "../interfaces"
+// import { DIRfrom } from "../const"
 // import { AvatarObserver, ObserverCommand } from "../observe"
-// import { getArtifact_NextTo } from "../universe/getters"
+// import { getArtifact_NextTo } from "../getters"
 // import { FengariMap } from "./api"
 // import { 
 //     updateArtifactProperties,
 //     updateArtifactText,
 //     tryToPlaceArtifact,
-// } from "../universe/manipulations"
-// import { cpCoords, normalizeDir } from "../universe/utils"
+// } from "../manipulations"
+// import { cpCoords, normalizeDir } from "../utils"
 
 // export const supportedFunctions = {
 //     "get_artifacts": { signature: ["world", "id", "name"], f: get_artifacts },

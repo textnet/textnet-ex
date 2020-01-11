@@ -1,8 +1,8 @@
 // import * as ex from "excalibur";
 
-// import { Dir } from "../universe/interfaces"
-// import { DIR, COMMAND } from "../universe/const"
-// import { deepCopy } from "../universe/utils"
+// import { Dir } from "../interfaces"
+// import { DIR, COMMAND } from "../const"
+// import { deepCopy } from "../utils"
 
 // import { Game } from "./index";
 

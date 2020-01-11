@@ -1,10 +1,10 @@
 // import * as ex from "excalibur";
 
 // import { DIR, DIRfrom, COMMAND, visualBounds,
-//          worldWidth } from "../universe/const";
-// import { Dir, Position, Artifact  } from "../universe/interfaces"
-// import { getArtifact_NextTo } from "../universe/getters"
-// import { deepCopy, addDir, cpCoords } from "../universe/utils"
+//          worldWidth } from "../const";
+// import { Dir, Position, Artifact  } from "../interfaces"
+// import { getArtifact_NextTo } from "../getters"
+// import { deepCopy, addDir, cpCoords } from "../utils"
 
 // import { updateArtifactOnScene } from "./plane"
 // import { PlaneScene } from "./plane"

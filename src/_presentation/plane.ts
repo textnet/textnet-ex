@@ -1,16 +1,16 @@
 // import * as jquery from "jquery";
 // import * as ex from "excalibur";
 
-// import { DIR, spawnPosition, worldWidth, visualBounds } from "../universe/const";
+// import { DIR, spawnPosition, worldWidth, visualBounds } from "../const";
 // import {
 //     Position,
 //     Account,
 //     World,
 //     Artifact,
-// } from "../universe/interfaces";
+// } from "../interfaces";
 
 // import { ArtifactActor } from "./actor";
-// import { updateEditor, adjustEditor, initEditor, Editor } from "./editor"
+// import { updateEditor, adjustEditorFocus, initEditor, Editor } from "./editor"
 // import { Game } from "./index"
 
 
@@ -74,7 +74,7 @@
 //         if (diff < -this.radius) {
 //             focus = focus.add(new ex.Vector(0, diff + this.radius));
 //         }
-//         adjustEditor((_eng.currentScene as PlaneScene).editor, focus)
+//         adjustEditorFocus((_eng.currentScene as PlaneScene).editor, focus)
 //         return focus;
 //     }
 // }

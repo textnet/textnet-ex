@@ -1,7 +1,7 @@
-import { Dir, Position, Artifact, World } from "../../universe/interfaces";
+import { Dir, Position, Artifact, World } from "../../interfaces";
 import { PersistenceObserver } from "./observer"
-import { numerate, normalizeDir, lengthDir } from "../../universe/utils"
-import { DIR, DIRfrom } from "../../universe/const"
+import { numerate, normalizeDir, lengthDir } from "../../utils"
+import { DIR, DIRfrom } from "../../const"
 import * as mutatePlace from "../mutate/place"
 
 

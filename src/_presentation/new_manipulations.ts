@@ -4,7 +4,7 @@
 //     Position, Dir, Coordinates,
 //     Artifact, World, 
 //     Account
-// } from "../universe/interfaces"
+// } from "../interfaces"
 
 
 // export function enterWorld(avatar:Artifact, world:World) {

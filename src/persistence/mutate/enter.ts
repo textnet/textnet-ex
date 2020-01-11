@@ -3,9 +3,9 @@ import { Persistence } from "../persist"
 import { fit, removeFromWorld } from "./place"
 import { sendTopInventory } from "../interop/send";
 
-import { spawnPosition } from "../../universe/const"
-import { Position, Artifact, World } from "../../universe/interfaces"
-import { deepCopy } from "../../universe/utils"
+import { spawnPosition } from "../../const"
+import { Position, Artifact, World } from "../../interfaces"
+import { deepCopy } from "../../utils"
 
 export async function enterWorld(P: Persistence, artifact: Artifact, world: World) {
     // console.log(`Enter world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);

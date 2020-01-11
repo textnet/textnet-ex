@@ -1,9 +1,9 @@
 import { BrowserWindow } from "electron"
 
 import { Storage } from "./storage"
-import { Artifact, Account, World, defaultsArtifact } from "../universe/interfaces"
+import { Artifact, Account, World, defaultsArtifact } from "../interfaces"
 import { generateId, registerAccountId } from "./identity"
-import { deepCopy } from "../universe/utils"
+import { deepCopy } from "../utils"
 
 import { Repository } from "./repo"
 

@@ -1,12 +1,19 @@
+/**
+ * Simple parser that extracts Written Word.
+ */
+
+// Line-based indentation (2+ spaces, 4+ is recommended)
+function isCode(line: string) { return line.match(/^[ ]{2,}[^+\-*>].*$/i) }
+// Block indentation using triple ticks ```
+function isCodeDelimiter(line: string) { return line.match(/^\s*```.*$/i) }
 
 
-function isCode(line: string) {
-    return line.match(/^[ ]{2,}[^+\-*>].*$/i)
-}
-function isCodeDelimiter(line: string) {
-    return line.match(/^\s*```.*$/i)
-}
-
+/**
+ * Extract Written Word from the given input text.
+ * Currently supported formats are as in Markdown:
+ * - line-based indentation (2+ spaces, 4+ is recommended);
+ * - triple-backtick block indentation.
+ */
 export function getChunks(input) {
     let lines = input.split("\n");
     lines.push("");

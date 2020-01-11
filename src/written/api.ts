@@ -1,50 +1,64 @@
+/**
+ * Generic API to Fengari: setting up Lua State, registering functions, etc.
+ */
+import { DEBUG } from "../const"
+
 import { lua, lauxlib, ldebug, lualib, to_luastring, to_jsstring, LuaState } from "fengari-web"
 import { push, luaopen_js, wrap, jscall } from "./interop"
 import { supportedFunctions } from "./library"
 
-import { defaultsArtifact } from "../universe/interfaces"
-import { deepCopy } from "../universe/utils"
-
+/**
+ * FengariMap is an interfact for Fengari Proxy wrapper which
+ * allows easy access to data structures made inside Lua.
+ * @see interop.ts:wrap()
+ */
 export interface FengariMap {
     get(key),
     set(key, value),
     has(key),
-    ownKeys()
 }
 
-
+/**
+ * Loads Lua code into Lua VM (defined by LuaState).
+ * Required before using "fengari_call".
+ * @param   {LuaState} L    
+ * @param   {string}   code 
+ * @returns {boolean} if code is loaded correctly (i.e. no syntax errors)
+ */
 export function fengari_load(L: LuaState, code:string) {
     const loadResult = lauxlib.luaL_loadstring(L, to_luastring(code));
     log(L, "luaL_loadstring", loadResult);
     return loadResult == lua.LUA_OK;
 }
 
+/**
+ * Runs Lua code previously loaded into Lua VM (defined by LuaState).
+ * Use in conjunction with "fengari_load".
+ * @param   {LuaState} L    
+ * @returns {boolean} - if code executed correctly (e.g. no runtime or OOM errors)
+ */
 export function fengari_call(L: LuaState) {
     const callResult = lua.lua_pcall(L, 0, 1, 0)
     log(L, "lua_pcall", callResult);
     return callResult == lua.LUA_OK;
 }
 
-export function fengari_resume(L: LuaState) {
-    const callResult = lua.lua_resume(L, null, 0);
-    log(L, "lua_resume", callResult);
-    return callResult == lua.LUA_YIELD || callResult == lua.LUA_OK;
-}
-
-export function fengari_yield(L: LuaState) {
-    const callResult = lua.lua_yield(L, 0);
-    log(L, "lua_yield", callResult);
-    return callResult == lua.LUA_YIELD || callResult == lua.LUA_OK;
-}
-
+/**
+ * Runs Lua code previously loaded into Lua VM (defined by LuaState).
+ * Use in conjunction with "fengari_load".
+ * @param   {LuaState} L  
+ * @param   {string}   call       - e.g. 'lua_pcall'
+ * @param   {string}   callResult - error code (e.g. LUA_ERRMEM)
+ */
 function log(L: LuaState, call:string, callResult:string) {
+    if (DEBUG) return;
     const _log = (text) => {
         console.log(call+":", text);
         console.log("Error message:", to_jsstring(lauxlib.luaL_tolstring(L, -1)))
     };
     switch (callResult) {
         case lua.LUA_OK:        return;
-        case lua.LUA_YIELD:     return;
+        case lua.LUA_YIELD:     return _log("Yield is not supported");
         case lua.LUA_ERRMEM:    return _log("Out of memory");
         case lua.LUA_ERRERR:    return _log("WTF: Error of error");
         case lua.LUA_ERRGCMM:   return _log("Garbage issue");
@@ -54,7 +68,18 @@ function log(L: LuaState, call:string, callResult:string) {
     return _log("Unknown Error")
 }
 
-
+/**
+ * Registers a TypeScript function as a Lua function in global space.
+ * Once done, the function can be called from Lua.
+ * @param   {object}   CTX - context object to be provided into the
+ *                           function as first parameter.
+ *                           API is agnostic of the object type.
+ * @param   {LuaState} L
+ * @param   {string}   name      - Lua name for the function
+ * @param   {string[]} signature - parameters to be extracted from Lua input;
+ *                                 if false, the whole FengariMap will be passed.
+ * @param   {function} f         - TypeScript function itself.
+ */
 export function fengari_register_function(CTX, L: LuaState, name: string, signature: string[], f)  {
     const fWrapper = function() {
         const argCount = lua.lua_gettop(L);
@@ -74,12 +99,17 @@ export function fengari_register_function(CTX, L: LuaState, name: string, signat
     lua.lua_setglobal(L, to_luastring(name));
 }
 
+/**
+ * Prepares Lua VM and registers all supported functions/
+ * @param {object} CTX - context object to be provided into the
+ *                       function as first parameter.
+ *                       API is agnostic of the object type.
+ * @returns {LuaState} of the VM.
+ * @see library.ts for list of the supported functions.
+ */
 export function fengari_init(CTX) {
     // init ----------------------------------------------------------------
     const L = lauxlib.luaL_newstate();
-    // lua.lua_atnativeerror(L, function (l) {
-    //     lua.lua_pushstring(l, to_luastring(''+lua.lua_touserdata(l, -1)));
-    // });
     if (!L) {
         console.log("luaL_newstate: out of memory")
         return;
@@ -95,6 +125,10 @@ export function fengari_init(CTX) {
     return L;
 }
 
+/**
+ * Shuts down the VM.
+ * @param   {LuaState} L
+ */
 export function fengari_free(L: LuaState) {
     lua.lua_close(L)
 }

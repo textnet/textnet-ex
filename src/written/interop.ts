@@ -1,10 +1,15 @@
+/**
+ * Fengari Lua <-> TypeScript interoperation layer.
+ * Adapted from Fengari-Interop and Fengari-Web:
+ * https://github.com/fengari-lua/fengari-interop/blob/master/src/js.js
+ *
+ * No documentation is provided in hope it will never be needed.
+ * Usually this hope is in vain.
+ * Sad.
+ */
+
 import {lua, lauxlib, lualib, to_luastring} from "fengari-web"
 import { checkjs, testjs, tojs } from "fengari-interop"
-
-/**
- * NB: it is massacred from here:
- * @see https://github.com/fengari-lua/fengari-interop/blob/master/src/js.js
- */
 
 const global_env = (function() {
     /* global WorkerGlobalScope */ /* see https://github.com/sindresorhus/globals/issues/127 */

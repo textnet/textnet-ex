@@ -1,6 +1,6 @@
 
 import { Persistence } from "../persist"
-import { Position } from "../../universe/interfaces"
+import { Position } from "../../interfaces"
 
 import { PositionEvent } from "../../render/interop/events"
 

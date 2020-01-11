@@ -1,6 +1,6 @@
 
-import { deepCopy } from "../../universe/utils"
-import { Account, Artifact, World } from "../../universe/interfaces"
+import { deepCopy } from "../../utils"
+import { Account, Artifact, World } from "../../interfaces"
 import { WorldStructure, ArtifactStructure, AccountStructure } from "../../render/data_structures"
 
 import { Persistence } from "../persist"

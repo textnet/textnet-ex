@@ -1,6 +1,18 @@
-import { Position } from "../universe/interfaces"
+/**
+ * Specific structures are used to exchange data between renderer 
+ * and main processes of the Electron app.
+ *
+ * They differ from the ones that Persistence and all other guys are
+ * using. They only contain data required for rendering, and in the 
+ * way that is convenient for the purpose.
+ */
+import { Position } from "../interfaces"
 
 
+/**
+ * Structure to describe World for rendering: colors, format, text, name.
+ * Built from both {Artefact} and {World} content.
+ */
 export interface WorldStructure {
     id: string;
     ownerId: string;
@@ -13,15 +25,27 @@ export interface WorldStructure {
     }
 }
 
+/**
+ * {Account} structure is very basic.
+ */
 export interface AccountStructure {
     id: string;
     artefactId: string;
     isLocal: boolean;
 }
 
+/**
+ * When updating properties of the artifact actor, those pieces
+ * of data structure are ignored.
+ */
 export const artifactPrivateProperties = [ "isInventory", "isLocal", "isPlayer", 
                                            "sprite", "body", "id", "position", ];
 
+
+/**
+ * Data structure for {Artifact} is focused on sprites and parameters of
+ * actor like `speed` and `passable`.
+ */
 export interface ArtifactStructure {
     id: string;
     name: string;

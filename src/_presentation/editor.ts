@@ -3,8 +3,8 @@
 // import * as ex from "excalibur"
 // import * as ace from "brace"
 
-// import { visualBounds, worldWidth } from "../universe/const"
-// import { World } from "../universe/interfaces"
+// import { visualBounds, worldWidth } from "../const"
+// import { World } from "../interfaces"
 
 // import { Game } from "./index"
 // import { ArtifactActor } from "./actor"
@@ -120,7 +120,7 @@
 // }
 
 
-// export function adjustEditor(editor: Editor, focus: ex.Vector) {
+// export function adjustEditorFocus(editor: Editor, focus: ex.Vector) {
 //     let home = visualBounds.height / 2 + visualBounds.margin;
 //     let camera = focus.y;
 //     let distance = camera-home;

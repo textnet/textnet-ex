@@ -1,9 +1,9 @@
 
 import { Persistence } from "../persist"
 import { SyncWrittenPersistence } from "../../written/persistence"
-import { Dir, Position, Artifact, World } from "../../universe/interfaces"
-import { DIR, visualBounds, worldWidth } from "../../universe/const"
-import { deepCopy } from "../../universe/utils"
+import { Dir, Position, Artifact, World } from "../../interfaces"
+import { DIR, visualBounds, worldWidth } from "../../const"
+import { deepCopy } from "../../utils"
 /**
  * How far artifacts should be to be considered 'next to each other'.
  */

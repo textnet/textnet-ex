@@ -1,8 +1,8 @@
 // can place? etc.
 
-import { deepCopy } from "../../universe/utils"
+import { deepCopy } from "../../utils"
 
-import { Artifact, World, Position } from "../../universe/interfaces"
+import { Artifact, World, Position } from "../../interfaces"
 import { Persistence } from "../persist"
 import { isPlaceable, isInBounds } from "./spatial"
 

@@ -1,11 +1,21 @@
+/**
+ * Written Word: Properties of worlds and artifacts.
+ * E.g. name, speed, background color.
+ */
 
-import { Artifact, World } from "../../universe/interfaces"
+import { Artifact, World }     from "../../interfaces"
 import { PersistenceObserver } from "../../persistence/observe/observer"
-import { FengariMap } from "../api"
+import { FengariMap }          from "../api"
+import { updateProperties }    from "../../persistence/mutate/properties"
 
-import { updateProperties } from "../../persistence/mutate/properties"
-
-
+/**
+ * Updates an artifact or a world referenced.
+ * Update is done asynchronously.
+ * @param {PersistenceObserver} O
+ * @optional @param {FengariMap} all parameters, namely:
+ *    - artifact (default is self)
+ *    - name, speed, power, etc. from API
+ */
 export function update( O: PersistenceObserver, params: FengariMap) {
     let artifact = params.get("artifact") as Artifact;
     if (!artifact) {

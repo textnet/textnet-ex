@@ -1,28 +1,33 @@
+/**
+ * Artifact Actor Module.
+ * ----------------------
+ * Every artifact in the world is rendered as an {ArtifactActor}.
+ */
 import * as ex from "excalibur";
 
-import { COMMAND, DIR, DIRfrom, worldWidth, visualBounds } from "../../universe/const"
-import { Dir, Position } from "../../universe/interfaces"
-import { deepCopy, addDir } from "../../universe/utils"
+import { COMMAND, DIR, DIRfrom, worldWidth, visualBounds } from "../../const"
+import { Dir, Position                                   } from "../../interfaces"
+import { deepCopy, addDir                                } from "../../utils"
 
-
-import { GameScene } from "../scene"
-import { Game } from "../game"
-import { ArtifactSprite } from "../sprite"
-import { ArtifactStructure } from "../data_structures"
-import { BaseActor } from "./base"
-import { InventoryActor } from "./inventory"
+import { BaseActor                            } from "./base"
+import { InventoryActor                       } from "./inventory"
+import { GameScene                            } from "../scene"
+import { Game                                 } from "../game"
+import { ArtifactSprite                       } from "../sprite"
+import { ArtifactStructure                    } from "../data_structures"
 import { getPlayerDirection, getPlayerCommand } from "../command"
-
-import { focusEditor } from "../editor"
+import { focusEditor                          } from "../editor"
 
 import * as interopSend from "../interop/send"
 
-
+/**
+ * Excalibur Actor extension for Artifact-based actors.
+ */
 export class ArtifactActor extends BaseActor {
     speed: { x:number, y: number };
-    needRelease: boolean;
-    isKneeled: boolean;
-    inventory?: InventoryActor;
+    needRelease: boolean; // need to release a key before next key command is triggered.
+    isKneeled: boolean;   // is a player typing in?
+    inventory?: InventoryActor; // an actor to render current inventory of this artifact.
 
     constructor(artifact: ArtifactStructure) {
         let pos:Position = artifact.position;
@@ -45,16 +50,14 @@ export class ArtifactActor extends BaseActor {
         }
     }
 
-    onInitialize(engine: Game) {
-        super.onInitialize(engine);
-    }
-
-
+    /**
+     * Update player's actor based on commands received (e.g. move, push, etc.)
+     * @param {Game} engine
+     */
     updateFromCommands(engine: Game) {
         this.speed = { x:0, y:0 };
         let dir: Dir = deepCopy(DIR.NONE);
         // Player input for direction and speed
-
         if (this.artifact.isPlayer && !this.isKneeled) {
             if (this.needRelease && engine.input.keyboard.getKeys().length == 0) {
                 this.needRelease = false;
@@ -90,8 +93,7 @@ export class ArtifactActor extends BaseActor {
                 }
             }
         }
-
-        // adjust orientation if it is changing
+        // Adjust orientation if it is changing
         if (dir.name != DIR.NONE.name) {
             this.dir = dir;
         } 
@@ -100,6 +102,12 @@ export class ArtifactActor extends BaseActor {
         this.vel.y = dir.y * this.artifact.speed;
     }
 
+
+    /**
+     * While moving an actor, make sure it stays within the stage.
+     * Same checks are done on the Persistence layer, so this is
+     * more for visual smoothness.
+     */
     checkBounds() {
         if (this.pos.y < 0) {
             this.pos.y = 0;

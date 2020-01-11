@@ -1,10 +1,10 @@
 // import * as ex from 'excalibur';
-// import { Dir, Artifact, World, Coordinates } from "./universe/interfaces"
+// import { Dir, Artifact, World, Coordinates } from "./interfaces"
 // import { initWrittenWord, freeWrittenWord, WrittenEnvironment } from "./written/word"
-// import { numerate, normalizeDir, lengthDir } from "./universe/utils"
-// import { DIR } from "./universe/const"
-// import { tryToPlaceArtifact, placeArtifact } from "./universe/manipulations"
-// import { ScriptTimerEvent } from "./universe/events"
+// import { numerate, normalizeDir, lengthDir } from "./utils"
+// import { DIR } from "./const"
+// import { tryToPlaceArtifact, placeArtifact } from "./manipulations"
+// import { ScriptTimerEvent } from "./events"
 
 
 // export enum ObserverCommand {

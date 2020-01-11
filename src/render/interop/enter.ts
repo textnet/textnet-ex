@@ -1,17 +1,22 @@
-
-import { Game } from "../game"
-import { EnterEvent, LeaveEvent } from "./events"
-import { ArtifactActor } from "../actors/artifact"
-import { BaseActor } from "../actors/base"
+/**
+ * INTEROP: Artifacts entering and leaving the world.
+ */
+import { visualBounds              } from "../../const"
+import { Game                      } from "../game"
+import { ArtifactActor             } from "../actors/artifact"
+import { BaseActor                 } from "../actors/base"
 import { RadiusAroundActorStrategy } from "../scene"
 
-import { visualBounds } from "../../universe/const"
-
 import * as interopSend from "../interop/send"
-import { repositionCamera } from "./position"
-import { inventoryArtifact } from "./inventory"
+import { EnterEvent, LeaveEvent    } from "./events"
+import { repositionCamera          } from "./position"
+import { inventoryArtifact         } from "./inventory"
 
-
+/**
+ * INTEROP: Artifact enters the world on stage.
+ * @param {Game}       game
+ * @param {EnterEvent} event
+ */
 export function enterArtifact(game: Game, event: EnterEvent) {
     var scene = game.gameScene();
     if (scene.worldData.id == event.worldId) {
@@ -45,6 +50,11 @@ export function enterArtifact(game: Game, event: EnterEvent) {
     }
 }
 
+/**
+ * INTEROP: Artifact leaves the world on stage.
+ * @param {Game}       game
+ * @param {LeaveEvent} event
+ */
 export function leaveArtifact(game: Game, event: LeaveEvent) {
     var scene = game.gameScene();
     if (scene.worldData.id == event.worldId) {

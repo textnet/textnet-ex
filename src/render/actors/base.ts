@@ -1,13 +1,17 @@
+/**
+ * Base Actor Module.
+ */
 import * as ex from "excalibur";
 
-import { Dir } from "../../universe/interfaces"
-
-import { GameScene } from "../scene"
-import { Game } from "../game"
-import { ArtifactSprite } from "../sprite"
+import { Dir               } from "../../interfaces"
+import { GameScene         } from "../scene"
+import { Game              } from "../game"
+import { ArtifactSprite    } from "../sprite"
 import { ArtifactStructure } from "../data_structures"
 
-
+/**
+ * Base class holds connection between an Excalibur actor and an artifact.
+ */
 export class BaseActor extends ex.Actor {
     artifact: ArtifactStructure;
     sprite: ArtifactSprite;
@@ -16,6 +20,7 @@ export class BaseActor extends ex.Actor {
 
     /**
      * Build an actor from the artifact.
+     * @param {ArtifactStructure} artifactData
      */
     constructor(artifactData: ArtifactStructure) {
         let sprite:ArtifactSprite = new ArtifactSprite(artifactData);
@@ -38,6 +43,7 @@ export class BaseActor extends ex.Actor {
     /**
      * Called before the first actor update.
      * Makes all animations ready.
+     * @param {Game} engine
      */
     onInitialize(engine: Game) {
         if (!this.sprite.animations)
@@ -46,5 +52,4 @@ export class BaseActor extends ex.Actor {
             this.addDrawing(a, this.sprite.animations[a]);
         }
     }
-
 }

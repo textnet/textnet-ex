@@ -1,18 +1,15 @@
-import * as ex from "excalibur";
-
-import { Dir } from "../universe/interfaces"
-import { DIR, COMMAND } from "../universe/const"
-import { deepCopy } from "../universe/utils"
-
-import { Game } from "./game";
-
 /**
  * Module that interprets input from the player and converts it
  * into commands that will be taking into account by ArtifactActor.
  *
  * Moved into a separate file to provide more observability.
  */
+import * as ex from "excalibur";
 
+import { Dir          } from "../interfaces"
+import { DIR, COMMAND } from "../const"
+import { deepCopy     } from "../utils"
+import { Game         } from "./game";
 
 /**
  * Returns a direction of the player input.

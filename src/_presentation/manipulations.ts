@@ -4,11 +4,11 @@
 //     Position, Dir, Coordinates,
 //     Artifact, World, 
 //     Account
-// } from "../universe/interfaces"
-// import { cpCoords, cpPosition } from "../universe/utils"
+// } from "../interfaces"
+// import { cpCoords, cpPosition } from "../utils"
 // import { spawnPosition, DIR, DIRfrom, 
-//          universeUpdateProbability, universeUpdateDelay } from "../universe/const"
-// import { isOverlap, artifactBox } from "../universe/getters"
+//          universeUpdateProbability, universeUpdateDelay } from "../const"
+// import { isOverlap, artifactBox } from "../getters"
 
 // /**
 //  * Functions that manipulate the universe in a proper manner.

@@ -1,12 +1,29 @@
+/**
+ * INTEROP: Shooting events back to the main process:
+ *  - position      - update artifact position
+ *  - askForWorld   - ask for a world to set up next
+ *  - askForPlayer  - ask for a player to enter the world
+ *  - push          - try to push
+ *  - pickup        - try to pickup
+ *  - goto          - try to enter an artifact's world
+ *  - leave         - try to leave the current world
+ *  - stand         - done with editing, send updated text
+ */
 import { ipcRenderer } from "electron";
 
-
-import { PositionEvent, PushEvent, PickupEvent, 
-         GotoEvent, LeaveEvent, StandEvent } from "./events";
 import { ArtifactActor } from "../actors/artifact";
-import { Position, Dir } from "../../universe/interfaces"
+import { Position, Dir } from "../../interfaces"
+import { PositionEvent, 
+         PushEvent, 
+         PickupEvent, 
+         GotoEvent, 
+         LeaveEvent, 
+         StandEvent    } from "./events";
 
-
+/**
+ * INTEROP-> Attempt to move an artifact to a new position.
+ * @param {ArtifactActor} actor
+ */
 export function updateArtifactPosition(actor: ArtifactActor) {
     let dx,dy: number;
     dx = actor.pos.x - actor.artifact.position.x;
@@ -18,14 +35,26 @@ export function updateArtifactPosition(actor: ArtifactActor) {
     } as PositionEvent) 
 }
 
+/**
+ * INTEROP-> Ask for a world data (and list of artifacts) to build a game scene.
+ */
 export function askForWorldLocal() {
     ipcRenderer.send("askForWorld", {});
 }
 
+/**
+ * INTEROP-> Ask for a player to enter the world just built.
+ * Done separately from the building of the world.
+ */
 export function askForPlayer() {
     ipcRenderer.send("askForPlayer", {});
 }
 
+/**
+ * INTEROP-> Attempt of an actor to push in a direction
+ * @param {ArtifactActor} actor
+ * @param {Dir}           dir
+ */
 export function push(actor: ArtifactActor, dir: Dir) {
     ipcRenderer.send("push", {
         artifactId: actor.artifact.id,
@@ -33,6 +62,11 @@ export function push(actor: ArtifactActor, dir: Dir) {
     } as PushEvent) 
 }
 
+/**
+ * INTEROP-> Attempt of an actor to pickup something in the given direction
+ * @param {ArtifactActor} actor
+ * @param {Dir}           dir
+ */
 export function pickup(actor: ArtifactActor, dir: Dir) {
     ipcRenderer.send("pickup", {
         artifactId: actor.artifact.id,
@@ -40,6 +74,11 @@ export function pickup(actor: ArtifactActor, dir: Dir) {
     } as PickupEvent) 
 }
 
+/**
+ * INTEROP-> Attempt of an actor to enter another artifact in the given direction.
+ * @param {ArtifactActor} actor
+ * @param {Dir}           dir
+ */
 export function goto(actor: ArtifactActor, dir: Dir) {
     ipcRenderer.send("goto", {
         artifactId: actor.artifact.id,
@@ -47,12 +86,23 @@ export function goto(actor: ArtifactActor, dir: Dir) {
     } as GotoEvent) 
 }
 
+/**
+ * INTEROP-> Attempt of an actor to leave the world and go up her stack of visits.
+ * @param {ArtifactActor} actor
+ * @param {Dir}           dir
+ */
 export function leave(actor: ArtifactActor) {
     ipcRenderer.send("leave", {
         artifactId: actor.artifact.id,
     } as LeaveEvent) 
 }
 
+/**
+ * INTEROP-> Actor stands and sends updated text to Persistence.
+ * @param {ArtifactActor} actor
+ * @param {string}        text
+ * @param {Position}      Position
+ */
 export function stand(actor: ArtifactActor, text: string, pos: Position) {
     ipcRenderer.send("stand", {
         artifactId: actor.artifact.id,

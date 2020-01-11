@@ -1,7 +1,7 @@
 // can place? etc.
 
-import { deepCopy } from "../../universe/utils"
-import { Artifact, World, Position, Dir } from "../../universe/interfaces"
+import { deepCopy } from "../../utils"
+import { Artifact, World, Position, Dir } from "../../interfaces"
 import { Persistence } from "../persist"
 
 import { removeFromWorld, place } from "./place"

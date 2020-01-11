@@ -4,9 +4,7 @@ import { Dir, Position } from "./interfaces"
  * Constants used across universe: directioms, commands, events.
  */
 
-
-export const mundaneWorldName = "mundane";
-export const possibleWorlds = [ mundaneWorldName ];
+export const DEBUG = true;
 
 /**
  * Standard directions (structure matches [[Dir]]).
@@ -32,16 +30,36 @@ export function DIRfrom(name: Dir) {
 /** 
  * World have a fixed width, this constant sets it.
  */
-export const worldWidth = 634; // 938; // add some visual bounds
-export const visualBounds = {
+export let worldWidth = 938; // add some visual bounds
+export let visualBounds = {
     left: 43, right: 43,
-    top: 0,   height: 320-24, // 500,
+    top: 0,   height: 500,
     margin: 65,
 };
+if (DEBUG) {
+    worldWidth = 634;
+    visualBounds.height = 320-24;
+}
 /**
  * When an avatar enters a world in the first time, it is positioned here.
  */
 export const spawnPosition: Position = { x: worldWidth/2, y: 0, dir: DIR.DOWN };
+
+export const mundaneWorldName = "mundane";
+export const possibleWorlds = [ mundaneWorldName ];
+
+export const supportedTextFormats = ["lua", "markdown", "text" ]
+
+export const uiSettings = {
+    titleHeight:   24, // height of the world title
+    labelFontSize: 16, // font size for the title
+    fontFamily:    "Nanum Gothic Coding, monospace",
+}
+export const editorSettings = {
+    fontSize:       15, 
+    lineHeight:     20, 
+    characterWidth: 9,
+}
 
 /**
  * Commands that user can give to an avatar.

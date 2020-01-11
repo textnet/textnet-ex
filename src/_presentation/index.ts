@@ -1,9 +1,9 @@
 // import * as ex from "excalibur";
 // import { ipcRenderer } from "electron";
 
-// import { visualBounds, worldWidth } from "../universe/const";
-// import { Account, World } from "../universe/interfaces";
-// import { getAccountWorld } from "../universe/getters"
+// import { visualBounds, worldWidth } from "../const";
+// import { Account, World } from "../interfaces";
+// import { getAccountWorld } from "../getters"
 
 // import { PlaneScene, setupScene, purgeScene } from "./plane";
 // import { initEditor } from "./editor"

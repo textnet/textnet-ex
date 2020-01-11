@@ -1,6 +1,6 @@
 // import * as ex from "excalibur";
-// import { DIR } from "../universe/const";
-// import { Dir, Artifact } from "../universe/interfaces"
+// import { DIR } from "../const";
+// import { Dir, Artifact } from "../interfaces"
 // import { Game } from "./index"
 // import { ArtifactSprite } from "./sprite"
 

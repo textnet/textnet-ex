@@ -1,24 +1,28 @@
+/** 
+ * Module about rendering the game scene.
+ */
 import * as jquery from "jquery";
 import * as ex from "excalibur";
 
+import { visualBounds                      } from "../const"
 import { WorldStructure, ArtifactStructure } from "./data_structures"
-import { visualBounds } from "../universe/const"
-import { ArtifactActor  } from "./actors/artifact";
-import { InventoryActor } from "./actors/inventory";
-import { Game } from "./game"
-import { Editor, adjustEditor } from "./editor"
+import { ArtifactActor                     } from "./actors/artifact";
+import { InventoryActor                    } from "./actors/inventory";
+import { Game                              } from "./game"
+import { Editor, adjustEditorFocus              } from "./editor"
 
+/** 
+ * Excalibur Scene with some additional properties:
+ * - editor link
+ * - world and artifact data
+ * - list of UI actors (non-artifact-based)
+ */
 export class GameScene extends ex.Scene {
     editor?: Editor;
     hasCamera?: boolean;
     worldData?: WorldStructure;
     artifacts?: Record<string, ArtifactStructure>;
     environmentActors?: Record<string, ex.Actor>;
-
-    public onInitialize(engine: Game) {}
-    public onActivate() {}
-    public onDeactivate() {}
-    public onPostUpdate(engine: Game) {}
 }
 
 /** 
@@ -49,7 +53,10 @@ export class RadiusAroundActorStrategy implements ex.CameraStrategy<ex.Actor> {
             focus = focus.add(new ex.Vector(0, diff + this.radius));
         }
         const scene = target.scene as GameScene
-        if (scene) adjustEditor(scene.editor, focus)
+        const artifactActor = target as ArtifactActor;
+        if (scene && !artifactActor.isKneeled) {
+            adjustEditorFocus(scene.editor, focus)
+        }
         return focus;
     }
 }

@@ -1,7 +1,7 @@
 import { Persistence } from "../persist"
 
-import { Position, Artifact, World } from "../../universe/interfaces"
-import { deepCopy } from "../../universe/utils"
+import { Position, Artifact, World } from "../../interfaces"
+import { deepCopy } from "../../utils"
 
 import * as interopSend from "../interop/send"
 

@@ -2,7 +2,7 @@
 
 import { ipcMain } from "electron";
 
-import { deepCopy } from "../../universe/utils"
+import { deepCopy } from "../../utils"
 import { Persistence } from "../persist"
 
 import { structureFromAccount, structureFromArtifact, structureFromWorld } from "./structures"
@@ -12,7 +12,7 @@ import { PositionEvent, EnterEvent, LeaveEvent,
          InventoryEvent, TextEvent } from "../../render/interop/events"
 import { ArtifactStructure } from "../../render/data_structures"
 
-import { Artifact, World, Position } from "../../universe/interfaces"
+import { Artifact, World, Position } from "../../interfaces"
 
 
 export async function sendProperties(P: Persistence, artifact: Artifact) {

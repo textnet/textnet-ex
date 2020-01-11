@@ -1,8 +1,8 @@
 
 import { Persistence } from "../persist"
 import { StandEvent } from "../../render/interop/events"
-import { Artifact, Position, Dir } from "../../universe/interfaces"
-import { DIR, DIRfrom } from "../../universe/const"
+import { Artifact, Position, Dir } from "../../interfaces"
+import { DIR, DIRfrom } from "../../const"
 
 import * as mutatePlace from "../mutate/place"
 import * as mutateWorld from "../mutate/world"

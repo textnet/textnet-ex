@@ -1,3 +1,6 @@
+/**
+ * Directory of all Written Word commands.
+ */
 
 import { get_artifacts, get_artifact, 
          get_myself, get_closest, get_next } from "./library/get"
@@ -5,8 +8,11 @@ import { update } from "./library/properties"
 import { move_to, move_by, place_at, fit_at, halt } from "./library/spatial"
 import { event_on, event_off } from "./library/events"
 
+/**
+ * Map of all commands currently supported in Written Word.
+ * Read Written Word documentation.
+ */
 export const supportedFunctions = {
-
     "get_artifacts": { signature: ["world", "id", "name"], f: get_artifacts },
     "get_artifact":  { signature: ["world", "id", "name"], f: get_artifact  },
     "get_myself":    { signature: [],                      f: get_myself    },

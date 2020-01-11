@@ -1,26 +1,39 @@
+/**
+ * Host process of the Electron.
+ * Responsible for persistence, networking, data manipulation.
+ * Commands the renderer process, opens windows, etc.
+ */
+
 import { existsSync } from "fs"
 import { app, BrowserWindow } from 'electron'
-import { worldWidth, visualBounds } from "../universe/const"
 
+// Constants
+import { DEBUG, worldWidth, visualBounds } from "../const"
+// Persistence
 import { Persistence } from "../persistence/persist"
 import { interopSetup } from "../persistence/interop/setup"
 
-let mainWindow: Electron.BrowserWindow
+/**
+ * Persistence that contains all the account data for this instance of the game.
+ */
+const localPersistence = new Persistence("app/");
 
-const localPersistence     = new Persistence("app/");
-const alternatePersistence = new Persistence("alt/");
 
+/**
+ * As soon as Electron is ready, we set up Persistence, open a window,
+ * and load the `index.html` file generated from `gui.ts`.
+ */
 function onReady() {
-    // another persistence to test multiplayer.
-    // alternatePersistence.init().then(()=> {
-    // })
-    // local game initialisation!
     localPersistence.init().then(() => { 
         const width  = worldWidth + visualBounds.left + visualBounds.right;
-        // const height = visualBounds.height + 2*visualBounds.margin + 24;
-        const height = 450;
+        let height;
+        if (DEBUG) {
+            height = 450;
+        } else {
+            height = visualBounds.height + 2*visualBounds.margin + 24;
+        }
         visualBounds.height = height - 2*visualBounds.margin;
-        mainWindow = new BrowserWindow({
+        const mainWindow = new BrowserWindow({
             x: 0, y: 0,
             width:  width,
             height: height,
@@ -38,6 +51,11 @@ function onReady() {
 
 }
 
+/**
+ * When the app is closed, we MUST signal to the local Persistence to shut down.
+ * Local Persistence is responsible for keeping persistences across TextNet
+ * aware of the app being online.
+ */
 function onQuit() {
     localPersistence.free()
 }

@@ -1,7 +1,7 @@
 // import * as ex from 'excalibur';
 
-// import { Artifact } from "../universe/interfaces"
-// import { b64toBlob } from "../universe/utils"
+// import { Artifact } from "../interfaces"
+// import { b64toBlob } from "../utils"
 
 // /** 
 //  * Module for sprite rendering.

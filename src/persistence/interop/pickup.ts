@@ -1,7 +1,7 @@
 import { Persistence } from "../persist"
 import { PickupEvent } from "../../render/interop/events"
-import { Artifact, Position, Dir } from "../../universe/interfaces"
-import { DIR, DIRfrom } from "../../universe/const"
+import { Artifact, Position, Dir } from "../../interfaces"
+import { DIR, DIRfrom } from "../../const"
 
 import { getArtifact_NextTo, artifactPos } from "../mutate/spatial";
 import * as mutatePlace  from "../mutate/place"

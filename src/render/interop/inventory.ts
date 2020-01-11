@@ -1,13 +1,20 @@
+/**
+ * INTEROP: Inventory
+ */
 import * as ex from "excalibur";
 
-import { Game } from "../game"
-import { InventoryEvent } from "./events"
+import { visualBounds   } from "../../const"
+import { Game           } from "../game"
 import { InventoryActor } from "../actors/inventory"
-import { ArtifactActor } from "../actors/artifact"
+import { ArtifactActor  } from "../actors/artifact"
+import { InventoryEvent } from "./events"
 
-import { visualBounds } from "../../universe/const"
 
-
+/**
+ * INTEROP: Update visual representation of inventory
+ * @param {Game}           game
+ * @param {InventoryEvent} event
+ */
 export function inventoryArtifact(game: Game, event: InventoryEvent) {
     var scene = game.gameScene();
     for (let a of scene.actors) {
@@ -24,7 +31,7 @@ export function inventoryArtifact(game: Game, event: InventoryEvent) {
                         +actor.inventory.artifact.body.size[0]/2*actor.inventory.scale.x,
                     0
                         -actor.inventory.artifact.body.size[1]/2*actor.inventory.scale.y
-                    )
+                )
                 actor.add(actor.inventory);
             }
         }

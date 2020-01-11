@@ -1,9 +1,22 @@
+/**
+ * Synchronous dump of the Persistence to be used in Written Word.
+ * Either Fengari Lua VM lacks in sophistication of yield/resume,
+ * or TextNet authors did not get how to operate async/await with Lua.
+ *
+ * Thus, there is a simple read-only proxy layer to Persistence.
+ * This proxy layer must be updated each time when the corresponding
+ * async Persistence is changed.
+ *
+ * The simplest implementation is to preload everything everytime.
+ */
 
-import { Artifact, Account, World, defaultsArtifact } from "../universe/interfaces"
-import { deepCopy } from "../universe/utils"
-
+import { Artifact, World } from "../interfaces"
 import { PersistenceObserver } from "../persistence/observe/observer"
 
+/**
+ * Synchronous read-only version of the async Persistence Repository.
+ * The simplest implementation is to preload everything everytime.
+ */
 export class SyncRepository<T> {
     P: SyncWrittenPersistence;
     contents: Record<string,T>;
@@ -18,6 +31,10 @@ export class SyncRepository<T> {
     }
 }
 
+/**
+ * Syncronous read-only version of the async Persistence.
+ * The simplest implementation is to preload everything everytime.
+ */
 export class SyncWrittenPersistence {
     observer:  PersistenceObserver;
     artifacts: SyncRepository<Artifact>;
