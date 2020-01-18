@@ -38,7 +38,7 @@ export let visualBounds = {
 };
 if (DEBUG) {
     worldWidth = 634;
-    visualBounds.height = 320-24;
+    visualBounds.height = 320-24-200; // 320-24-100;
 }
 
 export const spatialProximity = 3; // how far is 'NEXT'

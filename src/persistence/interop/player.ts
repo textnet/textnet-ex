@@ -6,7 +6,7 @@ import { WorldStructure, ArtifactStructure, AccountStructure } from "../../rende
 
 import { Persistence } from "../persist"
 
-import { InventoryEvent } from "../../render/interop/events"
+import { InventoryEvent, WorldEvent } from "../../render/interop/events"
 
 import { structureFromAccount, structureFromArtifact, structureFromWorld } from "./structures"
 
@@ -35,12 +35,13 @@ export async function playerPrepareWorld(P: Persistence) {
             inventoryEvents.push(inventoryEvent)
         }
     }
-    const result = {
+    const result: WorldEvent = {
         account: await structureFromAccount(P, P.account), 
         world: await structureFromWorld(P,world), 
         artifacts: artifacts,
         inventoryEvents: inventoryEvents,
     }
+    sendInterop.sendWorld(P, result)
     return result;
 }
 
@@ -49,7 +50,7 @@ export async function playerEnterWorld(P: Persistence) {
     const worldId = accountBody.visitsStack[ accountBody.visitsStack.length-1 ];
     let world: World = await P.worlds.load(worldId);
     if (accountBody.hostId != world.id) {
-        console.log(`Player enter world: ${accountBody.hostId} => ${world.id}`)
+        console.log(`Player ${accountBody.id} enters world: ${accountBody.hostId} => ${world.id}`)
         await mutateEnter.enterWorld(P, accountBody, world)
     } else {
         const pos = world.artifactPositions[accountBody.id];

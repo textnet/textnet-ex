@@ -45,4 +45,5 @@ export async function structureFromAccount(P: Persistence, account: Account) {
         artefactId: account.bodyId,
         isLocal: true, // TODO
     }
+    return data;
 }

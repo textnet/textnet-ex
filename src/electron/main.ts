@@ -3,7 +3,6 @@
  * Responsible for persistence, networking, data manipulation.
  * Commands the renderer process, opens windows, etc.
  */
-
 import { existsSync } from "fs"
 import { app, BrowserWindow } from 'electron'
 
@@ -13,10 +12,12 @@ import { DEBUG, worldWidth, visualBounds } from "../const"
 import { Persistence } from "../persistence/persist"
 import { interopSetup } from "../persistence/interop/setup"
 
+import * as remoteTest from "../persistence/remote/test"
+
 /**
  * Persistence that contains all the account data for this instance of the game.
  */
-const localPersistence = new Persistence("app/");
+const localPersistence = new Persistence("app_");
 
 
 /**
@@ -24,11 +25,12 @@ const localPersistence = new Persistence("app/");
  * and load the `index.html` file generated from `gui.ts`.
  */
 function onReady() {
-    localPersistence.init().then(() => { 
+    remoteTest.init(localPersistence).then(() => { 
+
         const width  = worldWidth + visualBounds.left + visualBounds.right;
         let height;
         if (DEBUG) {
-            height = 450;
+            height = 250;
         } else {
             height = visualBounds.height + 2*visualBounds.margin + 24;
         }

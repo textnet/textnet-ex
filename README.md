@@ -25,11 +25,20 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - Enter yourself: CTRL + ESCAPE
 
 
-# BUGS & etc
-+ BUG: scrolling text down while typing.
-+ excessive position submit (e.g. pickup)
-+ WW (events?) resubscribe after recompile or smth.
-+ some more documentation
+# Multiplayer and hosted universes
++ create two persistences
++ store 'persistenceId' next to id
+- import from remote persistence when loading
+- subscribe on changes on first load
+- send changes on save
+- send "remove" on "remove"
+- unsubscribe when offline
+- transfer renderer events to remote
+- get events back from remote
+- handle offline
+- create three persistences, simulate lost reference
+- handle complex operations
+
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
 - another session of documentation
@@ -59,14 +68,6 @@ This is an Excalibur+Electron prototype of the TXTNET.
 8.  [ ] Integrated editor with text flow     2021 H1 May
 9.  [ ] Advanced objects like images etc.    2021 H2 Sep
 10. [ ] Advanced concepts like <health>      2021 H2 Oct
-
-
-# 3. Persistence
-
-- [x] Electron distro
-- [x] Serverside universe
-- [x] Client-server protocol
-- [x] Rightful observers and WW
 
 
 # 4. Multiplayer

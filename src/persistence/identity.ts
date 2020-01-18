@@ -20,14 +20,18 @@ export function generateId(prefix: string) {
     return prefix + crypto.randomBytes(2).toString('hex')
 }
 
+export function persistenceId(id: string) {
+    const parts = id.split(".");
+    return parts[0];
+}
+
 /**
  * Create unique and discoverable account ID.
  * While we don't have any distributed identity, it is just another random ID.
  * @returns {string}
  */
 export function registerAccountId() {
-    return "";
-    return "(trusted)"+generateId("")
+    return "(*)"+generateId("")
 }
 
 

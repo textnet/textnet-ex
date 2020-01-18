@@ -16,7 +16,8 @@ export async function pickupFromArtifact(P: Persistence, event: PickupEvent) {
 
     // aiming to pick up
     const candidate = await getArtifact_NextTo(P, artifact, direction) as Artifact;
-    if (candidate && candidate.pickable ) {
+    // TODO ERROR THE CHECK SHOULD BE DONE IN MUTATE!
+    if (candidate && candidate.pickable) {
         const success = await mutateInventory.pickup(P, artifact, candidate);
     }
     if (!candidate && artifact.inventoryIds.length > 0) {

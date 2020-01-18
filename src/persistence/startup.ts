@@ -27,6 +27,7 @@ export async function registerAccount(P: Persistence) {
     artifact.hostId = null;
     // account and avatar
     const account = {
+        _persistenceId: id,
         id: id,
         local: true,
         bodyId: artifact["id"],
@@ -63,6 +64,7 @@ async function createArtifact(P: Persistence, accountId: string, hostId: string,
                         text:string ) {
     // world
     const world = {
+        _persistenceId: accountId,
         id: generateId(accountId),
         ownerId: generateId(accountId),
         text: text,
@@ -71,6 +73,7 @@ async function createArtifact(P: Persistence, accountId: string, hostId: string,
     await P.worlds.save(world);
     // artifact
     let artifact = deepCopy(artifacts[setupSpriteName]);
+    artifact._persistenceId = accountId;
     artifact.colors = { world: rnd(worldColors), title: rnd(titleColors), };
     artifact.id = world.ownerId;
     artifact.name = name;
@@ -110,7 +113,8 @@ function rnd(list) {
 /**
  * Default artifact, useful for debugging: visible collider body, asymmetric margins/offsets.
  */
-const artifactDefault: Artifact = {
+export const artifactDefault: Artifact = {
+    _persistenceId: "<id>",
     name: "Default", id: "<id>", worldIds: {}, colors: { world: rnd(worldColors), title: rnd(titleColors), },
     hostId: "", inventoryIds: [], visits: {}, visitsStack: [], 
     sprite: {
@@ -128,6 +132,7 @@ const artifactDefault: Artifact = {
  * Default player figure. Animated walking and turning in four directions.
  */
 const artifactPlayer: Artifact = {   
+    _persistenceId: "<id>",
     name: "<name>", id: "<id>", worldIds: {}, colors: { world: rnd(worldColors), title: rnd(titleColors), },
     hostId: "", inventoryIds: [], visits: {}, visitsStack: [], 
     sprite: {
@@ -145,6 +150,7 @@ const artifactPlayer: Artifact = {
  * Default non-player artifact: chair. Not animated, non-turnable.
  */
 const artifactChair: Artifact = {
+    _persistenceId: "<id>",
     name: "<name>", id: "<id>", worldIds: {}, colors: { world: rnd(worldColors), title: rnd(titleColors), },
     hostId: "", inventoryIds: [], visits: {}, visitsStack: [], 
     sprite: {

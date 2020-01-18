@@ -71,6 +71,7 @@ export function prepareWorld(game: Game, params) {
     // Go!
     game.start();
     askForPlayer();
+    console.log(`WORLD ${worldData.id} <${worldData.name}>`, worldData)
 }
 
 /**
@@ -109,7 +110,7 @@ export function updateText(game: Game, event: TextEvent) {
  * @param {WorldStructure} worldData
  */
 function updateSceneFromWorld(scene: GameScene, worldData: WorldStructure) {
-    console.log("update scene", worldData)
+    // console.log("update scene", worldData)
     scene.worldData = worldData;
     const label = (scene.environmentActors["label"] as ex.Label);
     const title = (scene.environmentActors["title"] as ex.UIActor)

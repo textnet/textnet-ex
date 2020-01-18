@@ -16,7 +16,8 @@ export async function gotoOfArtifact(P: Persistence, event: GotoEvent) {
 
     // going into artifact's world
     const candidate = await getArtifact_NextTo(P, artifact, direction) as Artifact;
-    if (candidate && !candidate.locked ) {
+    // TODO ERROR THE CHECK SHOULD BE DONE IN MUTATE!
+    if (candidate && !candidate.locked) {
         if (!candidate.worldIds[worldName]) worldName = mundaneWorldName;
         // console.log("loading candidate ",candidate.name," world", worldName, candidate.worldIds[worldName])
         const targetWorld = await P.worlds.load(candidate.worldIds[worldName]);

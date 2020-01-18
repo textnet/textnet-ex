@@ -20,6 +20,7 @@ import { inventoryArtifact         } from "./inventory"
 export function enterArtifact(game: Game, event: EnterEvent) {
     var scene = game.gameScene();
     if (scene.worldData.id == event.worldId) {
+        console.log("ENTER", event.artifactStructure.id, scene.worldData.id, event.worldId)
         event.artifactStructure.position = event.position;
         let existingActor: ArtifactActor;
         let cameraActor: ArtifactActor;

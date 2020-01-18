@@ -1,8 +1,10 @@
 /**
  * INTEROP: All events that happen between Renderer and Main processes.
  */
-import { Dir, Position                     } from "../../interfaces";
-import { ArtifactStructure, WorldStructure } from "../data_structures";
+import { Dir, Position       } from "../../interfaces";
+import { ArtifactStructure, 
+         WorldStructure, 
+         AccountStructure    } from "../data_structures";
 
 export interface ArtifactPropertiesEvent {
     artifactStructure: ArtifactStructure;
@@ -48,6 +50,13 @@ export interface GotoEvent {
 export interface InventoryEvent {
     artifactId: string;
     inventoryStructure?: ArtifactStructure;
+}
+
+export interface WorldEvent {
+    account:   AccountStructure,
+    world:     WorldStructure,
+    artifacts: Record<string,ArtifactStructure>,
+    inventoryEvents: InventoryEvent[], 
 }
 
 export interface EnterEvent {

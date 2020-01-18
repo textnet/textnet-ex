@@ -7,7 +7,7 @@ import { Persistence } from "../persist"
 
 import { structureFromAccount, structureFromArtifact, structureFromWorld } from "./structures"
 
-import { PositionEvent, EnterEvent, LeaveEvent,
+import { PositionEvent, EnterEvent, LeaveEvent, WorldEvent,
          ArtifactPropertiesEvent, WorldPropertiesEvent,
          InventoryEvent, TextEvent } from "../../render/interop/events"
 import { ArtifactStructure } from "../../render/data_structures"
@@ -110,4 +110,7 @@ export async function sendText(P: Persistence, world: World) {
     if (P.window) P.window.webContents.send('text', event);
 }
 
-
+export async function sendWorld(P: Persistence, data: WorldEvent) {
+    // console.log(`INTEROP: world`);
+    if (P.window) P.window.webContents.send('world', data);
+}

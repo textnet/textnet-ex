@@ -14,6 +14,8 @@ import { PersistenceObserver                        } from "./observe/observer";
 import * as mutateEnter from "./mutate/enter"
 import { interopSetup } from "./interop/setup"
 
+import * as receive from "./remote/receive"
+
 /**
  * Asynchronous Local Persistence. 
  * Provides local persistent storage for artifacts, worlds, and accounts.
@@ -24,6 +26,7 @@ export class Persistence {
     accounts:  Repository<Account>;
     worlds:    Repository<World>;
     config: Storage;
+    isSilent: boolean;
 
     window?: BrowserWindow;
 
@@ -33,9 +36,10 @@ export class Persistence {
     constructor(prefix?) {
         this.prefix    = prefix || "";
         this.artifacts = new Repository<Artifact>(this, "artifacts");
-        this.accounts  = new Repository<Account>(this, "account");
-        this.worlds    = new Repository<World>(this, "world");
+        this.accounts  = new Repository<Account>(this, "accounts");
+        this.worlds    = new Repository<World>(this, "worlds");
         this.config    = new Storage(this.prefix+"storage");
+        this.isSilent  = false;
     }
 
     /**
@@ -65,12 +69,14 @@ export class Persistence {
         this.account = await this.accounts.load(localId);
         // get all available (local) artifacts and make observers for them
         this.observers = {};
-        const artifacts = await this.artifacts.all()
+        const artifacts = await this.artifacts.local()
         for (let id in artifacts) {
             this.observers[id] = new PersistenceObserver();
             this.observers[id].init(this, id)
             await this.observers[id].attempt();
         }
+        //
+        receive.register(this);
     }
 
     async free() {

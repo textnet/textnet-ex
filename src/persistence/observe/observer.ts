@@ -67,7 +67,6 @@ export class PersistenceObserver extends events.EventEmitter {
             delete this.env;
         }
         for (let item of this.subscribedKeys) {
-            console.log(item)
             this.off(item["event"], item["key"]);
         }
         this.subscribedKeys = [];

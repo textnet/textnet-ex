@@ -38,6 +38,7 @@ export interface Position {
  * Currently very basic.
  */
 export interface Account {
+    _persistenceId: string;
     id: string;
     // ex-avatar
     local: boolean;
@@ -54,6 +55,7 @@ export interface Account {
  * World also have floor, which holds the text (with Written Word on it).
  */
 export interface World {
+    _persistenceId: string;
     id: string;
     ownerId: string;
     artifactPositions: Record<string,Position>;
@@ -102,6 +104,7 @@ export const defaultsArtifact = {
 }
 
 export interface Artifact {
+    _persistenceId: string;
     id: string;
 
     name: string;   

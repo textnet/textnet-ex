@@ -2,7 +2,10 @@
  * Generalised object storage based on an abstracted key-value storage
  */
 import { Storage     } from "./storage"
-import { Persistence } from "./persist";
+import { Persistence } from "./persist"
+
+import { persistenceId } from "./identity"
+import * as receive from "./remote/receive"
 
 /**
  * Repository of objects with interface <T>.
@@ -30,9 +33,39 @@ export class Repository<T> {
     }
     free() { this.storage.free() }
 
-    async load(id: string)   { return this.storage.get(id) as T }
-    async save(value: T)     { this.storage.set(value["id"], value) }
-    async remove(id: string) { this.storage.remove(id) }
-    async all()              { return this.storage.all() as Record<string, T>[] }
+    isLocal(id: string) {
+        if (!this.persistence.account) {
+            return true;
+        } else {
+            return persistenceId(id) == this.persistence.account.id;
+        }
+    }
+
+    async load(id: string)   { 
+        if (!this.isLocal(id)) {
+            const data = await receive.load(this.persistence, this.prefix, id);
+            await this.save(data);
+        }
+        return this.storage.get(id) as T 
+    }
+    async save(value: T) { 
+        this.storage.set(value["id"], value) 
+    }
+    async remove(id: string) { 
+        this.storage.remove(id) 
+    }
+    async all() { 
+        return this.storage.all() as Record<string, T> 
+    }
+    async local() {
+        const all = this.all();
+        const result = {};
+        for (let id in all) {
+            if (this.isLocal(id)) {
+                result[id] = all[id];
+            }
+        }
+        return result;
+    }
 }
 
