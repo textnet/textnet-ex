@@ -7,7 +7,6 @@ import { worldUpdateText } from "./local/world";
 export async function updateText(P: Persistence, world: World, text:string ) {
     if (world.text != text) {
         await worldUpdateText(P, world, text);
-        await interopSend.sendText(P, world);
     }
 }
 

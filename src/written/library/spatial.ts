@@ -13,7 +13,7 @@ import { DIR, DIRfrom, spawnPosition }    from "../../const"
 import { Artifact, World, Dir, Position } from "../../interfaces"
 import { normalizeDir }                   from "../../utils"
 
-import { MoveEvent, PlaceEvent,
+import { MoveCommand, PlaceCommand,
          ObserverCommand }       from "../../persistence/observe/observer_events"
 import { PersistenceObserver }   from "../../persistence/observe/observer"
 import { updateProperties }      from "../../persistence/mutate/properties"
@@ -47,7 +47,7 @@ export function move_to( O: PersistenceObserver,
         y: y, 
         dir: dir.name,
         isDelta: isDelta
-    } as MoveEvent) // nb: async
+    } as MoveCommand) // nb: async
     return true;
 }
 
@@ -127,7 +127,7 @@ export function place_at(O: PersistenceObserver,
             y: y, 
             dir: dir.name,
             isFit: isFit,
-        } as PlaceEvent) // nb: async
+        } as PlaceCommand) // nb: async
     }
     return true; 
 }

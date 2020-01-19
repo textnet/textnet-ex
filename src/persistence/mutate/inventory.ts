@@ -8,13 +8,14 @@ import { removeFromWorld, place } from "./place"
 import { sendInventory, sendEmptyInventory } from "../interop/send"
 
 import { artifactPickup, artifactPutdown } from "./local/artifact"
+import { worldPickup, worldPutdown } from "./local/world"
 
 export async function pickup(P: Persistence,
                       artifact: Artifact, obj: Artifact) {
     const hostWorld = await P.worlds.load(obj.hostId);
     await removeFromWorld(P, obj, hostWorld);
     await artifactPickup(P, artifact, obj.id);
-    await sendInventory(P, artifact, obj);
+    await worldPickup(P, hostWorld, artifact.id, obj.id);
 }
 
 export async function putdown(P: Persistence, artifact: Artifact, dir: Dir) {
@@ -40,14 +41,7 @@ export async function putdown(P: Persistence, artifact: Artifact, dir: Dir) {
         const placeSuccess = await place(P, obj, hostWorld, pos);
         if (placeSuccess) {
             await artifactPutdown(P, artifact);
-            // send event
-            if (artifact.inventoryIds.length > 0) {
-                const newObjId = artifact.inventoryIds[artifact.inventoryIds.length-1]
-                const newObj = await P.artifacts.load(newObjId);
-                await sendInventory(P, artifact, newObj);
-            } else {
-                await sendEmptyInventory(P, artifact);
-            }
+            await worldPutdown(P, hostWorld, artifact.id);
         }
     }
 }

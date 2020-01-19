@@ -85,14 +85,6 @@ export async function sendInventory(P: Persistence, artifact: Artifact, obj: Art
     if (P.window) P.window.webContents.send('inventory', event);
 }
 
-export async function sendTopInventory(P: Persistence, artifact: Artifact) {
-    if (artifact.inventoryIds.length > 0) {
-        const objId = artifact.inventoryIds[ artifact.inventoryIds.length-1 ];
-        const obj = await P.artifacts.load(objId);
-        return await sendInventory(P, artifact, obj)
-    }
-}
-
 export async function sendEmptyInventory(P: Persistence, artifact: Artifact) {
     // console.log(`INTEROP: inventory(empty)`, artifact.name);
     const event: InventoryEvent = {

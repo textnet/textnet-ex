@@ -11,6 +11,8 @@ import * as RemoteEvent from "../persistence/mutate/remote/event_structures"
 import * as localArtifact from "../persistence/mutate/local/artifact"
 import * as localWorld    from "../persistence/mutate/local/world"
 
+import { echo } from "./echo"
+
 export async function sendMessage(sender:   Persistence,
                                   receiver: RemotePersistence,
                                   payload:  RemoteEvent.Payload) {
@@ -31,9 +33,11 @@ export function unregister(P: Persistence) {
 // ----------vvvvvvv---------
 async function messageListener(P:Persistence, senderId:string, payload:RemoteEvent.Payload) {
     console.log(`${P.account.id}>> from ${senderId} "${payload.event}" ->`, payload.data);
-    switch (payload.event) {
+    const event = payload.event.split(":");
+    switch (event[0]) {
         case "load": const data = payload.data as RemoteEvent.Load;
                      return P[data.prefix].load(data.id);
+        case "echo": return echo(P, event[1], payload.data);
         default:     return _[payload.event](P, payload.data);
     }
 }
@@ -83,7 +87,6 @@ const _ = {
    worldInsertIntoWorld: async function(P, _) {
        const data = _ as RemoteEvent.WorldInsert;
        const world = await P.worlds.load(data.worldId);
-       console.log(world)
        return localWorld.worldInsertIntoWorld(P, world, data.artifactId, data.pos)
    },
    worldUpdateInWorld: async function(P, _) {

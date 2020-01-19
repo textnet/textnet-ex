@@ -215,11 +215,11 @@ export class PersistenceObserver extends events.EventEmitter {
         switch (command) {
             case ObserverCommand.Move:
                         commandFunc = await observerEvents.moveAction(this, 
-                                      params as observerEvents.MoveEvent);
+                                      params as observerEvents.MoveCommand);
                         break;
             case ObserverCommand.Place:
                         commandFunc = await observerEvents.placeAction(this, 
-                                      params as observerEvents.PlaceEvent);
+                                      params as observerEvents.PlaceCommand);
                         break;
             case ObserverCommand.Halt:
                         this.cleanCommands()

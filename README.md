@@ -129,8 +129,8 @@ Then here are options:
     end
 
 
-
-
+-------
+Renderer subscribes.
 
 
 ----

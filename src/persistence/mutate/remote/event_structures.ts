@@ -43,6 +43,20 @@ export interface ArtifactProperties extends RemoteEvent {
     properties: any,
 }
 // --------------------------------------------------------------
+export interface WorldProperties extends RemoteEvent {
+    artifactId: string,
+    worldId:    string,
+}
+export interface WorldPickup extends RemoteEvent {
+    artifactId: string,
+    worldId:    string,
+    objId:      string,
+}
+export interface WorldPutdown extends RemoteEvent {
+    artifactId: string,
+    worldId:    string,
+    objId:      string,
+}
 export interface WorldRemove extends RemoteEvent {
     artifactId: string,
     worldId:    string,

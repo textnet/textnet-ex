@@ -99,7 +99,6 @@ export async function removeFromWorld(P: Persistence, artifact: Artifact, world:
     await artifactRemoveFromWorld(P, artifact, world.id, 
                                   world.artifactPositions[ artifact.id ]);
     await worldRemoveFromWorld(P, world, artifact.id);
-    await sendRemoveArtifact(P, artifact, world);
 }
 
 // technical, don't use directly
@@ -108,12 +107,10 @@ export async function insertIntoWorld(P: Persistence, artifact: Artifact,
 
     await artifactInsertIntoWorld(P, artifact, world.id, pos);
     await worldInsertIntoWorld(P, world, artifact.id, pos);
-    await sendInsertArtifact(P, artifact, pos);
 }
 
 // technical, don't use directly
 export async function updateInWorld(P: Persistence, artifact: Artifact, 
                                       world: World, pos: Position) {
     await worldUpdateInWorld(P, world, artifact.id, pos);
-    await sendPlaceArtifact(P, artifact, pos);
 }

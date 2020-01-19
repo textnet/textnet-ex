@@ -25,7 +25,7 @@ export function register(P: Persistence) { // temporary-3
     localRegistry[RP.id] = RP;
 }
 
-export function getRemotePersistenceFromId(id: string) {
+export function getRemotePersistenceFromId(id: string): RemotePersistence|undefined {
     const pId = persistenceId(id);
     const idP = getRemotePersistence(pId);
     return idP;

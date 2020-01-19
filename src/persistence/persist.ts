@@ -17,6 +17,8 @@ import { interopSetup } from "./interop/setup"
 import * as remote from "./remote/persistence"
 import * as network from "../network/registry"
 
+import { RemoteSubscription } from "./remote/subscription"
+
 /**
  * Asynchronous Local Persistence. 
  * Provides local persistent storage for artifacts, worlds, and accounts.
@@ -33,6 +35,7 @@ export class Persistence {
 
     account: Account;
     observers: Record<string,PersistenceObserver>;
+    subscription: RemoteSubscription;
 
     constructor(prefix?) {
         this.prefix    = prefix || "";
@@ -68,6 +71,10 @@ export class Persistence {
             localId = account.id;
         }
         this.account = await this.accounts.load(localId);
+        // remote
+        this.subscription = new RemoteSubscription(this);
+        remote.register(this); // temp?
+        network.register(this);
         // get all available (local) artifacts and make observers for them
         this.observers = {};
         const artifacts = await this.artifacts.local()
@@ -76,9 +83,6 @@ export class Persistence {
             this.observers[id].init(this, id)
             await this.observers[id].attempt();
         }
-        // remote
-        remote.register(this); // temp?
-        network.register(this);
     }
 
     async free() {

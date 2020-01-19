@@ -5,6 +5,32 @@ import { Persistence } from "../../persist"
 import * as RemoteEvent from "./event_structures"
 import { wrapper } from "./wrapper"
 
+
+export async function worldPickup(P: Persistence, world: World, 
+                                  artifactId: string, objId: string) {
+    return await wrapper(P, "worldPickup", world.id, {
+        artifactId: artifactId,
+        worldId:    world.id,
+        objId:      objId,
+    } as RemoteEvent.WorldPickup);
+}
+
+export async function worldPutdown(P: Persistence, world: World, 
+                                   artifactId: string) {
+    return await wrapper(P, "worldPutdown", world.id, {
+        artifactId: artifactId,
+        worldId:    world.id,
+    } as RemoteEvent.WorldPutdown);
+}
+
+export async function worldUpdateProperties(P: Persistence, world: World, 
+                                            artifactId: string) {
+    return await wrapper(P, "worldUpdateProperties", world.id, {
+        artifactId: artifactId,
+        worldId:    world.id,
+    } as RemoteEvent.WorldProperties);
+}
+
 export async function worldRemoveFromWorld(P: Persistence, world: World, 
                                            artifactId: string) {
     return await wrapper(P, "worldRemoveFromWorld", world.id, {
