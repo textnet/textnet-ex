@@ -12,7 +12,7 @@ export async function structureFromWorld(P: Persistence, world: World) {
     const data: WorldStructure = {
         id: world.id,
         ownerId: owner.id,
-        name: owner.name,
+        name: owner.name + " " + P.account.id, // TEMP TODO
         text: world.text,
         format: owner.format,
         colors: deepCopy(owner.colors)

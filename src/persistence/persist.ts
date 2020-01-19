@@ -15,6 +15,7 @@ import * as mutateEnter from "./mutate/enter"
 import { interopSetup } from "./interop/setup"
 
 import * as remote from "./remote/persistence"
+import * as network from "../network/registry"
 
 /**
  * Asynchronous Local Persistence. 
@@ -75,8 +76,9 @@ export class Persistence {
             this.observers[id].init(this, id)
             await this.observers[id].attempt();
         }
-        //
-        remote.register(this);
+        // remote
+        remote.register(this); // temp?
+        network.register(this);
     }
 
     async free() {
@@ -90,6 +92,8 @@ export class Persistence {
         for (let id in this.observers) {
             await this.observers[id].free();
         }
+        // remote
+        network.unregister(this);
         // close db
         this.artifacts.free();
         this.accounts.free();

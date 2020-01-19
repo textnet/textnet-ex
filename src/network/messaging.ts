@@ -7,7 +7,6 @@ interface DataUpdatesChannel {
 }
 
 
-
 export function sendUpdate(senderId: string,
                            payload:  any,
                            channel?: DataUpdatesChannel) {
@@ -18,8 +17,8 @@ export function sendUpdate(senderId: string,
 }
 
 export async function sendMessage(senderId:   string,
-                                  payload:    any,
-                                  receiverId: string) {
+                                  receiverId: string,
+                                  payload:    any,) {
     const channelString = channelToString();
     for (let l of listeners[channelString]) {
         if (receiverId == l["listenerId"]) {
@@ -42,7 +41,6 @@ export function registerListener(listenerId: string,
         listener:   listener
     })
 }
-
 export function unregisterListener(listenerId, channel?: DataUpdatesChannel) {
     const channelString = channelToString(channel);
     if (listeners[channelString]) {

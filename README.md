@@ -28,24 +28,28 @@ This is an Excalibur+Electron prototype of the TXTNET.
 
 # CURRENT ITERATION
 + refactor `mutate` to `mutate_local`
-- `mutate` send signals
-- `mutate` receive signals
 - `load` send signals
++ `mutate` send signals
+    + artifact
+    + world
+- `messaging` mock framework    
 - `load` receive signals
+- `mutate` receive signals
+- `mutate` send events across network (e.g. pickup, move)
+- `persistence` receive events from across network
+- `render` work with messages ^
+- `observer` work with messages ^
 
 # Multiplayer and hosted universes
 + create two persistences
 + store 'persistenceId' next to id
-- import from remote persistence when loading
-- subscribe on changes on first load
-- send changes on save
-- send "remove" on "remove"
-- unsubscribe when offline
-- transfer renderer events to remote
-- get events back from remote
+> `mutate` across network
+- `renderer` across network
+- `observer` across network
 - handle offline
 - create three persistences, simulate lost reference
 - handle complex operations
+- move items between worlds
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
@@ -69,7 +73,7 @@ This is an Excalibur+Electron prototype of the TXTNET.
 1.  [x] Universe basis                       2019 Q4 Nov +
 2.  [x] Basic Written world                  2019 Q4 Dec +
 3.  [x] Persistence                          2020 Q1 Jan +
-4.  [ ] Hosted universes and multiplayer     2020 Q1 Feb
+4.  [>] Hosted universes and multiplayer     2020 Q1 Feb
 5.  [ ] Spoken word / gods (commands)        2020 Q1 Mar
 6.  [ ] Full events support.                 2020 Q2 Apr
 7.  [ ] Make a reasonably interesting game   2020 H2 Sep
