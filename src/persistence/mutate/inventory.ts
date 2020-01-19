@@ -13,7 +13,7 @@ export async function pickup(P: Persistence,
                       artifact: Artifact, obj: Artifact) {
     const hostWorld = await P.worlds.load(obj.hostId);
     await removeFromWorld(P, obj, hostWorld);
-    await artifactPickup(P, artifact, obj);
+    await artifactPickup(P, artifact, obj.id);
     await sendInventory(P, artifact, obj);
 }
 

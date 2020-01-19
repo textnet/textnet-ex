@@ -6,25 +6,27 @@ import * as RemoteEvent from "./event_structures"
 import { wrapper } from "./wrapper"
 
 
-export async function artifactEnter(P: Persistence, artifact: Artifact, world: World) {
+export async function artifactEnter(P: Persistence, artifact: Artifact, worldId: string) {
     return await wrapper(P, "artifactEnter", artifact.id, {
         artifactId: artifact.id,
-        worldId:    world.id,
+        worldId:    worldId,
     } as RemoteEvent.ArtifactEnter);
 }
 
-export async function artifactLeave(P: Persistence, artifact: Artifact, world: World, disconnect?: boolean) {
+export async function artifactLeave(P: Persistence, artifact: Artifact, worldId: string, 
+                                    position: Position, disconnect?: boolean) {
     return await wrapper(P, "artifactLeave", artifact.id, {
         artifactId: artifact.id,
-        worldId:    world.id,
-        disconnect: disconnect
+        worldId:    worldId,
+        position:   position,
+        disconnect: disconnect,
     } as RemoteEvent.ArtifactLeave);
 }
 
-export async function artifactPickup(P: Persistence, artifact: Artifact, obj: Artifact) {
+export async function artifactPickup(P: Persistence, artifact: Artifact, objId: string) {
     return await wrapper(P, "artifactPickup", artifact.id, {
         artifactId: artifact.id,
-        objId:      obj.id,
+        objId:      objId,
     } as RemoteEvent.ArtifactPickup);
 }
 
@@ -34,19 +36,21 @@ export async function artifactPutdown(P: Persistence, artifact: Artifact) {
     } as RemoteEvent.ArtifactPutdown);
 }
 
-export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact, world: World) {
+export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact, 
+                                              worldId: string, position: Position) {
     return await wrapper(P, "artifactRemoveFromWorld", artifact.id, {
         artifactId: artifact.id,
-        worldId:    world.id,
+        worldId:    worldId,
+        position:   position,
     } as RemoteEvent.ArtifactRemove);
 }
 
-export async function artifactInsertIntoWorld(P: Persistence, artifact: Artifact, world: World, 
-                                              pos: Position) {
+export async function artifactInsertIntoWorld(P: Persistence, artifact: Artifact, 
+                                              worldId: string, position: Position) {
     return await wrapper(P, "artifactInsertIntoWorld", artifact.id, {
         artifactId: artifact.id,
-        worldId:    world.id,
-        pos:        pos,
+        worldId:    worldId,
+        pos:        position,
     } as RemoteEvent.ArtifactInsert);
 }
 

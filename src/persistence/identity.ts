@@ -31,7 +31,7 @@ export function persistenceId(id: string) {
  * @returns {string}
  */
 export function registerAccountId() {
-    return "(*)"+generateId("")
+    return "*"+generateId("")
 }
 
 

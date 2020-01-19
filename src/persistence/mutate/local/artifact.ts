@@ -7,34 +7,32 @@ import { deepCopy }                       from "../../../utils"
 import * as remote from "../remote/artifact"
 
 
-export async function artifactEnter(P: Persistence, artifact: Artifact, world: World) {
-    if (!await remote.artifactEnter(P, artifact, world)) {
-        if (!artifact.visits[ world.id ]) {
-            artifact.visits[ world.id ] = deepCopy(spawnPosition);
+export async function artifactEnter(P: Persistence, artifact: Artifact, worldId: string) {
+    if (!await remote.artifactEnter(P, artifact, worldId)) {
+        if (!artifact.visits[ worldId ]) {
+            artifact.visits[ worldId ] = deepCopy(spawnPosition);
         } 
-        if (artifact.hostId && (artifact.hostId != world.id)) {
-            artifact.visitsStack.push( world.id );
+        if (artifact.hostId && (artifact.hostId != worldId)) {
+            artifact.visitsStack.push( worldId );
         }
         await P.artifacts.save(artifact);        
     }
 }
 
-export async function artifactLeave(P: Persistence, artifact: Artifact, world: World, 
-                                    disconnect?: boolean) {
-    if (!await remote.artifactLeave(P, artifact, world, disconnect)) {
+export async function artifactLeave(P: Persistence, artifact: Artifact, worldId: string,
+                                    position: Position, disconnect?: boolean) {
+    if (!await remote.artifactLeave(P, artifact, worldId, position, disconnect)) {
         if (!disconnect) {
             artifact.visitsStack.pop();
         }
-        const position = world.artifactPositions[artifact.id];
-        artifact.visits[world.id] = deepCopy(position);
+        artifact.visits[worldId] = deepCopy(position);
         await P.artifacts.save(artifact);
     }
 }
 
-
-export async function artifactPickup(P: Persistence, artifact: Artifact, obj: Artifact) {
-    if (!await remote.artifactPickup(P, artifact, obj)) {
-        artifact.inventoryIds.push(obj.id)
+export async function artifactPickup(P: Persistence, artifact: Artifact, objId: string) {
+    if (!await remote.artifactPickup(P, artifact, objId)) {
+        artifact.inventoryIds.push(objId)
         await P.artifacts.save(artifact);
     }
 }
@@ -48,19 +46,20 @@ export async function artifactPutdown(P: Persistence, artifact: Artifact) {
 }
 
 
-export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact, world: World) {
-    if (!await remote.artifactRemoveFromWorld(P, artifact, world)) {
-        artifact.visits[ world.id ] = deepCopy(world.artifactPositions[ artifact.id ])
+export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact, 
+                                              worldId: string, position: Position) {
+    if (!await remote.artifactRemoveFromWorld(P, artifact, worldId, position)) {
+        artifact.visits[ worldId ] = deepCopy(position)
         await P.artifacts.save(artifact);
     }
 }
 
 
 export async function artifactInsertIntoWorld(P: Persistence, artifact: Artifact, 
-                                      world: World, pos: Position) {
-    if (!await remote.artifactInsertIntoWorld(P, artifact, world, pos)) {
-        artifact.hostId = world.id;
-        artifact.visits[ world.id ] = deepCopy(pos)
+                                              worldId: string, pos: Position) {
+    if (!await remote.artifactInsertIntoWorld(P, artifact, worldId, pos)) {
+        artifact.hostId = worldId;
+        artifact.visits[ worldId ] = deepCopy(pos)
         await P.artifacts.save(artifact);
     }
 }

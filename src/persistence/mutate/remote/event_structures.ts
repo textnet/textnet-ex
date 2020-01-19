@@ -18,6 +18,7 @@ export interface ArtifactEnter extends RemoteEvent {
 export interface ArtifactLeave extends RemoteEvent {
     artifactId: string,
     worldId:    string,
+    position:   Position,
     disconnect: boolean;
 }
 export interface ArtifactPickup extends RemoteEvent {
@@ -30,6 +31,7 @@ export interface ArtifactPutdown extends RemoteEvent {
 export interface ArtifactRemove extends RemoteEvent {
     artifactId: string,
     worldId:    string,
+    position:   Position,
 }
 export interface ArtifactInsert extends RemoteEvent {
     artifactId: string,

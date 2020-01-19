@@ -9,7 +9,7 @@ import { artifactEnter, artifactLeave } from "./local/artifact";
 
 export async function enterWorld(P: Persistence, artifact: Artifact, world: World) {
     // console.log(`Enter world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
-    await artifactEnter(P, artifact, world)
+    await artifactEnter(P, artifact, world.id)
     await fit(P, artifact, world, artifact.visits[ world.id ])
 }
 
@@ -24,7 +24,9 @@ export async function leaveWorld(P: Persistence, artifact: Artifact, world: Worl
     if (disconnect 
         || (artifact.visitsStack.length > 1 
            && world.id == artifact.visitsStack[artifact.visitsStack.length-1])) {
-        await artifactLeave(P, artifact, world, disconnect);
+        await artifactLeave(P, artifact, world.id, 
+                            world.artifactPositions[artifact.id],
+                            disconnect);
         await removeFromWorld(P, artifact, world);
     }
 }
