@@ -14,7 +14,7 @@ import { PersistenceObserver                        } from "./observe/observer";
 import * as mutateEnter from "./mutate/enter"
 import { interopSetup } from "./interop/setup"
 
-import * as receive from "./remote/receive"
+import * as remote from "./remote/persistence"
 
 /**
  * Asynchronous Local Persistence. 
@@ -76,7 +76,7 @@ export class Persistence {
             await this.observers[id].attempt();
         }
         //
-        receive.register(this);
+        remote.register(this);
     }
 
     async free() {

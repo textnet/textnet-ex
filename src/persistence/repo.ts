@@ -5,7 +5,7 @@ import { Storage     } from "./storage"
 import { Persistence } from "./persist"
 
 import { persistenceId } from "./identity"
-import * as receive from "./remote/receive"
+import * as remote from "./remote/persistence"
 
 /**
  * Repository of objects with interface <T>.
@@ -43,7 +43,7 @@ export class Repository<T> {
 
     async load(id: string)   { 
         if (!this.isLocal(id)) {
-            const data = await receive.load(this.persistence, this.prefix, id);
+            const data = await remote.load(this.persistence, this.prefix, id);
             await this.save(data);
         }
         return this.storage.get(id) as T 

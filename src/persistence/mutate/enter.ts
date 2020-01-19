@@ -1,27 +1,20 @@
 
 import { Persistence } from "../persist"
 import { fit, removeFromWorld } from "./place"
-import { sendTopInventory } from "../interop/send";
 
-import { spawnPosition } from "../../const"
-import { Position, Artifact, World } from "../../interfaces"
-import { deepCopy } from "../../utils"
+import { Artifact, World } from "../../interfaces"
+import { deepCopy }        from "../../utils"
+
+import { artifactEnter, artifactLeave } from "./local/artifact";
 
 export async function enterWorld(P: Persistence, artifact: Artifact, world: World) {
     // console.log(`Enter world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
-    // adjust artifact
-    if (!artifact.visits[ world.id ]) {
-        artifact.visits[ world.id ] = deepCopy(spawnPosition);
-    } 
-    if (artifact.hostId && (artifact.hostId != world.id)) {
-        artifact.visitsStack.push( world.id );
-    }
-    await P.artifacts.save(artifact);
+    await artifactEnter(P, artifact, world)
     await fit(P, artifact, world, artifact.visits[ world.id ])
 }
 
 export async function disconnect(P: Persistence, artifact: Artifact, world: World) {
-    return leaveWorld(P, artifact, world, true)
+    return await leaveWorld(P, artifact, world, true)
 }
 
 export async function leaveWorld(P: Persistence, artifact: Artifact, world: World, 
@@ -31,13 +24,7 @@ export async function leaveWorld(P: Persistence, artifact: Artifact, world: Worl
     if (disconnect 
         || (artifact.visitsStack.length > 1 
            && world.id == artifact.visitsStack[artifact.visitsStack.length-1])) {
-        // adjust artifact
-        if (!disconnect) {
-            artifact.visitsStack.pop();
-        }
-        const position = world.artifactPositions[artifact.id];
-        artifact.visits[world.id] = deepCopy(position);
-        await P.artifacts.save(artifact);
+        await artifactLeave(P, artifact, world, disconnect);
         await removeFromWorld(P, artifact, world);
     }
 }

@@ -1,21 +1,19 @@
 // can place? etc.
 
 import { deepCopy } from "../../utils"
-import { Artifact, World, Position, Dir } from "../../interfaces"
+import { Artifact, Dir } from "../../interfaces"
 import { Persistence } from "../persist"
 
 import { removeFromWorld, place } from "./place"
 import { sendInventory, sendEmptyInventory } from "../interop/send"
 
+import { artifactPickup, artifactPutdown } from "./local/artifact"
+
 export async function pickup(P: Persistence,
                       artifact: Artifact, obj: Artifact) {
-    // 1. remove from world
     const hostWorld = await P.worlds.load(obj.hostId);
     await removeFromWorld(P, obj, hostWorld);
-    // 2. put into inventory
-    artifact.inventoryIds.push(obj.id)
-    await P.artifacts.save(artifact);
-    // 3. send event
+    await artifactPickup(P, artifact, obj);
     await sendInventory(P, artifact, obj);
 }
 
@@ -41,8 +39,7 @@ export async function putdown(P: Persistence, artifact: Artifact, dir: Dir) {
         // place if possible
         const placeSuccess = await place(P, obj, hostWorld, pos);
         if (placeSuccess) {
-            artifact.inventoryIds.pop();
-            await P.artifacts.save(artifact);
+            await artifactPutdown(P, artifact);
             // send event
             if (artifact.inventoryIds.length > 0) {
                 const newObjId = artifact.inventoryIds[artifact.inventoryIds.length-1]

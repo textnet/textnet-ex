@@ -1,14 +1,12 @@
 import { Persistence } from "../persist"
-
 import { Position, Artifact, World } from "../../interfaces"
-import { deepCopy } from "../../utils"
 
 import * as interopSend from "../interop/send"
+import { worldUpdateText } from "./local/world";
 
 export async function updateText(P: Persistence, world: World, text:string ) {
     if (world.text != text) {
-        world.text = text;
-        await P.worlds.save(world);
+        await worldUpdateText(P, world, text);
         await interopSend.sendText(P, world);
     }
 }

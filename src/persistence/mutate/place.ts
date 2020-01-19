@@ -8,6 +8,13 @@ import { isPlaceable, isInBounds } from "./spatial"
 
 import { sendPlaceArtifact, sendInsertArtifact, sendRemoveArtifact } from "../interop/send"
 
+import { artifactRemoveFromWorld,
+         artifactInsertIntoWorld  } from "./local/artifact";
+import { worldRemoveFromWorld,
+         worldInsertIntoWorld,
+         worldUpdateInWorld       } from "./local/world"
+
+
 
 
 // fit if there is space
@@ -89,32 +96,23 @@ export async function force(P: Persistence,
 
 // technical, don't use directly
 export async function removeFromWorld(P: Persistence, artifact: Artifact, world: World) {
-    artifact.visits[ world.id ] = deepCopy(world.artifactPositions[ artifact.id ])
-    delete world.artifactPositions[ artifact.id ];    
-    artifact.hostId = null;
-    await P.worlds.save(world);
-    await P.artifacts.save(artifact);
-    // sent event to renderer
+    await artifactRemoveFromWorld(P, artifact, world);
+    await worldRemoveFromWorld(P, artifact, world);
     await sendRemoveArtifact(P, artifact, world);
 }
 
 // technical, don't use directly
 export async function insertIntoWorld(P: Persistence, artifact: Artifact, 
                                       world: World, pos: Position) {
-    world.artifactPositions[ artifact.id ] = deepCopy(pos)
-    artifact.hostId = world.id;
-    artifact.visits[ world.id ] = deepCopy(pos)
-    await P.worlds.save(world);
-    await P.artifacts.save(artifact);
-    // send event to renderer
+
+    await artifactInsertIntoWorld(P, artifact, world, pos);
+    await worldInsertIntoWorld(P, artifact, world, pos);
     await sendInsertArtifact(P, artifact, pos);
 }
 
 // technical, don't use directly
 export async function updateInWorld(P: Persistence, artifact: Artifact, 
                                       world: World, pos: Position) {
-    world.artifactPositions[ artifact.id ] = deepCopy(pos)
-    await P.worlds.save(world);
-    // send event to renderer
+    await worldUpdateInWorld(P, artifact, world, pos);
     await sendPlaceArtifact(P, artifact, pos);
 }

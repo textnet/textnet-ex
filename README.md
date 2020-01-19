@@ -25,6 +25,14 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - Enter yourself: CTRL + ESCAPE
 
 
+
+# CURRENT ITERATION
++ refactor `mutate` to `mutate_local`
+- `mutate` send signals
+- `mutate` receive signals
+- `load` send signals
+- `load` receive signals
+
 # Multiplayer and hosted universes
 + create two persistences
 + store 'persistenceId' next to id
