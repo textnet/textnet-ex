@@ -24,31 +24,41 @@ This is an Excalibur+Electron prototype of the TXTNET.
 - Self:
     - Enter yourself: CTRL + ESCAPE
 
-
-
 # CURRENT ITERATION
 + refactor `mutate` to `mutate_local`
-- `load` send signals
++ `load` send signals
 + `mutate` send signals
     + artifact
     + world
-- `messaging` mock framework    
-- `load` receive signals
-- `mutate` receive signals
-- `mutate` send events across network (e.g. pickup, move)
-- `persistence` receive events from across network
++ `messaging` mock framework    
++ `load` receive signals
++ `mutate` receive signals
++ `mutate` send events across network (e.g. pickup, move)
++ `persistence` receive events from across network
 - `render` work with messages ^
+    + `move`
+    + `enter`, (`leave`)
+    - BUGS `pickup/putdown`
+    - `text`
+    - `properties`
+    - walking animation
+
+NEXT ITERATION(s)
 - `observer` work with messages ^
+    - spawn events
+    - make sure events are picking up
+- proper messaging
+- refactoring
 
 # Multiplayer and hosted universes
 + create two persistences
 + store 'persistenceId' next to id
-> `mutate` across network
-- `renderer` across network
++ `mutate` across network
+> `renderer` across network
 - `observer` across network
+- proper messaging
 - handle offline
 - create three persistences, simulate lost reference
-- handle complex operations
 - move items between worlds
 
 
@@ -129,8 +139,6 @@ Then here are options:
     end
 
 
--------
-Renderer subscribes.
 
 
 ----
