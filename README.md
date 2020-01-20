@@ -25,30 +25,38 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - Enter yourself: CTRL + ESCAPE
 
 # CURRENT ITERATION
-+ refactor `mutate` to `mutate_local`
-+ `load` send signals
-+ `mutate` send signals
-    + artifact
-    + world
-+ `messaging` mock framework    
-+ `load` receive signals
-+ `mutate` receive signals
-+ `mutate` send events across network (e.g. pickup, move)
-+ `persistence` receive events from across network
-+ `render` work with messages ^
-    + `move`
-    + `enter`, (`leave`)
-    + walking animation
-    + not matching coordinates
-    + blinking on enter/leave — because "askForWorld" happens for all windows.
-    + BUGS `pickup/putdown`
-    + `text`
-    ? `properties` — check when Written Word is back
+- Written Word is back
+    - setup both worlds
+        - put WW in chair (locally)
+        - put WW in myself (remote)
+        - put WW in the host (locally)
+    - loaders
+        - inner
+        - outer
+    - place
+        - inner
+        - outer
+    - move
+        - inner
+        - outer
+    - halt
+        - inner
+        - outer
+    - update
+        - self
+        - inner
+        - outer
+    - text
+        - self
+        - inner
+        - outer
+    - line
+        - self
+        - inner
+        - outer
 
 NEXT ITERATION(s)
-- `observer` work with messages ^
-    - spawn events
-    - make sure events are picking up
+- Written Word and events
 - proper messaging
 - refactoring
 
