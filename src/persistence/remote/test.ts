@@ -68,7 +68,7 @@ export async function init(local: Persistence) {
             }
         })
         P.attachWindow(mainWindow);
-        mainWindow.webContents.openDevTools({ mode:"detach" })
+        // mainWindow.webContents.openDevTools({ mode:"detach" })
         mainWindow.loadFile("dist/index.html")    
     }
 }

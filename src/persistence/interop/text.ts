@@ -15,13 +15,9 @@ export async function standArtifact(P: Persistence, event: StandEvent) {
     const artifact   = await P.artifacts.load(artifactId);
     const world      = await P.worlds.load(artifact.hostId);
 
-    // 1. update world
     if (world.text != text) {
         await mutateWorld.updateText(P, world, text);
     }
-    // 2. recompile Written Word
-    await P.observers[artifactId].attempt();
-    // 3. fit artifact
     if (position) {
         await mutatePlace.fit(P, artifact, world, position);
     }

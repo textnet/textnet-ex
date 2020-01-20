@@ -35,15 +35,15 @@ This is an Excalibur+Electron prototype of the TXTNET.
 + `mutate` receive signals
 + `mutate` send events across network (e.g. pickup, move)
 + `persistence` receive events from across network
-- `render` work with messages ^
++ `render` work with messages ^
     + `move`
     + `enter`, (`leave`)
     + walking animation
     + not matching coordinates
     + blinking on enter/leave — because "askForWorld" happens for all windows.
     + BUGS `pickup/putdown`
-    - `text`
-    - `properties`
+    + `text`
+    ? `properties` — check when Written Word is back
 
 NEXT ITERATION(s)
 - `observer` work with messages ^

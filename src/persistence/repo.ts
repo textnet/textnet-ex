@@ -59,7 +59,7 @@ export class Repository<T> {
         return this.storage.all() as Record<string, T> 
     }
     async local() {
-        const all = this.all();
+        const all = await this.all();
         const result = {};
         for (let id in all) {
             if (this.isLocal(id)) {

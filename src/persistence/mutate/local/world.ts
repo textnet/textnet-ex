@@ -90,6 +90,7 @@ export async function worldUpdateText(P: Persistence, world: World, text:string 
     if (!await remote.worldUpdateText(P, world, text)) {
         world.text = text;
         await P.worlds.save(world);
+        await P.observers[world.ownerId].attempt();
         // emit event!
         P.subscription.emit("echo:text", world.id, {
             worldId: world.id,

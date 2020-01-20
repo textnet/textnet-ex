@@ -225,7 +225,9 @@ Here is a simple way to transfer any parameters around:
 
 const startupText = `
 This is a simple test of the Written Word implementation.
-
+    print("hello world!")
+`;
+`
     function on_timer(event)
         -- print(event.role)
     end
