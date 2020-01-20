@@ -9,7 +9,7 @@ import * as ex     from "excalibur";
 
 import { worldWidth, visualBounds, uiSettings } from "../../const"
 import { Game                                 } from "../game"
-import { GameScene                            } from "../scene"
+import { GameScene, RadiusAroundSpawnPointStrategy } from "../scene"
 import { ArtifactActor                        } from "../actors/artifact"
 import { initEditor, updateEditor             } from "../editor"
 
@@ -68,6 +68,10 @@ export function prepareWorld(game: Game, params) {
     scene.editor = game.editor;
     updateSceneFromWorld(scene, worldData);
     updateEditor(scene);
+    // default camera
+    scene.camera.addStrategy(
+        new RadiusAroundSpawnPointStrategy(title, visualBounds.height / 2)
+    );    
     // Go!
     game.start();
     askForPlayer();

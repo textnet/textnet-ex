@@ -16,10 +16,11 @@ export async function worldPickup(P: Persistence, world: World,
 }
 
 export async function worldPutdown(P: Persistence, world: World, 
-                                   artifactId: string) {
+                                   artifactId: string, objId: string) {
     return await wrapper(P, "worldPutdown", world.id, {
         artifactId: artifactId,
         worldId:    world.id,
+        objId:      objId,
     } as RemoteEvent.WorldPutdown);
 }
 

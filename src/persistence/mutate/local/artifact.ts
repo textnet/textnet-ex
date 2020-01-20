@@ -49,6 +49,7 @@ export async function artifactPutdown(P: Persistence, artifact: Artifact) {
 export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact, 
                                               worldId: string, position: Position) {
     if (!await remote.artifactRemoveFromWorld(P, artifact, worldId, position)) {
+        artifact.hostId = null;
         artifact.visits[ worldId ] = deepCopy(position)
         await P.artifacts.save(artifact);
     }

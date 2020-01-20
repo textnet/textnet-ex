@@ -103,6 +103,6 @@ export async function sendText(P: Persistence, world: World) {
 }
 
 export async function sendWorld(P: Persistence, data: WorldEvent) {
-    // console.log(`INTEROP: world`);
+    // console.log(`INTEROP: world(${data.world.id}) -> ${P.account.id}`);
     if (P.window) P.window.webContents.send('world', data);
 }

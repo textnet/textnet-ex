@@ -32,16 +32,21 @@ export function unregister(P: Persistence) {
 
 // ----------vvvvvvv---------
 async function messageListener(P:Persistence, senderId:string, payload:RemoteEvent.Payload) {
-    console.log(`${P.account.id}>> from ${senderId} "${payload.event}" ->`, payload.data);
+    // console.log(`${P.account.id}>> from ${senderId} "${payload.event}" ->`, payload.data);
     const event = payload.event.split(":");
     switch (event[0]) {
         case "load": const data = payload.data as RemoteEvent.Load;
                      return P[data.prefix].load(data.id);
         case "echo": return echo(P, event[1], payload.data);
-        default:     return _[payload.event](P, payload.data);
+        default:     
+                     if (!_listener_[payload.event]) {
+                         console.log(`Listener for "${payload.event}" unknown!`, 
+                                     payload.data);
+                     }
+                     return _listener_[payload.event](P, payload.data);
     }
 }
-const _ = {
+const _listener_ = {
    artifactEnter: async function(P, _) {
        const data = _ as RemoteEvent.ArtifactEnter;
        const artifact = await P.artifacts.load(data.artifactId);
@@ -79,6 +84,21 @@ const _ = {
        return localArtifact.artifactUpdateProperties(P, artifact, data.properties);
    },
 //----
+   worldPickup: async function(P, _) {
+       const data = _ as RemoteEvent.WorldPickup;
+       const world = await P.worlds.load(data.worldId);
+       return localWorld.worldPickup(P, world, data.artifactId, data.objId);
+   },
+   worldPutdown: async function(P, _) {
+       const data = _ as RemoteEvent.WorldPutdown;
+       const world = await P.worlds.load(data.worldId);
+       return localWorld.worldPutdown(P, world, data.artifactId, data.objId);
+   },
+   worldUpdateProperties: async function(P, _) {
+       const data = _ as RemoteEvent.WorldProperties;
+       const world = await P.worlds.load(data.worldId);
+       return localWorld.worldUpdateProperties(P, world, data.artifactId);
+   },
    worldRemoveFromWorld: async function(P, _) {
        const data = _ as RemoteEvent.WorldRemove;
        const world = await P.worlds.load(data.worldId);

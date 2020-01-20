@@ -38,10 +38,12 @@ This is an Excalibur+Electron prototype of the TXTNET.
 - `render` work with messages ^
     + `move`
     + `enter`, (`leave`)
-    - BUGS `pickup/putdown`
+    + walking animation
+    + not matching coordinates
+    + blinking on enter/leave — because "askForWorld" happens for all windows.
+    + BUGS `pickup/putdown`
     - `text`
     - `properties`
-    - walking animation
 
 NEXT ITERATION(s)
 - `observer` work with messages ^

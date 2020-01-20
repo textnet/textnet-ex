@@ -27,12 +27,13 @@ export class ArtifactActor extends BaseActor {
     speed: { x:number, y: number };
     needRelease: boolean; // need to release a key before next key command is triggered.
     isKneeled: boolean;   // is a player typing in?
+    isMoving: boolean;
     inventory?: InventoryActor; // an actor to render current inventory of this artifact.
 
     constructor(artifact: ArtifactStructure) {
+        super(artifact);
         let pos:Position = artifact.position;
         let sprite:ArtifactSprite = new ArtifactSprite(artifact);
-        super(artifact);
         this.isKneeled = false;
         this.scale = new ex.Vector(1,1);
         this.opacity = 1;
@@ -92,16 +93,33 @@ export class ArtifactActor extends BaseActor {
                     focusEditor(this);
                 }
             }
+            // Adjust orientation if it is changing
+            if (dir.name != DIR.NONE.name) {
+                this.dir = dir;
+            } 
+            // Adjust velocity
+            this.vel.x = dir.x * this.artifact.speed;
+            this.vel.y = dir.y * this.artifact.speed;
+            //
+            this.isMoving = Math.abs(this.vel.x)+Math.abs(this.vel.y) > 0;
+            console.log("<keyboard>")
         }
-        // Adjust orientation if it is changing
-        if (dir.name != DIR.NONE.name) {
-            this.dir = dir;
-        } 
-        // Adjust velocity
-        this.vel.x = dir.x * this.artifact.speed;
-        this.vel.y = dir.y * this.artifact.speed;
     }
 
+
+    _movingTimeout;
+    _movingTimeoutDuration = 100;
+    startMoving() {
+        const that = this;
+        this.isMoving = true;
+        clearTimeout(this._movingTimeout);
+        this._movingTimeout = setTimeout(function(){ that.stopMoving() }, 
+                                         this._movingTimeoutDuration);
+    }
+    stopMoving() {
+        this.isMoving = false;
+        clearTimeout(this._movingTimeout);
+    }
 
     /**
      * While moving an actor, make sure it stays within the stage.
@@ -142,8 +160,8 @@ export class ArtifactActor extends BaseActor {
             interopSend.updateArtifactPosition(this);
         } 
         // Update animations
-        if (this.artifact.sprite.turning) {
-            if (Math.abs(this.vel.x)+Math.abs(this.vel.y) > 0) {
+        if (this.artifact.sprite.moving) {
+            if (this.isMoving) {
                 this.setDrawing("move:"+this.dir.name)
             } else {
                 this.setDrawing("idle:"+this.dir.name)

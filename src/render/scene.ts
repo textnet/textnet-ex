@@ -4,7 +4,7 @@
 import * as jquery from "jquery";
 import * as ex from "excalibur";
 
-import { visualBounds                      } from "../const"
+import { visualBounds, spawnPosition       } from "../const"
 import { WorldStructure, ArtifactStructure } from "./data_structures"
 import { ArtifactActor                     } from "./actors/artifact";
 import { InventoryActor                    } from "./actors/inventory";
@@ -24,6 +24,34 @@ export class GameScene extends ex.Scene {
     artifacts?: Record<string, ArtifactStructure>;
     environmentActors?: Record<string, ex.Actor>;
 }
+
+
+export class RadiusAroundSpawnPointStrategy implements ex.CameraStrategy<ex.Actor> {
+    constructor(public target: ex.Actor, public radius: number) {}
+    public action(
+        target: ex.Actor,
+        cam: ex.Camera,
+        _eng: ex.Engine,
+        _delta: number
+    ) {
+        const position = spawnPosition;
+        let focus = cam.getFocus();
+        focus.y = visualBounds.height/2;
+        const diff = position.y - focus.y;
+        if (diff > this.radius) {
+            focus = focus.add(new ex.Vector(0, diff - this.radius));
+        }
+        if (diff < -this.radius) {
+            focus = focus.add(new ex.Vector(0, diff + this.radius));
+        }
+        const scene = target.scene as GameScene
+        if (scene) {
+            adjustEditorFocus(scene.editor, focus)
+        }
+        return focus;
+    }
+}
+
 
 /** 
  * Strategy to move camera in a way that it always follows the player actor.

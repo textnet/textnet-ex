@@ -47,7 +47,7 @@ function onReady() {
             }
         })
         localPersistence.attachWindow(mainWindow);
-        // mainWindow.webContents.openDevTools({ mode:"detach" })
+        mainWindow.webContents.openDevTools({ mode:"detach" })
         mainWindow.loadFile("dist/index.html")
     })
 

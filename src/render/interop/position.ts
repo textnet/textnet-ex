@@ -22,12 +22,21 @@ export function positionArtifact(game: Game, event: PositionEvent) {
         for (let a of scene.actors) {
             const actor = a as BaseActor;
             if (actor.artifact.id == event.artifactId) {
-                const playerActor = actor as ArtifactActor;
+                const artifactActor = actor as ArtifactActor;
+                const vel = { 
+                    x: event.position.x - artifactActor.pos.x,
+                    y: event.position.y - artifactActor.pos.y,
+                };
+                if (Math.abs(vel.x) + Math.abs(vel.y) > 0) {
+                    artifactActor.startMoving();    
+                } else {
+                    artifactActor.stopMoving();
+                }
                 actor.pos.x = event.position.x;
                 actor.pos.y = event.position.y;
                 actor.dir   = event.position.dir;
                 actor.artifact.position = deepCopy(event.position)
-                playerActor.isKneeled = false;
+                artifactActor.isKneeled = false;
                 repositionCamera(game, actor);
             }
         }

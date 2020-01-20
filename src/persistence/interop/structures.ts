@@ -4,6 +4,7 @@ import { Account, Artifact, World } from "../../interfaces"
 import { WorldStructure, ArtifactStructure, AccountStructure } from "../../render/data_structures"
 
 import { Persistence } from "../persist"
+import { persistenceId } from "../identity"
 
 
 
@@ -30,12 +31,12 @@ export async function structureFromArtifact(P: Persistence, artifact: Artifact, 
         sprite: deepCopy(artifact.sprite),
         body: deepCopy(artifact.body),
         isInventory: false,
-        isLocal: true, // TODO
+        isLocal: P.account.id == persistenceId(artifact.id),
         isPlayer: P.account.bodyId == artifact.id, 
     }
     if (host) {
         data["position"] =host.artifactPositions[artifact.id];
-    }    
+    }
     return data
 }
 

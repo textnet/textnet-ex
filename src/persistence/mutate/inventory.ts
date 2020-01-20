@@ -41,7 +41,7 @@ export async function putdown(P: Persistence, artifact: Artifact, dir: Dir) {
         const placeSuccess = await place(P, obj, hostWorld, pos);
         if (placeSuccess) {
             await artifactPutdown(P, artifact);
-            await worldPutdown(P, hostWorld, artifact.id);
+            await worldPutdown(P, hostWorld, artifact.id, obj.id);
         }
     }
 }

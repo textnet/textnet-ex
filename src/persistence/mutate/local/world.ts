@@ -22,11 +22,12 @@ export async function worldPickup(P: Persistence, world: World,
 }
 
 export async function worldPutdown(P: Persistence, world: World, 
-                                   artifactId: string) {
-    if (!await remote.worldPutdown(P, world, artifactId)) {
+                                   artifactId: string, objId: string) {
+    if (!await remote.worldPutdown(P, world, artifactId, objId)) {
         // emit event!
         P.subscription.emit("echo:putdown", world.id, {
             artifactId: artifactId,
+            objId:      objId,
         } as RemoteEvent.WorldPutdown);
     }    
 }
