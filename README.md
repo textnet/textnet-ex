@@ -71,6 +71,10 @@ NEXT ITERATION(s)
 - create three persistences, simulate lost reference
 - move items between worlds
 
+# Refactoring Refactored
+- massive load across network -> subscribe on changes
+- merge remote/network in one module
+
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
 - another session of documentation
