@@ -96,6 +96,12 @@ const ww = {
         print(prefix, "Upper: "..upper[i].name)
     end
     --
+    local chair2 = get_artifact{ world="upper", name="Chair 2"}
+    if chair2 then
+        place_at{ artifact=chair2, x=310, y=40 }
+        move_by{ artifact=chair2, x=-300 }
+    end    
+    --
     print(prefix, "Done")
 `,
 
@@ -114,7 +120,8 @@ const ww = {
     --
     local chair1 = get_artifact{ name="Chair 1"}
     if chair1 then
-        print(prefix, chair1.name)
+        place_at{ artifact=chair1, x=10, y=10 }
+        move_by{ artifact=chair1, x=300 }
     end
     --
     print(prefix, "Done")
@@ -134,7 +141,6 @@ const ww = {
     for i=0,upper.length-1 do 
         print(prefix, "Upper: "..upper[i].name)
     end    
-    --
     --
     print(prefix, "Done")
 `,

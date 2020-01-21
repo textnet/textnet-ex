@@ -39,8 +39,8 @@ export function move_to( O: PersistenceObserver,
     const artifact = getArtifactFromData(O, artifactData);
     const dir = DIRfrom({name:direction} as Dir);
     const artifactPos = getArtifactPos(O, artifact);
-    if (x === undefined) x = artifactPos.x;
-    if (y === undefined) y = artifactPos.y;
+    if (x === undefined) x = isDelta?0:artifactPos.x;
+    if (y === undefined) y = isDelta?0:artifactPos.y;
     O.executeCommand(ObserverCommand.Move, {
         artifact: artifact.id,
         x: x, 

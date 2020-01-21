@@ -33,15 +33,9 @@ This is an Excalibur+Electron prototype of the TXTNET.
     + loaders
         + inner
         + outer
-    - place
-        - inner
-        - outer
-    - move
-        - inner
-        - outer
-    - halt
-        - inner
-        - outer
+    + place, move
+        + inner
+        + outer
     - update
         - self
         - inner
@@ -80,6 +74,7 @@ NEXT ITERATION(s)
 - another session of documentation
 - even more refactor positions, coords, and vector stuff
 - embed lua highlighting into markdown
+- test `halt()`
 
 # MAKE IT PRETTY!
 - Apple Developer certificate

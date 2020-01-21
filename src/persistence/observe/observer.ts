@@ -50,8 +50,6 @@ export class PersistenceObserver extends events.EventEmitter {
         this.cleanCommands();
         this.command = ObserverCommand.None;
         this.subscribedKeys = [];
-        this.subscribe(undefined, "timer", "object", 
-            (event: observerEvents.TimeEvent) => { that.iterateCommand() })
     }
 
     /**
@@ -89,6 +87,8 @@ export class PersistenceObserver extends events.EventEmitter {
             prevTime = nowTime;
             that.sendEvent("timer", { delta: delta } as observerEvents.TimeEvent)
         }, observerEvents.observerInterval)
+        this.subscribe(undefined, "timer", "object", 
+            (event: observerEvents.TimeEvent) => { that.iterateCommand() })
     }
 
     /**
@@ -152,8 +152,8 @@ export class PersistenceObserver extends events.EventEmitter {
         };
         this.on(event, key);
         this.subscribedKeys.push({event:event, key:key})
-        // if (artifact) console.log(`SUBSCRIBE <${artifact.name}> #${event}:${role}`)
-        // else          console.log(`SUBSCRIBE <> #${event}:${role}`)
+        if (artifact) console.log(`(${this.ownerId}) SUBSCRIBE <${artifact.name}> #${event}:${role}`)
+        else          console.log(`(${this.ownerId}) SUBSCRIBE <> #${event}:${role}`)
         return key;
     }
 
@@ -167,8 +167,8 @@ export class PersistenceObserver extends events.EventEmitter {
      */
     unsubscribe(artifact: Artifact, event: string, role: string, key:any) {
         this.off(event, key);
-        if (artifact) console.log(`unsubscribe <${artifact.name}> #${event}:${role}`)
-        else          console.log(`unsubscribe <> #${event}:${role}`)
+        if (artifact) console.log(`(${this.ownerId}) unsubscribe <${artifact.name}> #${event}:${role}`)
+        else          console.log(`(${this.ownerId}) unsubscribe <> #${event}:${role}`)
     }    
 
     /**

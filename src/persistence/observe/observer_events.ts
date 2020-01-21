@@ -90,7 +90,7 @@ export async function placeAction(O: PersistenceObserver, command: PlaceCommand)
             y: command.y,
             dir: DIRfrom({x:0, y:0, name: command.dir})
         }
-        if (command.isFit) {
+        if (!command.isFit) {
             await mutatePlace.place(P, artifact, hostWorld, newPos);
         } else {
             await mutatePlace.fit(P, artifact, hostWorld, newPos);
