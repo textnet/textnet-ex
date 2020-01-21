@@ -26,13 +26,13 @@ This is an Excalibur+Electron prototype of the TXTNET.
 
 # CURRENT ITERATION
 - Written Word is back
-    - setup both worlds
-        - put WW in chair (locally)
-        - put WW in myself (remote)
-        - put WW in the host (locally)
-    - loaders
-        - inner
-        - outer
+    + setup both worlds
+        + put WW in chair (locally)
+        + put WW in myself (remote)
+        + put WW in the host (locally)
+    + loaders
+        + inner
+        + outer
     - place
         - inner
         - outer

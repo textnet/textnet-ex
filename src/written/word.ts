@@ -36,7 +36,7 @@ export function initWrittenWord(CTX, id: string, text: string) {
         if (!success) return;
         success = fengari_call(env.L);
         if (!success) return;
-        console.log(`<Written Word>(${id}) Ready.`)
+        console.log(`\n<Written Word>(${id}) Ready.`)
         return env;
     }
 }

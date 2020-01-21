@@ -223,25 +223,4 @@ Here is a simple way to transfer any parameters around:
 
 
 
-const startupText = `
-This is a simple test of the Written Word implementation.
-    print("hello world!")
-`;
-`
-    function on_timer(event)
-        -- print(event.role)
-    end
-    self{ name="P2", speed=200 }
-    local chair = get_artifact{ name="Chair 1" }
-    if (chair) then
-        place_at{ artifact=chair, x=200, y=10 }
-        move_by{ artifact=chair, x=100, y=100 }
-        on{ event="timer", artifact=chair, handler=on_timer }
-    end
-
-The game is a sandbox where you can alter everything you see.
-
-Or is it?
-    
-
-`;
+const startupText = ``;

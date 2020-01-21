@@ -152,8 +152,8 @@ export class PersistenceObserver extends events.EventEmitter {
         };
         this.on(event, key);
         this.subscribedKeys.push({event:event, key:key})
-        if (artifact) console.log(`SUBSCRIBE <${artifact.name}> #${event}:${role}`)
-        else          console.log(`SUBSCRIBE <> #${event}:${role}`)
+        // if (artifact) console.log(`SUBSCRIBE <${artifact.name}> #${event}:${role}`)
+        // else          console.log(`SUBSCRIBE <> #${event}:${role}`)
         return key;
     }
 

@@ -51,7 +51,7 @@ export function fengari_call(L: LuaState) {
  * @param   {string}   callResult - error code (e.g. LUA_ERRMEM)
  */
 function log(L: LuaState, call:string, callResult:string) {
-    if (DEBUG) return;
+    if (!DEBUG) return;
     const _log = (text) => {
         console.log(call+":", text);
         console.log("Error message:", to_jsstring(lauxlib.luaL_tolstring(L, -1)))
