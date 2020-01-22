@@ -25,7 +25,7 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - Enter yourself: CTRL + ESCAPE
 
 # CURRENT ITERATION
-- Written Word is back
++ Written Word is back
     + setup both worlds
         + put WW in chair (locally)
         + put WW in myself (remote)
@@ -39,14 +39,9 @@ This is an Excalibur+Electron prototype of the TXTNET.
     + update
         + self
         + inner
-    - text
-        - self
-        - inner
-        - outer
-    - line
-        - self
-        - inner
-        - outer
+    + text, line
+        + inner
+        + outer
 
 NEXT ITERATION(s)
 - Written Word and events
