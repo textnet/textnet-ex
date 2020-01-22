@@ -36,10 +36,9 @@ This is an Excalibur+Electron prototype of the TXTNET.
     + place, move
         + inner
         + outer
-    - update
-        - self
-        - inner
-        - outer
+    + update
+        + self
+        + inner
     - text
         - self
         - inner

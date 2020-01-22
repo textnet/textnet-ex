@@ -58,10 +58,12 @@ export async function worldUpdateInWorld(P: Persistence, world: World,
     } as RemoteEvent.WorldUpdate);
 }
 
-export async function worldUpdateText(P: Persistence, world: World, text:string ) {
+export async function worldUpdateText(P: Persistence, world: World, text:string,
+                                      skipAttempt?:boolean ) {
     return await wrapper(P, "worldUpdateText", world.id, {
-        worldId:    world.id,
-        text:       text,
+        worldId:     world.id,
+        text:        text,
+        skipAttempt: skipAttempt
     } as RemoteEvent.WorldUpdateText);
 }
 

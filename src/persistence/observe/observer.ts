@@ -152,8 +152,8 @@ export class PersistenceObserver extends events.EventEmitter {
         };
         this.on(event, key);
         this.subscribedKeys.push({event:event, key:key})
-        if (artifact) console.log(`(${this.ownerId}) SUBSCRIBE <${artifact.name}> #${event}:${role}`)
-        else          console.log(`(${this.ownerId}) SUBSCRIBE <> #${event}:${role}`)
+        // if (artifact) console.log(`(${this.ownerId}) SUBSCRIBE <${artifact.name}> #${event}:${role}`)
+        // else          console.log(`(${this.ownerId}) SUBSCRIBE <> #${event}:${role}`)
         return key;
     }
 
@@ -283,15 +283,13 @@ export class PersistenceObserver extends events.EventEmitter {
         }   
         // artifacts - 2 (with their worlds)
         for (let worldId in worlds) {
-            if (worldId != artifact.hostId) {
-                for (let artifactId in worlds[worldId].artifactPositions) {
-                    const innerArtifact = await this.P.artifacts.load(artifactId);
-                    artifacts[artifactId] = innerArtifact;
-                    for (let worldName in innerArtifact.worldIds) {
-                        const innerWorld = await this.P.worlds.load(
-                                           innerArtifact.worldIds[worldName]);
-                        worlds[innerWorld.id] = innerWorld;
-                    }
+            for (let artifactId in worlds[worldId].artifactPositions) {
+                const innerArtifact = await this.P.artifacts.load(artifactId);
+                artifacts[artifactId] = innerArtifact;
+                for (let worldName in innerArtifact.worldIds) {
+                    const innerWorld = await this.P.worlds.load(
+                                       innerArtifact.worldIds[worldName]);
+                    worlds[innerWorld.id] = innerWorld;
                 }
             }
         }

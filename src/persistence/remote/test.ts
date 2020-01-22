@@ -87,6 +87,7 @@ export async function init(local: Persistence) {
 
 const ww = {
 "Chair 1": `This is Chair No.1.
+#health 100
 
     local myself = get_myself{}
     local prefix = myself.name.." >"
@@ -100,6 +101,7 @@ const ww = {
     if chair2 then
         place_at{ artifact=chair2, x=310, y=40 }
         move_by{ artifact=chair2, x=-300 }
+        update_text{ artifact=chair2, text="Chair No.2 -> Revised by Chair No.1"}
     end    
     --
     print(prefix, "Done")
@@ -124,7 +126,13 @@ const ww = {
         place_at{ artifact=chair1, x=10, y=10 }
         move_by{ artifact=chair1, x=300 }
         update{ artifact=chair1, name="Chair 1 (updated)"}
+        local health = get_text{ artifact=chair1, anchor="health"}
+        local chair1 = get_artifact{ name="Chair 1" }
+        local decreased = health-10
+        update_line{ artifact=chair1, anchor="health", text=decreased }
+        print(prefix, "Chair health="..health.."-10="..decreased)
     end
+    --
     --
     print(prefix, "Done")
 `,

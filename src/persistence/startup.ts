@@ -39,8 +39,8 @@ export async function registerAccount(P: Persistence) {
     const chair2 = await createArtifact(P, id, hostWorld.id, "Chair 2", "chair", "");
     hostWorld.artifactPositions[chair1.id] = { x: 370, y: 50, dir: DIR.DOWN } 
     hostWorld.artifactPositions[chair2.id] = { x: 200, y: 100, dir: DIR.DOWN }
-    await P.artifacts.save(chair1);
     await P.artifacts.save(chair2);
+    await P.artifacts.save(chair1);
     await P.worlds.save(hostWorld);
     // -----------------------
     // save

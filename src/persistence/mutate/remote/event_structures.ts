@@ -72,6 +72,7 @@ export interface WorldUpdate extends RemoteEvent {
     pos:        Position,
 }
 export interface WorldUpdateText extends RemoteEvent {
-    worldId:    string,
-    text:       string,
+    worldId:     string,
+    text:        string,
+    skipAttempt: boolean,
 }
