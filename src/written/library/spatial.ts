@@ -16,7 +16,6 @@ import { normalizeDir }                   from "../../utils"
 import { MoveCommand, PlaceCommand,
          ObserverCommand }       from "../../persistence/observe/observer_events"
 import { PersistenceObserver }   from "../../persistence/observe/observer"
-import { updateProperties }      from "../../persistence/mutate/properties"
 import * as mutatePlace          from "../../persistence/mutate/place"
 
 import { getArtifactFromData, getArtifactPos } from "./tools"

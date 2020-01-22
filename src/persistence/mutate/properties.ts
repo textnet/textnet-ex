@@ -9,8 +9,10 @@ import { worldUpdateProperties } from "./local/world";
 
 export async function updateProperties(P: Persistence,
                       artifact: Artifact, properties) {
-    const hostWorld = await P.worlds.load(artifact.hostId);
     await artifactUpdateProperties(P, artifact, properties)
-    await worldUpdateProperties(P, hostWorld, artifact.id)
+    if (artifact.hostId) {
+        const hostWorld = await P.worlds.load(artifact.hostId);
+        await worldUpdateProperties(P, hostWorld, artifact.id)        
+    }
 }
 

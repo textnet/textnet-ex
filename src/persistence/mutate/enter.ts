@@ -10,6 +10,7 @@ import { artifactEnter, artifactLeave } from "./local/artifact";
 export async function enterWorld(P: Persistence, artifact: Artifact, world: World) {
     // console.log(`Enter world: ${artifact.name} -> ${world.id} (from ${artifact.hostId})`);
     await artifactEnter(P, artifact, world.id)
+    artifact = await P.artifacts.load(artifact.id);
     await fit(P, artifact, world, artifact.visits[ world.id ])
 }
 

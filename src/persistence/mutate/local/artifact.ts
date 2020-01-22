@@ -9,39 +9,43 @@ import * as remote from "../remote/artifact"
 
 export async function artifactEnter(P: Persistence, artifact: Artifact, worldId: string) {
     if (!await remote.artifactEnter(P, artifact, worldId)) {
-        if (!artifact.visits[ worldId ]) {
-            artifact.visits[ worldId ] = deepCopy(spawnPosition);
+        const fullArtifact = await P.artifacts.load(artifact.id);
+        if (!fullArtifact.visits[ worldId ]) {
+            fullArtifact.visits[ worldId ] = deepCopy(spawnPosition);
         } 
-        if (artifact.hostId && (artifact.hostId != worldId)) {
-            artifact.visitsStack.push( worldId );
+        if (fullArtifact.hostId && (artifact.hostId != worldId)) {
+            fullArtifact.visitsStack.push( worldId );
         }
-        await P.artifacts.save(artifact);        
+        await P.artifacts.save(fullArtifact);        
     }
 }
 
 export async function artifactLeave(P: Persistence, artifact: Artifact, worldId: string,
                                     position: Position, disconnect?: boolean) {
     if (!await remote.artifactLeave(P, artifact, worldId, position, disconnect)) {
+        const fullArtifact = await P.artifacts.load(artifact.id);
         if (!disconnect) {
-            artifact.visitsStack.pop();
+            fullArtifact.visitsStack.pop();
         }
-        artifact.visits[worldId] = deepCopy(position);
-        await P.artifacts.save(artifact);
+        fullArtifact.visits[worldId] = deepCopy(position);
+        await P.artifacts.save(fullArtifact);
     }
 }
 
 export async function artifactPickup(P: Persistence, artifact: Artifact, objId: string) {
     if (!await remote.artifactPickup(P, artifact, objId)) {
-        artifact.inventoryIds.push(objId)
-        await P.artifacts.save(artifact);
+        const fullArtifact = await P.artifacts.load(artifact.id);
+        fullArtifact.inventoryIds.push(objId)
+        await P.artifacts.save(fullArtifact);
     }
 }
 
 
 export async function artifactPutdown(P: Persistence, artifact: Artifact) {
     if (!await remote.artifactPutdown(P, artifact)) {
-        artifact.inventoryIds.pop();
-        await P.artifacts.save(artifact);
+        const fullArtifact = await P.artifacts.load(artifact.id);
+        fullArtifact.inventoryIds.pop();
+        await P.artifacts.save(fullArtifact);
     }
 }
 
@@ -49,9 +53,10 @@ export async function artifactPutdown(P: Persistence, artifact: Artifact) {
 export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact, 
                                               worldId: string, position: Position) {
     if (!await remote.artifactRemoveFromWorld(P, artifact, worldId, position)) {
-        artifact.hostId = null;
-        artifact.visits[ worldId ] = deepCopy(position)
-        await P.artifacts.save(artifact);
+        const fullArtifact = await P.artifacts.load(artifact.id);
+        fullArtifact.hostId = null;
+        fullArtifact.visits[ worldId ] = deepCopy(position)
+        await P.artifacts.save(fullArtifact);
     }
 }
 
@@ -59,9 +64,10 @@ export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact
 export async function artifactInsertIntoWorld(P: Persistence, artifact: Artifact, 
                                               worldId: string, pos: Position) {
     if (!await remote.artifactInsertIntoWorld(P, artifact, worldId, pos)) {
-        artifact.hostId = worldId;
-        artifact.visits[ worldId ] = deepCopy(pos)
-        await P.artifacts.save(artifact);
+        const fullArtifact = await P.artifacts.load(artifact.id);
+        fullArtifact.hostId = worldId;
+        fullArtifact.visits[ worldId ] = deepCopy(pos)
+        await P.artifacts.save(fullArtifact);
     }
 }
 
@@ -69,12 +75,13 @@ export async function artifactInsertIntoWorld(P: Persistence, artifact: Artifact
 export async function artifactUpdateProperties(P: Persistence,
                                                artifact: Artifact, properties) {
     if (!await remote.artifactUpdateProperties(P, artifact, properties)) {
+        const fullArtifact = await P.artifacts.load(artifact.id);
         for (let key in properties) {
             if (properties[key] != undefined) {
-                artifact[key] = properties[key];
+                fullArtifact[key] = properties[key];
             }
         }
-        await P.artifacts.save(artifact);
+        await P.artifacts.save(fullArtifact);
     }
 }
 

@@ -28,11 +28,12 @@ import { FengariMap } from "../api"
  */
 export function get_artifacts( O: PersistenceObserver, 
                                world?: string, id?: string, name?: string) {
-    console.log(`get_artifacts( world="${world}", name="${name}", id="${id}" )`)
     const artifact = O.writtenP.artifacts.load(O.ownerId);
     let _world: World;
     if (world == "upper") {
-        _world = O.writtenP.worlds.load(artifact.hostId);
+        if (artifact.hostId) {
+            _world = O.writtenP.worlds.load(artifact.hostId);    
+        }
     } else {
         if (possibleWorlds.indexOf(world) < 0) {
             world = mundaneWorldName;

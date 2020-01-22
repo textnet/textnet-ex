@@ -88,8 +88,8 @@ export async function init(local: Persistence) {
 const ww = {
 "Chair 1": `This is Chair No.1.
 
-    local self = get_myself{}
-    local prefix = self.name.." >"
+    local myself = get_myself{}
+    local prefix = myself.name.." >"
     --
     local upper = get_artifacts{ world="upper" }
     for i=0,upper.length-1 do 
@@ -110,18 +110,20 @@ const ww = {
 
 "Host": `This is the hosting world.
 
-    local self = get_myself{}
-    local prefix = self.name.." >"
+    local myself = get_myself{}
+    local prefix = myself.name.." >"
+    self{ name="Host (updated)" }
     --
     local inner = get_artifacts{}
     for i=0,inner.length-1 do 
         print(prefix, "Inner: "..inner[i].name)
     end
     --
-    local chair1 = get_artifact{ name="Chair 1"}
+    local chair1 = get_artifact{ name="Chair 1" }
     if chair1 then
         place_at{ artifact=chair1, x=10, y=10 }
         move_by{ artifact=chair1, x=300 }
+        update{ artifact=chair1, name="Chair 1 (updated)"}
     end
     --
     print(prefix, "Done")
@@ -129,8 +131,9 @@ const ww = {
 
 "P1": `This is myself.
 
-    local self = get_myself{}
-    local prefix = self.name.." >"
+    local myself = get_myself{}
+    local prefix = myself.name.." >"
+    self{ speed=300 }
     --
     local inner = get_artifacts{}
     for i=0,inner.length-1 do 
