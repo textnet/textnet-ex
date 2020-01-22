@@ -87,24 +87,6 @@ export async function init(local: Persistence) {
 
 const ww = {
 "Chair 1": `This is Chair No.1.
-#health 100
-
-    local myself = get_myself{}
-    local prefix = myself.name.." >"
-    --
-    local upper = get_artifacts{ world="upper" }
-    for i=0,upper.length-1 do 
-        print(prefix, "Upper: "..upper[i].name)
-    end
-    --
-    local chair2 = get_artifact{ world="upper", name="Chair 2"}
-    if chair2 then
-        place_at{ artifact=chair2, x=310, y=40 }
-        move_by{ artifact=chair2, x=-300 }
-        update_text{ artifact=chair2, text="Chair No.2 -> Revised by Chair No.1"}
-    end    
-    --
-    print(prefix, "Done")
 `,
 
 "Chair 2": `This is Chair No.2.
@@ -116,44 +98,30 @@ const ww = {
     local prefix = myself.name.." >"
     self{ name="Host (updated)" }
     --
-    local inner = get_artifacts{}
-    for i=0,inner.length-1 do 
-        print(prefix, "Inner: "..inner[i].name)
+    function tell_me_about_it(event)
+        print(prefix, event.event, event.role, event.object.name)
     end
-    --
     local chair1 = get_artifact{ name="Chair 1" }
-    if chair1 then
-        place_at{ artifact=chair1, x=10, y=10 }
-        move_by{ artifact=chair1, x=300 }
-        update{ artifact=chair1, name="Chair 1 (updated)"}
-        local health = get_text{ artifact=chair1, anchor="health"}
-        local chair1 = get_artifact{ name="Chair 1" }
-        local decreased = health-10
-        update_line{ artifact=chair1, anchor="health", text=decreased }
-        print(prefix, "Chair health="..health.."-10="..decreased)
-    end
-    --
-    --
-    print(prefix, "Done")
+    -- on{ artifact=chair1, event="move", handler=tell_me_about_it }
+    -- on{ artifact=chair1, event="pickup", handler=tell_me_about_it }
+    -- on{ event="move", role="world", handler=tell_me_about_it }
 `,
 
 "P1": `This is myself.
-
-    local myself = get_myself{}
-    local prefix = myself.name.." >"
-    self{ speed=300 }
-    --
-    local inner = get_artifacts{}
-    for i=0,inner.length-1 do 
-        print(prefix, "Inner: "..inner[i].name)
-    end
-    --
-    local upper = get_artifacts{ world="upper" }
-    for i=0,upper.length-1 do 
-        print(prefix, "Upper: "..upper[i].name)
-    end    
-    --
-    print(prefix, "Done")
 `,
 
 }
+
+
+
+/**
+
+@timer
+    role: object only?
+    event: 
+        .event
+        .role
+        .data: observerEvents.TimeEvent 
+            .delta
+
+*/

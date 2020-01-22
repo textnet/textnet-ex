@@ -7,6 +7,7 @@
 import { PersistenceObserver } from "../../persistence/observe/observer"
 import { getArtifactFromData } from "./tools"
 import { FengariMap          } from "../api"
+import { supportedEvents } from "../library"
 
 /**
  * Subscribe on event happening to a particular artifact.
@@ -21,12 +22,14 @@ import { FengariMap          } from "../api"
  */
 export function event_on(O: PersistenceObserver, 
                          params: FengariMap) {
-    const artifactData = params.has("artifact") ? params.get("artifact") : undefined;
-    const event = params.has("event") ? params.get("event") : "timer";
+    const artifactId = params.has("artifact") ? params.get("artifact")["id"] : undefined;
+    let event = params.has("event") ? params.get("event") : "timer";
+    if (supportedEvents.indexOf(event) < 0) {
+        event = "timer";
+    }
     const role  = params.has("role")  ? params.get("role") : "object";
-    const artifact = getArtifactFromData(O, artifactData);
     if (params.has("handler")) {
-        O.subscribe(artifact, event, role, params.get("handler"));
+        O.subscribe(artifactId, event, role, params.get("handler"));
         return params.get("handler");
     } else {
         return false;
@@ -45,11 +48,11 @@ export function event_on(O: PersistenceObserver,
 export function event_off( O: PersistenceObserver, 
                            artifactData?: object, 
                            event?: string, role?: string, key? ) {
-    const artifact = getArtifactFromData(O, artifactData);
+    const artifactId = artifactData ? artifactData["id"] : undefined;
     event = event || "timer";
     role  = role  || "object";
     if (key) {
-        O.unsubscribe(artifact, event, role, key);
+        O.unsubscribe(artifactId, event, role, key);
         return true;
     } else {
         return false;

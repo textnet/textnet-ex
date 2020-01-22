@@ -25,35 +25,28 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - Enter yourself: CTRL + ESCAPE
 
 # CURRENT ITERATION
-+ Written Word is back
-    + setup both worlds
-        + put WW in chair (locally)
-        + put WW in myself (remote)
-        + put WW in the host (locally)
-    + loaders
-        + inner
-        + outer
-    + place, move
-        + inner
-        + outer
-    + update
-        + self
-        + inner
-    + text, line
-        + inner
-        + outer
++ Events support (with subscription)
+    + timer
+    + move
+    - pickup
+    - enter/leave
+    - push
+- make sure `halt` works
+- start moving / stop moving
+    - walking
+    - events
+- make one chair run in circles
 
 NEXT ITERATION(s)
-- Written Word and events
-- proper messaging
-- refactoring
+- proper messaging across network
+- small refactoring
 
 # Multiplayer and hosted universes
 + create two persistences
 + store 'persistenceId' next to id
 + `mutate` across network
-> `renderer` across network
-- `observer` across network
++ `renderer` across network
+> `observer` across network
 - proper messaging
 - handle offline
 - create three persistences, simulate lost reference
@@ -69,6 +62,7 @@ NEXT ITERATION(s)
 - even more refactor positions, coords, and vector stuff
 - embed lua highlighting into markdown
 - test `halt()`
+- when sending `move` event with `delta`, direction is broken
 
 # MAKE IT PRETTY!
 - Apple Developer certificate

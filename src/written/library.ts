@@ -40,3 +40,8 @@ export const supportedFunctions = {
     "on":  { signature: false, /* artifact, event, role, handler */ f: event_on }, 
     "off": { signature: ["artifact", "event", "role", "key"     ,], f: event_off },
 }
+
+export const supportedEvents = [ "timer", "move", 
+                                 "pickup", "putdown", 
+                                 "enter", "leave",
+                               ];

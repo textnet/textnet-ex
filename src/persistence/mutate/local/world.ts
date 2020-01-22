@@ -2,7 +2,7 @@
 import { Persistence }                    from "../../persist"
 import { spawnPosition }                  from "../../../const"
 import { Position, Artifact, World, Dir } from "../../../interfaces"
-import { deepCopy }                       from "../../../utils"
+import { deepCopy, deltaPos }             from "../../../utils"
 
 import { fit } from "../place"
 
@@ -16,6 +16,7 @@ export async function worldPickup(P: Persistence, world: World,
         // emit event!
         P.subscription.emit("echo:pickup", world.id, {
             artifactId: artifactId,
+            worldId:    world.id,
             objId: objId,
         } as RemoteEvent.WorldPickup);
     }
@@ -27,6 +28,7 @@ export async function worldPutdown(P: Persistence, world: World,
         // emit event!
         P.subscription.emit("echo:putdown", world.id, {
             artifactId: artifactId,
+            worldId:    world.id,
             objId:      objId,
         } as RemoteEvent.WorldPutdown);
     }    
@@ -37,6 +39,7 @@ export async function worldUpdateProperties(P: Persistence, world: World,
     if (!await remote.worldUpdateProperties(P, world, artifactId)) {
         // emit event!
         P.subscription.emit("echo:properties", world.id, {
+            worldId:    world.id,
             artifactId: artifactId,
         } as RemoteEvent.WorldProperties);        
     }    
@@ -75,13 +78,16 @@ export async function worldInsertIntoWorld(P: Persistence, world: World,
 export async function worldUpdateInWorld(P: Persistence, world: World, 
                                          artifactId: string, pos: Position) {
     if (!await remote.worldUpdateInWorld(P, world, artifactId, pos)) {
+        let prevPos = deepCopy(world.artifactPositions[ artifactId ]);
         world.artifactPositions[ artifactId ] = deepCopy(pos)
+        if (!prevPos) prevPos = pos;
         await P.worlds.save(world);
         // emit event!
         P.subscription.emit("echo:move", world.id, {
             artifactId: artifactId,
             worldId: world.id,
             pos: pos,
+            delta: deltaPos(pos, prevPos),
         } as RemoteEvent.WorldUpdate);
     }
 }

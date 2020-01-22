@@ -27,12 +27,14 @@ export async function artifactPickup(P: Persistence, artifact: Artifact, objId: 
     return await wrapper(P, "artifactPickup", artifact.id, {
         artifactId: artifact.id,
         objId:      objId,
+        worldId:    artifact.hostId,
     } as RemoteEvent.ArtifactPickup);
 }
 
 export async function artifactPutdown(P: Persistence, artifact: Artifact) {
     return await wrapper(P, "artifactPutdown", artifact.id, {
         artifactId: artifact.id,
+        worldId:    artifact.hostId,
     } as RemoteEvent.ArtifactPutdown);
 }
 
@@ -57,6 +59,7 @@ export async function artifactInsertIntoWorld(P: Persistence, artifact: Artifact
 export async function artifactUpdateProperties(P: Persistence, artifact: Artifact, properties) {
     return await wrapper(P, "artifactUpdateProperties", artifact.id, {
         artifactId: artifact.id,
+        worldId:    artifact.hostId,
         properties: properties,
     } as RemoteEvent.ArtifactProperties);
 }

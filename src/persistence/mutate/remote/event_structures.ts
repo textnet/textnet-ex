@@ -70,6 +70,7 @@ export interface WorldUpdate extends RemoteEvent {
     artifactId: string,
     worldId:    string,
     pos:        Position,
+    delta?:     Position,
 }
 export interface WorldUpdateText extends RemoteEvent {
     worldId:     string,

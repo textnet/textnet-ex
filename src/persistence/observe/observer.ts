@@ -85,9 +85,11 @@ export class PersistenceObserver extends events.EventEmitter {
             const nowTime = Date.now();
             const delta = nowTime - prevTime;
             prevTime = nowTime;
-            that.sendEvent("timer", { delta: delta } as observerEvents.TimeEvent)
+            that.sendEvent("timer", 
+                           { delta: delta } as observerEvents.TimeEvent,
+                           { object: that.ownerId })
         }, observerEvents.observerInterval)
-        this.subscribe(undefined, "timer", "object", 
+        this.subscribe(undefined, "timer", "world", 
             (event: observerEvents.TimeEvent) => { that.iterateCommand() })
     }
 
@@ -99,38 +101,33 @@ export class PersistenceObserver extends events.EventEmitter {
      * @param {Record<string,Artifact>} targets @optional
      */
     sendEvent(event: string, data,
-              targets?: Record<string,Artifact>){
-        let targetIds: Record<string,string> = {}
-        if (targets) {
-            for (let targetRole in targets) {
-                targetIds[targetRole] = targets[targetRole].id
-            }
-        } else {
-            targetIds = undefined;
-        }
+              targetIds?: Record<string,string>){
         this.emit(event, {
             data: deepCopy(data),
             targetIds: targetIds,
-        });
+        });            
     }
 
     /**
      * Subscribe on an event for an artifact with a given role.
      * E.g. <Subject> PUSHES <object> in the <world>.
      * More on events in Written Word documentation.
-     * @param {Artifact} artifact
+     * @param {string}   artifactId
      * @param {string}   event
      * @param {string}   role (subject, object, world)
      * @param {function} handler
      * @returns {any}    key to 'unsubscribe'
      */
-    subscribe(artifact: Artifact, event: string, role: string, handler: any) {
+    subscribe(artifactId: string, event: string, role: string, handler: any) {
+        if (!artifactId) {
+            artifactId = this.ownerId;
+        }
         const that = this;
         const key = (fullData) => {
             let caught = false;
             if (fullData.targetIds) {
                 if (fullData.targetIds[role]) {
-                    if (fullData.targetIds[role] == artifact.id) {
+                    if (fullData.targetIds[role] == artifactId) {
                         caught = true;
                     }
                 }
@@ -141,19 +138,27 @@ export class PersistenceObserver extends events.EventEmitter {
                 const eventData = {
                     event: event,
                     role: role,
-                    data: fullData.data
+                    data: fullData.data,
+                    targetIds: fullData.targetIds,
                 }
                 if (handler.invoke) {
-                    handler.invoke(eventData, {})
+                    that.prepareWrittenPersistence().then(function(){
+                        for (let i of ["subject", "object", "world"]) {
+                            const targetId = fullData.targetIds[i];
+                            if (targetId) {
+                                eventData[i] = that.writtenP.artifacts.load(targetId);
+                            }
+                        }
+                        handler.invoke(eventData, {})    
+                    })
                 } else {
                     handler.call(this, eventData);
                 }
             }
         };
         this.on(event, key);
-        this.subscribedKeys.push({event:event, key:key})
-        // if (artifact) console.log(`(${this.ownerId}) SUBSCRIBE <${artifact.name}> #${event}:${role}`)
-        // else          console.log(`(${this.ownerId}) SUBSCRIBE <> #${event}:${role}`)
+        this.subscribedKeys.push({event:event, role: role, key:key})
+        console.log(`(${this.ownerId}) SUBSCRIBE <${artifactId}> #${event}:${role}`)
         return key;
     }
 

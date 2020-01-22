@@ -54,6 +54,20 @@ export function addDir(dir1: Dir, dir2: Dir) {
     return dir;
 }
 
+export function reverseDir(dir: Dir) {
+    const result: Dir = deepCopy(DIR.NONE)
+    result.x = -dir.x;
+    result.y = -dir.y;
+    const names = { up: "down", down: "up", left:"right", right: "left" }
+    result.name = names[dir.name]?names[dir.name]:result.name;
+    return result;
+}
+
+export function deltaDir(dir1: Dir, dir2: Dir) {
+    const dir1reverse = reverseDir(dir1);
+    return addDir(dir1reverse, dir2);
+}
+
 export function normalizeDir(dir: Dir, scale?: number) { 
     if (scale === undefined) scale = 1;
     const result = addDir(dir, {x:0, y:0, name: DIR.NONE.name});
@@ -62,6 +76,16 @@ export function normalizeDir(dir: Dir, scale?: number) {
     result.y *= scale/len;
     return result;
 }
+
+export function deltaPos(pos1: Position, pos2: Position) {
+    const pos: Position = {
+        x: pos2.x-pos1.x,
+        y: pos2.y-pos1.y,
+        dir: deltaDir(pos1.dir, pos2.dir)
+    }
+    return pos;
+}
+
 export function lengthDir(dir: Dir) {
     return Math.sqrt( Math.pow(dir.x,2) + Math.pow(dir.y,2) ); 
 }
