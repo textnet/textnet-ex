@@ -84,6 +84,11 @@ const _listener_ = {
        return localArtifact.artifactUpdateProperties(P, artifact, data.properties);
    },
 //----
+   worldPush: async function(P, _) {
+       const data = _ as RemoteEvent.WorldPush;
+       const world = await P.worlds.load(data.worldId);
+       return localWorld.worldPush(P, world, data.artifactId, data.objId);
+   },
    worldPickup: async function(P, _) {
        const data = _ as RemoteEvent.WorldPickup;
        const world = await P.worlds.load(data.worldId);
@@ -113,6 +118,16 @@ const _listener_ = {
        const data = _ as RemoteEvent.WorldUpdate;
        const world = await P.worlds.load(data.worldId);
        return localWorld.worldUpdateInWorld(P, world, data.artifactId, data.pos)
+   },
+   worldStartMoving: async function(P, _) {
+       const data = _ as RemoteEvent.WorldStartMoving;
+       const world = await P.worlds.load(data.worldId);
+       return localWorld.worldStartMoving(P, world, data.artifactId)
+   },
+   worldStopMoving: async function(P, _) {
+       const data = _ as RemoteEvent.WorldStopMoving;
+       const world = await P.worlds.load(data.worldId);
+       return localWorld.worldStopMoving(P, world, data.artifactId)
    },
    worldUpdateText: async function(P, _) {
        const data = _ as RemoteEvent.WorldUpdateText;

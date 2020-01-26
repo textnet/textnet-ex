@@ -10,6 +10,18 @@ import * as remote from "../remote/world"
 import * as RemoteEvent from "../remote/event_structures"
 
 
+export async function worldPush(P: Persistence, world: World, 
+                                artifactId: string, objId: string) {
+    if (!await remote.worldPush(P, world, artifactId, objId)) {
+        // emit event!
+        P.subscription.emit("echo:push", world.id, {
+            artifactId: artifactId,
+            worldId:    world.id,
+            objId: objId,
+        } as RemoteEvent.WorldPush);
+    }
+}
+
 export async function worldPickup(P: Persistence, world: World, 
                                   artifactId: string, objId: string) {
     if (!await remote.worldPickup(P, world, artifactId, objId)) {
@@ -17,7 +29,7 @@ export async function worldPickup(P: Persistence, world: World,
         P.subscription.emit("echo:pickup", world.id, {
             artifactId: artifactId,
             worldId:    world.id,
-            objId: objId,
+            objId:      objId,
         } as RemoteEvent.WorldPickup);
     }
 }
@@ -89,6 +101,32 @@ export async function worldUpdateInWorld(P: Persistence, world: World,
             pos: pos,
             delta: deltaPos(pos, prevPos),
         } as RemoteEvent.WorldUpdate);
+    }
+}
+
+export async function worldStartMoving(P: Persistence, world: World, 
+                                         artifactId: string ) {
+    if (!await remote.worldStartMoving(P, world, artifactId)) {
+        let pos = deepCopy(world.artifactPositions[ artifactId ]);
+        // emit event!
+        P.subscription.emit("echo:move_start", world.id, {
+            artifactId: artifactId,
+            worldId: world.id,
+            pos: pos,
+        } as RemoteEvent.WorldStartMoving);
+    }
+}
+
+export async function worldStopMoving(P: Persistence, world: World, 
+                                         artifactId: string, ) {
+    if (!await remote.worldStopMoving(P, world, artifactId)) {
+        let pos = deepCopy(world.artifactPositions[ artifactId ]);
+        // emit event!
+        P.subscription.emit("echo:move_stop", world.id, {
+            artifactId: artifactId,
+            worldId: world.id,
+            pos: pos,
+        } as RemoteEvent.WorldStopMoving);
     }
 }
 

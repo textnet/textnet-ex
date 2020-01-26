@@ -29,6 +29,15 @@ export class SyncRepository<T> {
     load(id: string) {
         return this.contents[id];
     }
+    directory() {
+        console.log("Directory>", this.P.observer.ownerId)
+        for (let i in this.contents) {
+            console.log("         >", i, this.contents[i]["name"]);
+        }
+    }
+    update(o: any) {
+        this.contents[o.id] = o;
+    }
 }
 
 /**

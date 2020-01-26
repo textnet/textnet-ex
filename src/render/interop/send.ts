@@ -18,7 +18,9 @@ import { PositionEvent,
          PickupEvent, 
          GotoEvent, 
          LeaveEvent, 
-         StandEvent    } from "./events";
+         StandEvent,
+         StartMovingEvent, 
+         StopMovingEvent,    } from "./events";
 
 /**
  * INTEROP-> Attempt to move an artifact to a new position.
@@ -60,6 +62,18 @@ export function push(actor: ArtifactActor, dir: Dir) {
         artifactId: actor.artifact.id,
         direction: dir
     } as PushEvent) 
+}
+
+export function startMoving(actor: ArtifactActor) {
+    ipcRenderer.send("startMoving", {
+        artifactId: actor.artifact.id,
+    } as StartMovingEvent) 
+}
+
+export function stopMoving(actor: ArtifactActor) {
+    ipcRenderer.send("stopMoving", {
+        artifactId: actor.artifact.id,
+    } as StopMovingEvent) 
 }
 
 /**

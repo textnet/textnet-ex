@@ -24,20 +24,34 @@ This is an Excalibur+Electron prototype of the TXTNET.
 - Self:
     - Enter yourself: CTRL + ESCAPE
 
+# BUGS BUGS BUGS BUGS
++ staggering walking. WHY?
+    + only adjust player after t=0.5 sec
+
 # CURRENT ITERATION
 + Events support (with subscription)
     + timer
     + move
-    - pickup
-    - enter/leave
-    - push
-- make sure `halt` works
-- start moving / stop moving
-    - walking
-    - events
+    + pickup
+    + enter/leave
++ new events: push, start/stop moving
+    + create RemoteEvent structures
+    + push
+    + start moving
+    + stop moving
+    + use start/stop in renderer
+        + send by renderer
+        + converted to mutate
+        + replace old start/stop
+    + observer should generate start/stop
+- `halt`
 - make one chair run in circles
+- figure out how `pickup` event will still function
+    - call before pickup?
+- BUG: walking is not working remotely
 
-NEXT ITERATION(s)
+
+# NEXT ITERATION(s)
 - proper messaging across network
 - small refactoring
 
@@ -46,7 +60,7 @@ NEXT ITERATION(s)
 + store 'persistenceId' next to id
 + `mutate` across network
 + `renderer` across network
-> `observer` across network
++ `observer` across network
 - proper messaging
 - handle offline
 - create three persistences, simulate lost reference
@@ -55,6 +69,7 @@ NEXT ITERATION(s)
 # Refactoring Refactored
 - massive load across network -> subscribe on changes
 - merge remote/network in one module
+- reduce duplication in RemoteEvent, echo, registry, mutate local/remote
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
@@ -81,39 +96,36 @@ NEXT ITERATION(s)
 2.  [x] Basic Written world                  2019 Q4 Dec +
 3.  [x] Persistence                          2020 Q1 Jan +
 4.  [>] Hosted universes and multiplayer     2020 Q1 Feb
-5.  [ ] Spoken word / gods (commands)        2020 Q1 Mar
-6.  [ ] Full events support.                 2020 Q2 Apr
-7.  [ ] Make a reasonably interesting game   2020 H2 Sep
+5.  [>] Full events support.                 2020 Q1 Mar
+6.  [ ] Make a reasonably interesting game   2020 Q2 Jun
+7.  [ ] Spoken word / gods (commands)        2020 H2 Oct
 8.  [ ] Integrated editor with text flow     2021 H1 May
 9.  [ ] Advanced objects like images etc.    2021 H2 Sep
 10. [ ] Advanced concepts like <health>      2021 H2 Oct
 
-
 # 4. Multiplayer
 
-- [ ] Messaging library
-- [ ] Address space
-- [ ] Simultaneous multiplayer
++ Address space
++ Visiting other spaces
+- Portals to travel between words
+- Expose world address
+- Messaging library
 
-# 5. Spoken word and gods
-- [ ] Artifact libraries
-- ... (plan further)
-
-# 6. Full support for events
+# 5. Full support for events
 - Events
     + introduce roles
     + on: timer
-    - on: move 
-    - on: push/push-target (both actors)
-    - on: pickup/pickup-target
-    - on: putdown/putdown-target
-    - on: enter/leave for world
-    - on: enter/leave for artifact
+    + on: move 
+    + on: push/push-target (both actors)
+    + on: pickup/pickup-target
+    + on: putdown/putdown-target
+    + on: enter/leave for world
+    + on: enter/leave for artifact
     - on: stop (=closures in spatial commands)
-- Redocument Written Word   
 - WW: `move_by{ distance=10, angle=45 }`
-- WW: travel in chairs <- learn how to put code into chairs, make bouncing chair
-- WW: supporting enter/leave events (complex)
++ WW: travel in chairs <- learn how to put code into chairs, make bouncing chair
++ WW: supporting enter/leave events
+- Redocument Written Word and make a separate technical chapter on events  
 
 0. TIMER:   event happens all <objects>.
 1. MOVE:    <object> is being moved (by another code, for example) in the <world>
@@ -136,6 +148,14 @@ Then here are options:
     end
 
 
+# DOCUMENTATION HOW TO ADD EVENTS
+- create RemoteEvent structures
+- create `mutate` entry point
+- implement `local` mutations
+- implement `remote` proxies
+- add to `registry`
+- add to `echo`
+- extend `supportedEvents` in Written Word
 
 
 ----

@@ -5,6 +5,8 @@ import { DIR, DIRfrom } from "../../const"
 import * as mutatePlace from "../mutate/place"
 
 
+// TODO should be renamed/refactored into `observer_commands`
+
 export enum ObserverCommand {
     Next = "->",
     None = "None",
@@ -24,6 +26,10 @@ export interface MoveCommand {
     y: number;
     dir: string;
     isDelta: boolean;
+}
+
+export interface HaltCommand {
+    artifact: string;
 }
 
 export interface PlaceCommand {
@@ -75,6 +81,27 @@ export async function moveAction(O: PersistenceObserver, command: MoveCommand) {
         if (lengthDir(delta) > observerThreshold) {
             const success = await mutatePlace.place(P, artifact, hostWorld, newPos);
             return true; // repeat
+        } else {
+            // stop?
+        }
+    }
+}
+
+export async function haltAction(O: PersistenceObserver, command: PlaceCommand) {
+    const P = O.P;
+    return async function() {
+        const artifactId = command.artifact;
+        const artifact  = await P.artifacts.load(artifactId);
+        const hostWorld = await P.worlds.load(artifact.hostId);
+        const newPos: Position = {
+            x: command.x,
+            y: command.y,
+            dir: DIRfrom({x:0, y:0, name: command.dir})
+        }
+        if (!command.isFit) {
+            await mutatePlace.place(P, artifact, hostWorld, newPos);
+        } else {
+            await mutatePlace.fit(P, artifact, hostWorld, newPos);
         }
     }
 }

@@ -52,6 +52,11 @@ export interface WorldPickup extends RemoteEvent {
     worldId:    string,
     objId:      string,
 }
+export interface WorldPush extends RemoteEvent {
+    artifactId: string,
+    worldId:    string,
+    objId:      string,
+}
 export interface WorldPutdown extends RemoteEvent {
     artifactId: string,
     worldId:    string,
@@ -71,6 +76,16 @@ export interface WorldUpdate extends RemoteEvent {
     worldId:    string,
     pos:        Position,
     delta?:     Position,
+}
+export interface WorldStartMoving extends RemoteEvent {
+    artifactId: string,
+    worldId:    string,
+    pos?:        Position,
+}
+export interface WorldStopMoving extends RemoteEvent {
+    artifactId: string,
+    worldId:    string,
+    pos?:        Position,
 }
 export interface WorldUpdateText extends RemoteEvent {
     worldId:     string,

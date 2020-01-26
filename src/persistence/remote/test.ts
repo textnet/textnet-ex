@@ -87,9 +87,36 @@ export async function init(local: Persistence) {
 
 const ww = {
 "Chair 1": `This is Chair No.1.
+    local myself = get_myself{}
+    local prefix = myself.name.." >"
+    function tell_me_about_it(event)
+        print(prefix, event.event, event.role, event.object.name)
+        local chair2 = get_artifact{ world=event.world, name="Chair 2" }
+        print(chair2)
+        if chair2 then
+          halt{ artifact=chair2 }
+        end
+    end
+    on{ event="pickup", role="object", handler=tell_me_about_it }
+    on{ event="push", role="object", handler=tell_me_about_it }
+
 `,
 
 "Chair 2": `This is Chair No.2.
+
+    move_by{ x= 300 }
+    move_by{ x=-300 }
+    move_by{ x= 300 }
+    move_by{ x=-300 }
+    move_by{ x= 300 }
+    move_by{ x=-300 }
+    move_by{ x=-300 }
+    move_by{ x= 300 }
+    move_by{ x=-300 }
+    move_by{ x=-300 }
+    move_by{ x= 300 }
+    move_by{ x=-300 }
+
 `,
 
 "Host": `This is the hosting world.
@@ -99,11 +126,20 @@ const ww = {
     self{ name="Host (updated)" }
     --
     function tell_me_about_it(event)
-        print(prefix, event.event, event.role, event.object.name)
+        if event.object then
+            print(prefix, event.event, event.role, "Object-> ", event.object.name)
+        end
+        if event.subject then
+            print(prefix, event.event, event.role, "Subject->",event.subject.name)
+        end
     end
     local chair1 = get_artifact{ name="Chair 1" }
+    local chair2 = get_artifact{ name="Chair 2" }
     -- on{ artifact=chair1, event="move", handler=tell_me_about_it }
-    -- on{ artifact=chair1, event="pickup", handler=tell_me_about_it }
+    on{ event="enter", role="world", handler=tell_me_about_it }
+    on{ event="leave", role="world", handler=tell_me_about_it }
+    on{ event="move_start", role="world", handler=tell_me_about_it }
+    on{ event="move_stop",  role="world", handler=tell_me_about_it }
     -- on{ event="move", role="world", handler=tell_me_about_it }
 `,
 
@@ -117,7 +153,7 @@ const ww = {
 /**
 
 @timer
-    role: object only?
+    roles: world
     event: 
         .event
         .role

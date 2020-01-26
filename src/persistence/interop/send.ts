@@ -8,6 +8,7 @@ import { Persistence } from "../persist"
 import { structureFromAccount, structureFromArtifact, structureFromWorld } from "./structures"
 
 import { PositionEvent, EnterEvent, LeaveEvent, WorldEvent,
+         StartMovingEvent, StopMovingEvent,
          ArtifactPropertiesEvent, WorldPropertiesEvent,
          InventoryEvent, TextEvent } from "../../render/interop/events"
 import { ArtifactStructure } from "../../render/data_structures"
@@ -45,6 +46,23 @@ export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, posi
     }
     if (P.window) P.window.webContents.send('position', event);
 }
+
+export async function sendStartMovingArtifact(P: Persistence, artifact: Artifact) {
+    // console.log(`INTEROP: subject(startMoving)`, artifact.name)
+    const event: StartMovingEvent = {
+        artifactId: artifact.id,
+    }
+    if (P.window) P.window.webContents.send('startMoving', event);
+}
+
+export async function sendStopMovingArtifact(P: Persistence, artifact: Artifact) {
+    // console.log(`INTEROP: subject(stopMoving)`, artifact.name)
+    const event: StopMovingEvent = {
+        artifactId: artifact.id,
+    }
+    if (P.window) P.window.webContents.send('stopMoving', event);
+}
+
 
 export async function sendInsertArtifact(P: Persistence, artifact: Artifact, position: Position) {
     const world = await P.worlds.load(artifact.hostId);

@@ -13,7 +13,7 @@ import { DIR, DIRfrom, spawnPosition }    from "../../const"
 import { Artifact, World, Dir, Position } from "../../interfaces"
 import { normalizeDir }                   from "../../utils"
 
-import { MoveCommand, PlaceCommand,
+import { MoveCommand, PlaceCommand, HaltCommand,
          ObserverCommand }       from "../../persistence/observe/observer_events"
 import { PersistenceObserver }   from "../../persistence/observe/observer"
 import * as mutatePlace          from "../../persistence/mutate/place"
@@ -34,8 +34,8 @@ export function move_to( O: PersistenceObserver,
                          artifactData?: object, 
                          x?: number, y?: number, direction?: string, 
                          isDelta?: boolean ) {
-    console.log(`<${artifactData["name"]}>.move_to( x=${x}, y=${y} )`)
     const artifact = getArtifactFromData(O, artifactData);
+    console.log(`<${artifact.name}>.move_to( x=${x}, y=${y} )`)
     const dir = DIRfrom({name:direction} as Dir);
     const artifactPos = getArtifactPos(O, artifact);
     if (x === undefined) x = isDelta?0:artifactPos.x;
@@ -85,10 +85,12 @@ export function move_by(O: PersistenceObserver,
  */
 export function halt(O: PersistenceObserver, 
                      artifactData?: object) {
-    console.log(`<${artifactData["name"]}>.halt()`)
-    let success = false;
     const artifact = getArtifactFromData(O, artifactData);
-    O.executeCommand(ObserverCommand.Halt, {}); // nb: async
+    console.log(`<${artifact.name}>.halt()`)
+    let success = false;
+    O.executeCommand(ObserverCommand.Halt, {
+        artifact: artifact.id,        
+    } as HaltCommand); // nb: async
     return true; 
 }
 
@@ -108,10 +110,10 @@ export function place_at(O: PersistenceObserver,
                          x?: number, y?: number, 
                          direction?: string,
                          isFit?:boolean) {
-    const mode = isFit?"fit":"place";
-    console.log(`<${artifactData["name"]}>.${mode}( x=${x}, y=${y} )`)
-    let success = false;
     const artifact = getArtifactFromData(O, artifactData);
+    const mode = isFit?"fit":"place";
+    console.log(`<${artifact.name}>.${mode}( x=${x}, y=${y} )`)
+    let success = false;
     const world = O.writtenP.worlds.load(artifact.hostId);
     const dir = DIRfrom({name:direction} as Dir);
     const artifactPos = getArtifactPos(O, artifact);

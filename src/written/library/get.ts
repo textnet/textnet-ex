@@ -27,18 +27,28 @@ import { FengariMap } from "../api"
  * @returns         {object} Written Word artifact data
  */
 export function get_artifacts( O: PersistenceObserver, 
-                               world?: string, id?: string, name?: string) {
+                               world?: any, id?: string, name?: string) {
     const artifact = O.writtenP.artifacts.load(O.ownerId);
     let _world: World;
-    if (world == "upper") {
-        if (artifact.hostId) {
-            _world = O.writtenP.worlds.load(artifact.hostId);    
-        }
+    if (world && world.id) {
+        // artifact
+        const targetArtifact = O.writtenP.artifacts.load(world.id);
+        const worldId = targetArtifact.worldIds[mundaneWorldName];
+        _world = O.writtenP.worlds.load(worldId);
     } else {
-        if (possibleWorlds.indexOf(world) < 0) {
-            world = mundaneWorldName;
-        }
-        _world = O.writtenP.worlds.load(artifact.worldIds[world]);
+        switch (world) {
+            case "upper": //---------  
+                            if (artifact.hostId) {
+                                _world = O.writtenP.worlds.load(artifact.hostId);    
+                            };
+                            break;
+            default: //--------------
+                            if (possibleWorlds.indexOf(world) < 0) {
+                                world = mundaneWorldName;
+                            }
+                            _world = O.writtenP.worlds.load(artifact.worldIds[world]);
+
+        }       
     }
     let result = [];
     if (_world) {

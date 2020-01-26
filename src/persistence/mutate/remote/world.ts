@@ -6,6 +6,15 @@ import * as RemoteEvent from "./event_structures"
 import { wrapper } from "./wrapper"
 
 
+export async function worldPush(P: Persistence, world: World, 
+                                  artifactId: string, objId: string) {
+    return await wrapper(P, "worldPush", world.id, {
+        artifactId: artifactId,
+        worldId:    world.id,
+        objId:      objId,
+    } as RemoteEvent.WorldPush);
+}
+
 export async function worldPickup(P: Persistence, world: World, 
                                   artifactId: string, objId: string) {
     return await wrapper(P, "worldPickup", world.id, {
@@ -57,6 +66,21 @@ export async function worldUpdateInWorld(P: Persistence, world: World,
         pos:        pos,
     } as RemoteEvent.WorldUpdate);
 }
+
+export async function worldStartMoving(P: Persistence, world: World, artifactId: string) {
+    return await wrapper(P, "worldStartMoving", world.id, {
+        artifactId: artifactId,
+        worldId:    world.id,
+    } as RemoteEvent.WorldStartMoving);
+}
+
+export async function worldStopMoving(P: Persistence, world: World, artifactId: string) {
+    return await wrapper(P, "worldStopMoving", world.id, {
+        artifactId: artifactId,
+        worldId:    world.id,
+    } as RemoteEvent.WorldStopMoving);
+}
+
 
 export async function worldUpdateText(P: Persistence, world: World, text:string,
                                       skipAttempt?:boolean ) {

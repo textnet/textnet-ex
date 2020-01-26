@@ -9,6 +9,7 @@ import { positionArtifact             } from "./position"
 import { enterArtifact, leaveArtifact } from "./enter"
 import { inventoryArtifact            } from "./inventory"
 import { propertiesArtifact, propertiesWorld } from "./properties"
+import { startMovingArtifact, stopMovingArtifact } from "./dynamics"
 
 /**
  * Set up all event listeners.
@@ -22,4 +23,7 @@ export function interopSetup(game: Game) {
     ipcRenderer.on("text",       (event, args) => { updateText         (game, args) });
     ipcRenderer.on("properties", (event, args) => { propertiesArtifact (game, args) });
     ipcRenderer.on("environment",(event, args) => { propertiesWorld    (game, args) });
+
+    ipcRenderer.on("startMoving",(event, args) => { startMovingArtifact(game, args) });
+    ipcRenderer.on("stopMoving", (event, args) => { stopMovingArtifact (game, args) });
 }

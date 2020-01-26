@@ -1,11 +1,12 @@
 
 import { Persistence } from "../persist"
-import { PushEvent } from "../../render/interop/events"
+import { PushEvent, StartMovingEvent, StopMovingEvent } from "../../render/interop/events"
 import { Artifact, Position, Dir } from "../../interfaces"
 import { DIR, DIRfrom } from "../../const"
 
 import { getArtifact_NextTo, artifactPos } from "../mutate/spatial";
 import * as mutatePlace from "../mutate/place"
+import * as mutateDynamics from "../mutate/dynamics"
 
 export async function pushFromArtifact(P: Persistence, event: PushEvent) {
     const artifactId  = event["artifactId"];
@@ -22,6 +23,24 @@ export async function pushFromArtifact(P: Persistence, event: PushEvent) {
         newPos.x += direction.x * pushStrength;
         newPos.y += direction.y * pushStrength;
         success = await mutatePlace.place(P, candidate, hostWorld, newPos);
+        if (success) {
+            await mutateDynamics.push(P, artifact, candidate);
+        }
     }
     return success
+}
+
+
+export async function startMoving(P: Persistence, event: StartMovingEvent) {
+    const artifactId  = event["artifactId"];
+    const artifact   = await P.artifacts.load(artifactId);
+    await mutateDynamics.startMoving(P, artifact);
+    return true
+}
+
+export async function stopMoving(P: Persistence, event: StopMovingEvent) {
+    const artifactId  = event["artifactId"];
+    const artifact   = await P.artifacts.load(artifactId);
+    await mutateDynamics.stopMoving(P, artifact);
+    return true
 }

@@ -15,7 +15,7 @@ export async function pickup(P: Persistence,
     const hostWorld = await P.worlds.load(obj.hostId);
     await removeFromWorld(P, obj, hostWorld);
     await artifactPickup(P, artifact, obj.id);
-    await worldPickup(P, hostWorld, artifact.id, obj.id);
+    await worldPickup(P, hostWorld, artifact.id, obj.id); // before for event!
 }
 
 export async function putdown(P: Persistence, artifact: Artifact, dir: Dir) {

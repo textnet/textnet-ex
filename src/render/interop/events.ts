@@ -25,6 +25,13 @@ export interface PushEvent {
     direction: Dir;
 }
 
+export interface StartMovingEvent {
+    artifactId: string;
+}
+export interface StopMovingEvent {
+    artifactId: string;
+}
+
 export interface PickupEvent {
     artifactId: string;
     direction: Dir;

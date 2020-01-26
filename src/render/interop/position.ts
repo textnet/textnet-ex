@@ -28,7 +28,7 @@ export function positionArtifact(game: Game, event: PositionEvent) {
                     y: event.position.y - artifactActor.pos.y,
                 };
                 if (Math.abs(vel.x) + Math.abs(vel.y) > 0) {
-                    artifactActor.startMoving();    
+                    artifactActor.continueMoving();    
                 } else {
                     artifactActor.stopMoving();
                 }

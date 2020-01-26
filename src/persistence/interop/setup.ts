@@ -4,7 +4,7 @@ import { Persistence } from "../persist"
 
 import { playerPrepareWorld, playerEnterWorld } from "./player"
 import { placeArtifact } from "./place"
-import { pushFromArtifact } from "./push"
+import { pushFromArtifact, startMoving, stopMoving } from "./push"
 import { pickupFromArtifact } from "./pickup"
 import { leaveOfArtifact, gotoOfArtifact } from "./goto"
 import { standArtifact } from "./text"
@@ -32,12 +32,14 @@ export function interopSetup(P: Persistence) {
 
     if (!P.isSilent) {
         ipcMain.on("askForPlayer", (event, args) => { playerEnterWorld(P) })   
-        ipcMain.on("position", (event, args) => { placeArtifact(P, args) })
-        ipcMain.on("push",     (event, args) => { pushFromArtifact(P, args) });
-        ipcMain.on("pickup",   (event, args) => { pickupFromArtifact(P, args) });
-        ipcMain.on("leave",    (event, args) => { leaveOfArtifact(P, args) });
-        ipcMain.on("goto",     (event, args) => { gotoOfArtifact(P, args) });
-        ipcMain.on("stand",    (event, args) => { standArtifact(P, args) });
+        ipcMain.on("position",     (event, args) => { placeArtifact(P, args) })
+        ipcMain.on("push",         (event, args) => { pushFromArtifact(P, args) });
+        ipcMain.on("startMoving",  (event, args) => { startMoving(P, args) });
+        ipcMain.on("stopMoving",   (event, args) => { stopMoving(P, args) });
+        ipcMain.on("pickup",       (event, args) => { pickupFromArtifact(P, args) });
+        ipcMain.on("leave",        (event, args) => { leaveOfArtifact(P, args) });
+        ipcMain.on("goto",         (event, args) => { gotoOfArtifact(P, args) });
+        ipcMain.on("stand",        (event, args) => { standArtifact(P, args) });
     }
 
 }

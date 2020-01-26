@@ -101,20 +101,30 @@ export class ArtifactActor extends BaseActor {
             this.vel.x = dir.x * this.artifact.speed;
             this.vel.y = dir.y * this.artifact.speed;
             //
+            const prevMoving = this.isMoving;
             this.isMoving = Math.abs(this.vel.x)+Math.abs(this.vel.y) > 0;
+            if (this.isMoving && !prevMoving) {
+                interopSend.startMoving(this);
+            }
+            if (!this.isMoving && prevMoving) {
+                interopSend.stopMoving(this);                
+            }
             console.log("<keyboard>")
         }
     }
 
 
     _movingTimeout;
-    _movingTimeoutDuration = 100;
+    _movingTimeoutDuration = 500;
     startMoving() {
-        const that = this;
         this.isMoving = true;
+        this.continueMoving();
+    }
+    continueMoving() {
+        const that = this;
         clearTimeout(this._movingTimeout);
         this._movingTimeout = setTimeout(function(){ that.stopMoving() }, 
-                                         this._movingTimeoutDuration);
+                                         this._movingTimeoutDuration);        
     }
     stopMoving() {
         this.isMoving = false;

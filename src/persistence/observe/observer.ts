@@ -3,6 +3,7 @@
  */
 import * as events from "events"
 
+import { mundaneWorldName } from "../../const"
 import { deepCopy                       } from "../../utils"
 import { Dir, Artifact, World, Position } from "../../interfaces"
 import { Persistence                    } from "../persist"
@@ -13,6 +14,8 @@ import { SyncWrittenPersistence         } from "../../written/persistence"
 
 import * as observerEvents from "./observer_events";
 import { ObserverCommand } from "./observer_events";
+
+import * as mutateDynamics from "../mutate/dynamics";
 
 
 /**
@@ -45,11 +48,12 @@ export class PersistenceObserver extends events.EventEmitter {
     init(P: Persistence, artifactId: string) {
         const that = this;
         this.P = P;
-        this.writtenP = new SyncWrittenPersistence(this);
-        this.ownerId = artifactId;
-        this.cleanCommands();
         this.command = ObserverCommand.None;
+        this._commands = [];
+        this._commandFuncs = [];
+        this.ownerId = artifactId;
         this.subscribedKeys = [];
+        this.writtenP = new SyncWrittenPersistence(this);
     }
 
     /**
@@ -87,7 +91,7 @@ export class PersistenceObserver extends events.EventEmitter {
             prevTime = nowTime;
             that.sendEvent("timer", 
                            { delta: delta } as observerEvents.TimeEvent,
-                           { object: that.ownerId })
+                           { world: that.ownerId })
         }, observerEvents.observerInterval)
         this.subscribe(undefined, "timer", "world", 
             (event: observerEvents.TimeEvent) => { that.iterateCommand() })
@@ -143,13 +147,20 @@ export class PersistenceObserver extends events.EventEmitter {
                 }
                 if (handler.invoke) {
                     that.prepareWrittenPersistence().then(function(){
-                        for (let i of ["subject", "object", "world"]) {
-                            const targetId = fullData.targetIds[i];
-                            if (targetId) {
-                                eventData[i] = that.writtenP.artifacts.load(targetId);
+                         that.updateWrittenPersistence("artifacts", fullData.targetIds)
+                            .then(function(){
+                            for (let i of ["subject", "object", "world"]) {
+                                const targetId = fullData.targetIds[i];
+                                if (targetId) {
+                                    eventData[i] = that.writtenP.artifacts.load(targetId);
+                                }
                             }
-                        }
-                        handler.invoke(eventData, {})    
+                            if (event == "pickup") {
+                                console.log(eventData)
+                                that.writtenP.artifacts.directory();
+                            }
+                            handler.invoke(eventData, {})    
+                        })
                     })
                 } else {
                     handler.call(this, eventData);
@@ -182,18 +193,30 @@ export class PersistenceObserver extends events.EventEmitter {
     cleanCommands() {
         this._commands = [];
         this._commandFuncs = [];
+        this.nextCommand();
     }
 
     /**
      * Move on to the next command in the command stack.
      */
     nextCommand() {
+        const that = this;
         if (this._commands.length == 0) {
             this.command = ObserverCommand.None;
             this.commandFunc = undefined;
+            this.P.artifacts.load(this.ownerId).then(function(owner) {
+                mutateDynamics.stopMoving(that.P, owner)    
+            })
         } else {
+            const prevCommand = this.command;
             this.command = this._commands.shift();
             this.commandFunc = this._commandFuncs.shift();
+            if (this.command == ObserverCommand.Move &&
+                prevCommand  != ObserverCommand.Move) {
+                    this.P.artifacts.load(this.ownerId).then(function(owner) {
+                        mutateDynamics.startMoving(that.P, owner);    
+                })                
+            }
         }
     }
 
@@ -203,9 +226,17 @@ export class PersistenceObserver extends events.EventEmitter {
      * until it gets to its designated point.
      */
     async iterateCommand() { 
+        const owner = await this.P.artifacts.load(this.ownerId);
         if (this.command != ObserverCommand.None && this.commandFunc) {
             const repeat = await this.commandFunc();
             if (!repeat) {
+                this.nextCommand();
+            }
+        } else {
+            if (owner && owner.name == "Chair 2") {
+                console.log("end of command", this._commands)
+            }
+            if (this._commands.length > 0) {
                 this.nextCommand();
             }
         }
@@ -216,6 +247,7 @@ export class PersistenceObserver extends events.EventEmitter {
      * We might need to rewrite that later. TODO
      */
     async executeCommand(command: ObserverCommand, params: object) {
+        const owner = await this.P.artifacts.load(this.ownerId);
         let commandFunc;
         switch (command) {
             case ObserverCommand.Move:
@@ -227,15 +259,13 @@ export class PersistenceObserver extends events.EventEmitter {
                                       params as observerEvents.PlaceCommand);
                         break;
             case ObserverCommand.Halt:
-                        this.cleanCommands()
+                        commandFunc = await observerEvents.haltAction(this, 
+                                      params as observerEvents.HaltCommand);
                         break;
         }
         if (commandFunc) {
             this._commands.push(command);
             this._commandFuncs.push(commandFunc);
-        }
-        if (this.command == ObserverCommand.None) {
-            this.nextCommand()
         }
     }
 
@@ -301,5 +331,22 @@ export class PersistenceObserver extends events.EventEmitter {
         // setup from scratch, yeah.
         this.writtenP.artifacts.setup(artifacts);
         this.writtenP.worlds.setup(worlds);
+    }
+    async updateWrittenPersistence(prefix: string, ids: string[]|Record<string,string>) {
+        for (let idx in ids) {
+            this.writtenP[prefix].update(await this.P[prefix].load(ids[idx]));
+        }
+        if (ids["world"]) {
+            // add world content
+            const worldArtifact = await this.P.artifacts.load(ids["world"]);
+            const worldArtifactWorldId = worldArtifact.worldIds[mundaneWorldName];
+            const worldArtifactWorld = await this.P.worlds.load(worldArtifactWorldId);
+            for (let id in worldArtifactWorld.artifactPositions) {
+                const a = await this.P.artifacts.load(id);
+                this.writtenP["artifacts"].update(a);
+            }
+            this.writtenP["worlds"].update(worldArtifactWorld);
+
+        }
     }
 }
