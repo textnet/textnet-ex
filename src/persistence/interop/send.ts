@@ -38,7 +38,7 @@ export async function sendProperties(P: Persistence, artifact: Artifact) {
 }
 
 export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, position: Position) {
-    // console.log(`INTEROP: position(placeArtifact)`, artifact.name, position)
+    // console.log(`(${P.account.id})INTEROP: position(placeArtifact)`, artifact.name, position)
     const event: PositionEvent = {
         artifactId: artifact.id,
         worldId:    artifact.hostId,

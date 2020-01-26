@@ -105,25 +105,27 @@ export async function worldUpdateInWorld(P: Persistence, world: World,
 }
 
 export async function worldStartMoving(P: Persistence, world: World, 
-                                         artifactId: string ) {
-    if (!await remote.worldStartMoving(P, world, artifactId)) {
+                                         artifactId: string, subjectId: string ) {
+    if (!await remote.worldStartMoving(P, world, artifactId, subjectId)) {
         let pos = deepCopy(world.artifactPositions[ artifactId ]);
         // emit event!
         P.subscription.emit("echo:move_start", world.id, {
             artifactId: artifactId,
             worldId: world.id,
+            subjectId: subjectId,
             pos: pos,
         } as RemoteEvent.WorldStartMoving);
     }
 }
 
 export async function worldStopMoving(P: Persistence, world: World, 
-                                         artifactId: string, ) {
-    if (!await remote.worldStopMoving(P, world, artifactId)) {
+                                         artifactId: string, subjectId: string ) {
+    if (!await remote.worldStopMoving(P, world, artifactId, subjectId)) {
         let pos = deepCopy(world.artifactPositions[ artifactId ]);
         // emit event!
         P.subscription.emit("echo:move_stop", world.id, {
             artifactId: artifactId,
+            subjectId: subjectId,
             worldId: world.id,
             pos: pos,
         } as RemoteEvent.WorldStopMoving);

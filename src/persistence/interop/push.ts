@@ -34,13 +34,13 @@ export async function pushFromArtifact(P: Persistence, event: PushEvent) {
 export async function startMoving(P: Persistence, event: StartMovingEvent) {
     const artifactId  = event["artifactId"];
     const artifact   = await P.artifacts.load(artifactId);
-    await mutateDynamics.startMoving(P, artifact);
+    await mutateDynamics.startMoving(P, artifact, artifact);
     return true
 }
 
 export async function stopMoving(P: Persistence, event: StopMovingEvent) {
     const artifactId  = event["artifactId"];
     const artifact   = await P.artifacts.load(artifactId);
-    await mutateDynamics.stopMoving(P, artifact);
+    await mutateDynamics.stopMoving(P, artifact, artifact);
     return true
 }

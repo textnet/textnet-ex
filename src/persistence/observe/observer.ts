@@ -156,7 +156,6 @@ export class PersistenceObserver extends events.EventEmitter {
                                 }
                             }
                             if (event == "pickup") {
-                                console.log(eventData)
                                 that.writtenP.artifacts.directory();
                             }
                             handler.invoke(eventData, {})    
@@ -205,7 +204,7 @@ export class PersistenceObserver extends events.EventEmitter {
             this.command = ObserverCommand.None;
             this.commandFunc = undefined;
             this.P.artifacts.load(this.ownerId).then(function(owner) {
-                mutateDynamics.stopMoving(that.P, owner)    
+                mutateDynamics.stopMoving(that.P, owner, owner) // WRONG, refactor
             })
         } else {
             const prevCommand = this.command;
@@ -214,7 +213,7 @@ export class PersistenceObserver extends events.EventEmitter {
             if (this.command == ObserverCommand.Move &&
                 prevCommand  != ObserverCommand.Move) {
                     this.P.artifacts.load(this.ownerId).then(function(owner) {
-                        mutateDynamics.startMoving(that.P, owner);    
+                        mutateDynamics.startMoving(that.P, owner, owner);  // WRONG, refactor  
                 })                
             }
         }
@@ -233,9 +232,6 @@ export class PersistenceObserver extends events.EventEmitter {
                 this.nextCommand();
             }
         } else {
-            if (owner && owner.name == "Chair 2") {
-                console.log("end of command", this._commands)
-            }
             if (this._commands.length > 0) {
                 this.nextCommand();
             }
@@ -258,10 +254,8 @@ export class PersistenceObserver extends events.EventEmitter {
                         commandFunc = await observerEvents.placeAction(this, 
                                       params as observerEvents.PlaceCommand);
                         break;
-            case ObserverCommand.Halt:
-                        commandFunc = await observerEvents.haltAction(this, 
-                                      params as observerEvents.HaltCommand);
-                        break;
+            // case ObserverCommand.Halt:
+            //             break;
         }
         if (commandFunc) {
             this._commands.push(command);

@@ -65,7 +65,7 @@ export class RemotePersistence {
     }
 
     async send(senderP: Persistence, event: string, data: RemoteEvent.RemoteEvent) {
-        // console.log(`RP-Call:Event(${event}) => ...`)
+        // console.log(`RP-Call:Event(${event}) => ... Sender=${senderP.account.id}, receiver=${this.id}`)
         return await network.sendMessage(senderP, this, {
             event: event,
             data: data,

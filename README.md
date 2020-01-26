@@ -27,6 +27,8 @@ This is an Excalibur+Electron prototype of the TXTNET.
 # BUGS BUGS BUGS BUGS
 + staggering walking. WHY?
     + only adjust player after t=0.5 sec
++ BUG: walking is not working remotely
++ BUG: disconnect is broken
 
 # CURRENT ITERATION
 + Events support (with subscription)
@@ -44,11 +46,9 @@ This is an Excalibur+Electron prototype of the TXTNET.
         + converted to mutate
         + replace old start/stop
     + observer should generate start/stop
-- `halt`
-- make one chair run in circles
-- figure out how `pickup` event will still function
-    - call before pickup?
-- BUG: walking is not working remotely
++ make one chair run in circles
++ figure out how `pickup` event will still function = call before removing the object
++ `move_start` and `move_stop`: add object/subject to data
 
 
 # NEXT ITERATION(s)
@@ -70,13 +70,14 @@ This is an Excalibur+Electron prototype of the TXTNET.
 - massive load across network -> subscribe on changes
 - merge remote/network in one module
 - reduce duplication in RemoteEvent, echo, registry, mutate local/remote
+- rewrite command system for observer, so move commands are chained with artifacts they move, not with the observer itself.
+    - also rewrite object/subject for start/stop moving
 
 
 # SMALL THINGS TO PLAY WITH WHEN NOT ENOUGH CONCENTRATION
 - another session of documentation
 - even more refactor positions, coords, and vector stuff
 - embed lua highlighting into markdown
-- test `halt()`
 - when sending `move` event with `delta`, direction is broken
 
 # MAKE IT PRETTY!

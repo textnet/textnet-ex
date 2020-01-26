@@ -46,7 +46,7 @@ const _echo_ = {
                 clearTimeout(_echo_timeout);
                 _echo_timeout = setTimeout(_, _echo_move_latency);
             } else {
-                _();
+                await _();
             }
             const targetIds = {
                 world: (await P.worlds.load(data.worldId)).ownerId,
@@ -59,7 +59,8 @@ const _echo_ = {
         await interopSend.sendStartMovingArtifact(P, artifact);
         const targetIds = {
             world: (await P.worlds.load(data.worldId)).ownerId,
-            subject: data.artifactId,
+            object: data.artifactId,
+            subject: data.subjectId,
         }
         return targetIds;
     },
@@ -68,7 +69,8 @@ const _echo_ = {
         await interopSend.sendStopMovingArtifact(P, artifact);
         const targetIds = {
             world: (await P.worlds.load(data.worldId)).ownerId,
-            subject: data.artifactId,
+            object: data.artifactId,
+            subject: data.subjectId,
         }
         return targetIds;
     },

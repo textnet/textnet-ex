@@ -14,14 +14,12 @@ export async function push(P: Persistence,
     await worldPush(P, hostWorld, artifact.id, obj.id);
 }
 
-export async function startMoving(P: Persistence, artifact: Artifact) {
-    console.log(artifact.name, artifact.id, artifact.hostId)
+export async function startMoving(P: Persistence, artifact: Artifact, subject: Artifact) {
     const hostWorld = await P.worlds.load(artifact.hostId);
-    await worldStartMoving(P, hostWorld, artifact.id);
+    await worldStartMoving(P, hostWorld, artifact.id, subject.id);
 }
 
-export async function stopMoving(P: Persistence, artifact: Artifact) {
-    console.log(artifact.name, artifact.id, artifact.hostId)
+export async function stopMoving(P: Persistence, artifact: Artifact, subject: Artifact) {
     const hostWorld = await P.worlds.load(artifact.hostId);
-    await worldStopMoving(P, hostWorld, artifact.id);
+    await worldStopMoving(P, hostWorld, artifact.id, subject.id);
 }

@@ -89,9 +89,11 @@ export class Persistence {
         // account
         this.window = null;
         const accountBody = await this.artifacts.load(this.account.bodyId);
-        const worldId = accountBody.hostId;
-        const world: World = await this.worlds.load(worldId);
-        await mutateEnter.disconnect(this, accountBody, world);
+        if (accountBody.hostId) {
+            const worldId = accountBody.hostId;
+            const world: World = await this.worlds.load(worldId);
+            await mutateEnter.disconnect(this, accountBody, world);
+        }
         // observers
         for (let id in this.observers) {
             await this.observers[id].free();

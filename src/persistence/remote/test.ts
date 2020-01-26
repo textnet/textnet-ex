@@ -82,6 +82,7 @@ export async function init(local: Persistence) {
         // mainWindow.webContents.openDevTools({ mode:"detach" })
         mainWindow.loadFile("dist/index.html")    
     }
+    return P;
 }
 
 
@@ -89,33 +90,18 @@ const ww = {
 "Chair 1": `This is Chair No.1.
     local myself = get_myself{}
     local prefix = myself.name.." >"
-    function tell_me_about_it(event)
-        print(prefix, event.event, event.role, event.object.name)
-        local chair2 = get_artifact{ world=event.world, name="Chair 2" }
-        print(chair2)
-        if chair2 then
-          halt{ artifact=chair2 }
-        end
-    end
-    on{ event="pickup", role="object", handler=tell_me_about_it }
-    on{ event="push", role="object", handler=tell_me_about_it }
-
 `,
 
 "Chair 2": `This is Chair No.2.
 
-    move_by{ x= 300 }
-    move_by{ x=-300 }
-    move_by{ x= 300 }
-    move_by{ x=-300 }
-    move_by{ x= 300 }
-    move_by{ x=-300 }
-    move_by{ x=-300 }
-    move_by{ x= 300 }
-    move_by{ x=-300 }
-    move_by{ x=-300 }
-    move_by{ x= 300 }
-    move_by{ x=-300 }
+    function next()
+        move_by{ x= 300 }
+        move_by{ y= 300 }
+        move_by{ x=-300 }
+        move_by{ y=-300 }
+    end
+    on{ event="move_stop", role="subject", handler=next}
+    -- next()
 
 `,
 
@@ -136,10 +122,10 @@ const ww = {
     local chair1 = get_artifact{ name="Chair 1" }
     local chair2 = get_artifact{ name="Chair 2" }
     -- on{ artifact=chair1, event="move", handler=tell_me_about_it }
-    on{ event="enter", role="world", handler=tell_me_about_it }
-    on{ event="leave", role="world", handler=tell_me_about_it }
-    on{ event="move_start", role="world", handler=tell_me_about_it }
-    on{ event="move_stop",  role="world", handler=tell_me_about_it }
+    -- on{ event="enter", role="world", handler=tell_me_about_it }
+    -- on{ event="leave", role="world", handler=tell_me_about_it }
+    -- on{ event="move_start", role="world", handler=tell_me_about_it }
+    -- on{ event="move_stop",  role="world", handler=tell_me_about_it }
     -- on{ event="move", role="world", handler=tell_me_about_it }
 `,
 

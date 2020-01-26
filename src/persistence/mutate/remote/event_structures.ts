@@ -79,11 +79,13 @@ export interface WorldUpdate extends RemoteEvent {
 }
 export interface WorldStartMoving extends RemoteEvent {
     artifactId: string,
+    subjectId:  string,
     worldId:    string,
     pos?:        Position,
 }
 export interface WorldStopMoving extends RemoteEvent {
     artifactId: string,
+    subjectId:  string,
     worldId:    string,
     pos?:        Position,
 }

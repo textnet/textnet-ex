@@ -67,17 +67,21 @@ export async function worldUpdateInWorld(P: Persistence, world: World,
     } as RemoteEvent.WorldUpdate);
 }
 
-export async function worldStartMoving(P: Persistence, world: World, artifactId: string) {
+export async function worldStartMoving(P: Persistence, world: World,
+                                       artifactId: string, subjectId: string) {
     return await wrapper(P, "worldStartMoving", world.id, {
         artifactId: artifactId,
         worldId:    world.id,
+        subjectId: subjectId,
     } as RemoteEvent.WorldStartMoving);
 }
 
-export async function worldStopMoving(P: Persistence, world: World, artifactId: string) {
+export async function worldStopMoving(P: Persistence, world: World, 
+                                      artifactId: string, subjectId: string) {
     return await wrapper(P, "worldStopMoving", world.id, {
         artifactId: artifactId,
         worldId:    world.id,
+        subjectId: subjectId,
     } as RemoteEvent.WorldStopMoving);
 }
 

@@ -13,7 +13,7 @@ import { DIR, DIRfrom, spawnPosition }    from "../../const"
 import { Artifact, World, Dir, Position } from "../../interfaces"
 import { normalizeDir }                   from "../../utils"
 
-import { MoveCommand, PlaceCommand, HaltCommand,
+import { MoveCommand, PlaceCommand,
          ObserverCommand }       from "../../persistence/observe/observer_events"
 import { PersistenceObserver }   from "../../persistence/observe/observer"
 import * as mutatePlace          from "../../persistence/mutate/place"
@@ -85,13 +85,7 @@ export function move_by(O: PersistenceObserver,
  */
 export function halt(O: PersistenceObserver, 
                      artifactData?: object) {
-    const artifact = getArtifactFromData(O, artifactData);
-    console.log(`<${artifact.name}>.halt()`)
-    let success = false;
-    O.executeCommand(ObserverCommand.Halt, {
-        artifact: artifact.id,        
-    } as HaltCommand); // nb: async
-    return true; 
+    // TODO write anew
 }
 
 /**

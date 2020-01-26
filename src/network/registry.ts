@@ -122,12 +122,12 @@ const _listener_ = {
    worldStartMoving: async function(P, _) {
        const data = _ as RemoteEvent.WorldStartMoving;
        const world = await P.worlds.load(data.worldId);
-       return localWorld.worldStartMoving(P, world, data.artifactId)
+       return localWorld.worldStartMoving(P, world, data.artifactId, data.subjectId)
    },
    worldStopMoving: async function(P, _) {
        const data = _ as RemoteEvent.WorldStopMoving;
        const world = await P.worlds.load(data.worldId);
-       return localWorld.worldStopMoving(P, world, data.artifactId)
+       return localWorld.worldStopMoving(P, world, data.artifactId, data.subjectId)
    },
    worldUpdateText: async function(P, _) {
        const data = _ as RemoteEvent.WorldUpdateText;

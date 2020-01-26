@@ -18,6 +18,7 @@ import * as remoteTest from "../persistence/remote/test"
  * Persistence that contains all the account data for this instance of the game.
  */
 const localPersistence = new Persistence("app_");
+let testPersistence;
 
 
 /**
@@ -25,7 +26,8 @@ const localPersistence = new Persistence("app_");
  * and load the `index.html` file generated from `gui.ts`.
  */
 function onReady() {
-    remoteTest.init(localPersistence).then(() => { 
+    remoteTest.init(localPersistence).then((testP) => { 
+        testPersistence = testP;
 
         const width  = worldWidth + visualBounds.left + visualBounds.right;
         let height;
@@ -59,6 +61,9 @@ function onReady() {
  * aware of the app being online.
  */
 function onQuit() {
+    if (testPersistence) {
+        testPersistence.free();
+    }
     localPersistence.free()
 }
 
