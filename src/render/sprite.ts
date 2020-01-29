@@ -47,6 +47,7 @@ export class ArtifactSprite {
         this.artifact = artifact;
         if (artifact.sprite.moving)  this.cols = 9;
         if (artifact.sprite.turning) this.rows = 4;
+        if (artifact.sprite.cols)    this.cols = artifact.sprite.cols;
 
         let mainTexture = new ex.Texture("");
         mainTexture.setData(b64toBlob(artifact.sprite.base64, "image/png"))
@@ -55,10 +56,11 @@ export class ArtifactSprite {
                 this.cols, this.rows, 
                 this.artifact.sprite.size[0], this.artifact.sprite.size[1]);
         if (this.artifact.sprite.idleBase64 != "") {
+            console.log("idleBase64")
             let idleTexture = new ex.Texture("");
             idleTexture.setData(b64toBlob(artifact.sprite.idleBase64, "image/png"))
             idleTexture.load()
-            this.move = new ex.SpriteSheet(idleTexture, 
+            this.idle = new ex.SpriteSheet(idleTexture, 
                     this.cols, this.rows, 
                     this.artifact.sprite.size[0], this.artifact.sprite.size[1]);
 

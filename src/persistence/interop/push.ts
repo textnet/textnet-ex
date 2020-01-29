@@ -17,7 +17,8 @@ export async function pushFromArtifact(P: Persistence, event: PushEvent) {
 
     let success = false;
     const candidate = await getArtifact_NextTo(P, artifact, direction) as Artifact;
-    if (candidate && candidate.pushable ) {
+    if (candidate && candidate.pushable) {
+        console.log(`<${candidate.name}> is pushable? ${candidate.pushable}`)
         const newPos = await artifactPos(P, candidate);
         const pushStrength = artifact.power / candidate.weight * 2;
         newPos.x += direction.x * pushStrength;

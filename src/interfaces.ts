@@ -124,6 +124,7 @@ export interface Artifact {
         size:   number[]; // [32,32]
         turning:  boolean;
         moving:   boolean;
+        cols?:    number;
     }
     body: { 
         offset: number[]; // [0,0]

@@ -15,7 +15,7 @@ const peers = {};
 let connSeq = 0
 
 export function broadcast( message, recipients? ) {
-    if (recipients) recipients = peers;
+    if (!recipients) recipients = peers;
     for (let id in recipients) {
         recipients[id].conn.write(message)
     }    
@@ -31,7 +31,7 @@ export async function connect( id, messageHandler?, openHandler?, closeHandler? 
     const port = await getPort()
     swarm.listen(port);
     swarm.join(TEXTNET_SWARM_CHANNEL);
-    swarm.on("connection"), (conn, info) => {
+    swarm.on("connection", (conn, info) => {
         const seq = connSeq++;
         const peerId = info.id
         peers[peerId] = { conn: conn, seq: seq }
@@ -62,5 +62,5 @@ export async function connect( id, messageHandler?, openHandler?, closeHandler? 
                 delete peers[peerId]
             }
         })
-    }
+    })
 }

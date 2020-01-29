@@ -14,7 +14,7 @@ import { DIR, spatialThreshold } from "./const"
  * @param {object} defaults - object with default values
  */
 export function pushDefaults(to,defaults) 
-{ for (let i in defaults) if (!to[i]) to[i] = defaults[i]; }
+{ for (let i in defaults) if (to[i] === undefined) to[i] = defaults[i]; }
 
 
 /**

@@ -109,7 +109,6 @@ export class ArtifactActor extends BaseActor {
             if (!this.isMoving && prevMoving) {
                 interopSend.stopMoving(this);                
             }
-            console.log("<keyboard>")
         }
     }
 
