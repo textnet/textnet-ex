@@ -37,9 +37,8 @@ function hexEncode(s: string) {
 
 
 export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
-    var buf = Buffer.from(id, 'utf8');
     const swarm = Swarm(defaults({
-        id: buf
+        id: Buffer.from(id, 'utf8')
     }))
     const port = await getPort()
     swarm.listen(port);
