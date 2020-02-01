@@ -5,6 +5,7 @@ import { Dir, Position } from "./interfaces"
  */
 
 export const DEBUG = true;
+export const version = "1";
 
 /**
  * Standard directions (structure matches [[Dir]]).
@@ -99,4 +100,5 @@ export const EVENT = {
 }
 
 
+export const messagingChannelPrefix = `above/r&d/textnet/${version}/`;
 

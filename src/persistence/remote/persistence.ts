@@ -4,47 +4,33 @@ import { persistenceId } from "../identity"
 import { Persistence } from "../persist"
 
 import * as RemoteEvent from "../mutate/remote/event_structures"
-import * as network from "../../network/registry"
+import { ConnectionInfo } from "../../network/p2p"
+import * as messaging from "../../network/messaging"
 
 
 export async function load(P: Persistence, prefix: string, id: string) {
-    // temporary!
-    // TODO: subscribe etc.
-    let data;
-    const pId = persistenceId(id);
-    const idP = getRemotePersistence(pId);
-    data = await idP.load(P, prefix, id);
+    const idP = getRemotePersistenceById(id);
+    const data = await idP.load(P, prefix, id);
     return data;
 }
 
-const localRegistry = {}; // temporary-2
-
-export function register(P: Persistence) { // temporary-3
-    const RP = new RemotePersistence(P.account.id);
-    localRegistry[RP.id] = RP;
-}
-
-export function getRemotePersistenceFromId(id: string): RemotePersistence|undefined {
-    const pId = persistenceId(id);
-    const idP = getRemotePersistence(pId);
-    return idP;
-}
-
-export function getRemotePersistence(pId: string) { // temporary-4
-    return localRegistry[pId];
+export function getRemotePersistenceById(id: string) {
+    return messaging.getConnection(id);
 }
 
 // Remote Persistence
 export class RemotePersistence {
     id: string;
+    conn: ConnectionInfo;
 
-    constructor(id: string) {
-        this.id = id;
+    constructor(conn: ConnectionInfo) {
+        this.conn = conn;
+        this.id = conn.info.id;
     }
 
     async load(senderP: Persistence, prefix:string, id: string) {
         // console.log(`RP-Call:Load(${prefix}) => ${id}`)
-        return await network.sendMessage(senderP, this, {
+        return await messaging.sendMessage(senderP, this, {
             event: "load",
             data: {
                 prefix: prefix,
@@ -55,7 +41,7 @@ export class RemotePersistence {
 
     async send(senderP: Persistence, event: string, data: RemoteEvent.RemoteEvent) {
         // console.log(`RP-Call:Event(${event}) => ... Sender=${senderP.account.id}, receiver=${this.id}`)
-        return await network.sendMessage(senderP, this, {
+        return await messaging.sendMessage(senderP, this, {
             event: event,
             data: data,
         } as RemoteEvent.Payload)

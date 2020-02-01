@@ -37,6 +37,8 @@ export class Persistence {
     observers: Record<string,PersistenceObserver>;
     subscription: RemoteSubscription;
 
+    connection; // used in `network`
+
     constructor(prefix?) {
         this.prefix    = prefix || "";
         this.artifacts = new Repository<Artifact>(this, "artifacts");
@@ -57,6 +59,7 @@ export class Persistence {
     }
 
     async init() {
+        const that = this;
         this.artifacts.init();
         this.accounts.init();
         this.worlds.init();
@@ -73,8 +76,7 @@ export class Persistence {
         this.account = await this.accounts.load(localId);
         // remote
         this.subscription = new RemoteSubscription(this);
-        remote.register(this); // temp?
-        network.register(this);
+        await network.register(this)
         // get all available (local) artifacts and make observers for them
         this.observers = {};
         const artifacts = await this.artifacts.local()
@@ -82,7 +84,7 @@ export class Persistence {
             this.observers[id] = new PersistenceObserver();
             this.observers[id].init(this, id)
             await this.observers[id].attempt();
-        }
+        }        
     }
 
     async free() {
@@ -99,7 +101,7 @@ export class Persistence {
             await this.observers[id].free();
         }
         // remote
-        network.unregister(this);
+        await network.unregister(this);
         // close db
         this.artifacts.free();
         this.accounts.free();

@@ -155,9 +155,6 @@ export class PersistenceObserver extends events.EventEmitter {
                                     eventData[i] = that.writtenP.artifacts.load(targetId);
                                 }
                             }
-                            if (event == "pickup") {
-                                that.writtenP.artifacts.directory();
-                            }
                             handler.invoke(eventData, {})    
                         })
                     })

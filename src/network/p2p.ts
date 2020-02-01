@@ -1,66 +1,78 @@
-const crypto = require('crypto')
+// const crypto = require('crypto')
 const Swarm = require('discovery-swarm')
 const defaults = require('dat-swarm-defaults')
 const getPort = require('get-port')
 
-const TEXTNET_SWARM_CHANNEL = "textnet-swarm(0)"
+import * as crypto from "crypto";
 
-/**
- * Here we will save our TCP peer connections
- * using the peer id as key: { peer_id: TCP_Connection }
- */
-const peers = {};
 
-// Counter for connections, used for identify connections
-let connSeq = 0
+import { messagingChannelPrefix } from "../const"
+import { Persistence } from "../persistence/persist"
 
-export function broadcast( message, recipients? ) {
-    if (!recipients) recipients = peers;
-    for (let id in recipients) {
-        recipients[id].conn.write(message)
-    }    
-}
-export function message( message, recipient ) {
-    return broadcast( message, [recipient] )
+import { Socket } from "net"
+
+
+const discoveryChannel = messagingChannelPrefix+"discovery";
+
+export interface ConnectionInfo {
+    id: string,
+    socket: Socket,
+    info;
 }
 
-export async function connect( id, messageHandler?, openHandler?, closeHandler? ) {
+export function message(connectionInfo: ConnectionInfo, fullPayload) {
+    const data = JSON.stringify(fullPayload);
+    connectionInfo.socket.write(data);
+}
+
+
+function hexEncode(s: string) {
+    let result = "";
+    for (let i=0; i<s.length; i++) {
+        const hex = s.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+    return result
+}
+
+
+export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
+    var buf = Buffer.from(id, 'utf8');
     const swarm = Swarm(defaults({
-        id: id
+        id: buf
     }))
     const port = await getPort()
     swarm.listen(port);
-    swarm.join(TEXTNET_SWARM_CHANNEL);
-    swarm.on("connection", (conn, info) => {
-        const seq = connSeq++;
-        const peerId = info.id
-        peers[peerId] = { conn: conn, seq: seq }
-        console.log(`Connected #${seq} to peer: ${peerId}`)
-        if (openHandler) openHandler(peerId);
-        // keep alive
+    console.log(`P2P: join "${discoveryChannel}" at port ${port}`);
+    swarm.on("connection", (conn: Socket, info) => {
+        const connectionInfo = { id: id, socket:conn, info:info }
+        console.log(`${id}: Connected: ${info.id}`)
+        // keep alive ---------------------------------------
         if (info.initiator) {
+            console.log(`${id}: keep alive!`)
            try {
                conn.setKeepAlive(true, 600)
            } catch (exception) {
                console.log('P2P Connect Exception', exception)
            }
         }
-        // incoming
+        if (onConnect) onConnect(connectionInfo);
+        // incoming -----------------------------------------
         conn.on('data', data => {
-            // Here we handle incomming messages
-            console.log(
-                   'Received Message from peer ' + peerId,
-                   '----> ' + data.toString()
+            console.log('${id}: Received Message from peer ' + info.id,
+                        '----> ' + data.toString()
             )
-            if (messageHandler) messageHandler(peerId, data);
+            const fullPayload = JSON.parse(data.toString())
+            if (onMessage) onMessage(connectionInfo, fullPayload);
         })
-        // close
+        // close --------------------------------------------
         conn.on('close', () => {
-            console.log(`Close connection with peer: ${peerId}`)
-            if (closeHandler) closeHandler(peerId)
-            if (peers[peerId].seq === seq) {
-                delete peers[peerId]
-            }
+            console.log(`${id}: Close connection with peer: ${info.id}`);
+            if (onClose) onClose(connectionInfo)
         })
     })
+    return new Promise((resolve, reject)=>{
+        swarm.join(discoveryChannel, {}, resolve);
+    })
+
 }

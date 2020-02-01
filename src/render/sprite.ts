@@ -56,7 +56,6 @@ export class ArtifactSprite {
                 this.cols, this.rows, 
                 this.artifact.sprite.size[0], this.artifact.sprite.size[1]);
         if (this.artifact.sprite.idleBase64 != "") {
-            console.log("idleBase64")
             let idleTexture = new ex.Texture("");
             idleTexture.setData(b64toBlob(artifact.sprite.idleBase64, "image/png"))
             idleTexture.load()

@@ -10,11 +10,12 @@ import { deepCopy } from "../../utils"
 import { artifactDefault } from "../startup"
 
 
+
 export async function init(local: Persistence) {
     const P = new Persistence("test_");
     P.isSilent = true;
-    await local.init();
     await P.init();
+    await local.init();
 
     // delete chairs from local
     const allArtifacts = await local.artifacts.all();    
@@ -51,6 +52,9 @@ export async function init(local: Persistence) {
             console.log(`Custom WW for "${artifact.name}"\n`)
             const artifactWorld = await P.worlds.load(artifact.worldIds[mundaneWorldName]);
             artifactWorld.text = ww[artifact.name];
+            if (artifact.name == "Portal") {
+                artifactWorld.text = "#teleport/target "+playerArtifact.id+"\n"+artifactWorld.text;
+            }
             await P.worlds.save(artifactWorld);
             await P.observers[id].attempt();
         }
@@ -87,9 +91,22 @@ export async function init(local: Persistence) {
 
 
 const ww = {
+"Portal" :`
+    function do_teleport(event)
+        local target_id = get_line{ anchor="teleport/target" }
+        if (target_id ~= "") then
+            teleport{ artifact=event.subject, target_id=target_id }
+        end
+    end
+    self{ pushable=false }
+    on{ event="push", role="object", handler=do_teleport }
+`,
 "Chair 1": `This is Chair No.1.
     local myself = get_myself{}
     local prefix = myself.name.." >"
+    update_line{ anchor="teleport/here", myself.id }
+
+#teleport/here    
 `,
 
 "Chair 2": `This is Chair No.2.
@@ -106,10 +123,13 @@ const ww = {
 `,
 
 "Host": `This is the hosting world.
+#teleport/here
 
     local myself = get_myself{}
     local prefix = myself.name.." >"
     self{ name="Host (updated)" }
+    --
+    update_line{ anchor="teleport/here", text=myself.id }
     --
     function tell_me_about_it(event)
         if event.object then
@@ -127,6 +147,7 @@ const ww = {
     -- on{ event="move_start", role="world", handler=tell_me_about_it }
     -- on{ event="move_stop",  role="world", handler=tell_me_about_it }
     -- on{ event="move", role="world", handler=tell_me_about_it }
+
 `,
 
 "P1": `This is myself.

@@ -1,33 +1,26 @@
 
 import { Persistence } from "../persistence/persist"
 import { RemotePersistence } from "../persistence/remote/persistence"
-
 import { World, Artifact } from "../interfaces"
-
-
-import * as messaging from "./messaging"
 import * as RemoteEvent from "../persistence/mutate/remote/event_structures"
-
 import * as localArtifact from "../persistence/mutate/local/artifact"
 import * as localWorld    from "../persistence/mutate/local/world"
 
+
+import * as messaging from "./messaging"
+
 import { echo } from "./echo"
 
-export async function sendMessage(sender:   Persistence,
-                                  receiver: RemotePersistence,
-                                  payload:  RemoteEvent.Payload) {
-    return messaging.sendMessage(sender.account.id, receiver.id, payload);
-}
-
-export function register(P: Persistence) {
-    const _messageListener = async function(senderId, payload) {
+export async function register(P: Persistence) {
+    await messaging.connect(P);
+    const _messageListener = async function(senderId, receiverId, payload) {
         return messageListener(P, senderId, payload);
     }
-    messaging.registerListener(P.account.id, _messageListener);
+    await messaging.registerListener(P.account.id, _messageListener);
 }
 
-export function unregister(P: Persistence) {
-    messaging.unregisterListener(P.account.id);
+export async function unregister(P: Persistence) {
+    await messaging.unregisterListener(P.connection);
 }
 
 // ----------vvvvvvv---------

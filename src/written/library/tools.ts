@@ -6,6 +6,7 @@ import { spawnPosition }       from "../../const"
 import { deepCopy }            from "../../utils"
 import { Artifact }            from "../../interfaces"
 import { PersistenceObserver } from "../../persistence/observe/observer"
+import { mundaneWorldName }    from "../../const"
 
 
 /**
@@ -26,6 +27,19 @@ export function getArtifactFromData(O: PersistenceObserver, artifactData?: objec
     const artifact = O.writtenP.artifacts.load(artifactId);
     return artifact;    
 }
+
+
+export function getWorldFromArtifactData(O: PersistenceObserver, artifactData?: object) {
+    const artifact = O.writtenP.artifacts.load(artifactData?artifactData["id"]:O.ownerId);
+    if (artifact) {
+        const worldId = artifact.worldIds[ mundaneWorldName ];    
+        const world = O.writtenP.worlds.load(worldId);
+        return world;
+    } else {
+        return undefined
+    }
+}
+
 
 /**
  * Load an artifact from the Written Persistence.

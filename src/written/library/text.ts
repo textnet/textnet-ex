@@ -3,15 +3,9 @@ import { PersistenceObserver } from "../../persistence/observe/observer"
 import { FengariMap }          from "../api"
 import { updateText }    from "../../persistence/mutate/world"
 import { mundaneWorldName } from "../../const"
+import { getWorldFromArtifactData } from "./tools"
 
 
-
-function getWorldFromArtifactData(O: PersistenceObserver, artifactData?: object) {
-    const artifact = O.writtenP.artifacts.load(artifactData?artifactData["id"]:O.ownerId);
-    const worldId = artifact.worldIds[ mundaneWorldName ];
-    const world = O.writtenP.worlds.load(worldId);
-    return world;    
-}
 
 export function get_text( O: PersistenceObserver, artifactData?: object, 
                           line?: number, anchor?: string, 
@@ -24,7 +18,7 @@ export function get_text( O: PersistenceObserver, artifactData?: object,
         let result = [];
         if (anchor) {
             for (let l of lines) {
-                if (l.substr(0,anchor.length+2) == "#"+anchor+" ") {
+                if ((l+" ").substr(0,anchor.length+2) == "#"+anchor+" ") {
                     result.push(l.substr(anchor.length+2));
                 }
             }
@@ -82,7 +76,7 @@ function _update_line(O: PersistenceObserver, artifactData?: object,
         if (anchor) {
             let skip = false;
             for (let i in lines) {
-                    if (!skip && (lines[i].substr(0,anchor.length+2) == "#"+anchor+" ")) {
+                    if (!skip && ((lines[i]+" ").substr(0,anchor.length+2) == "#"+anchor+" ")) {
                         if (mode == "insert") {
                             if (text === undefined) text = "";
                             lines.splice(parseInt(i), 0, "#"+anchor+" "+text)

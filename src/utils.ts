@@ -1,12 +1,15 @@
 import { Position, Dir } from "./interfaces"
 import { DIR, spatialThreshold } from "./const"
+import * as crypto from "crypto";
+
 
 /**
  * Miscellaneous utility function.
  */
 
-
-
+export function nonce() {
+    return (new Date()) + ":" + crypto.randomBytes(16).toString('hex')
+}
 
 /**
  * Push values from B to A if there are no values present in A

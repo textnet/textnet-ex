@@ -17,16 +17,16 @@ export async function pushFromArtifact(P: Persistence, event: PushEvent) {
 
     let success = false;
     const candidate = await getArtifact_NextTo(P, artifact, direction) as Artifact;
-    if (candidate && candidate.pushable) {
-        console.log(`<${candidate.name}> is pushable? ${candidate.pushable}`)
-        const newPos = await artifactPos(P, candidate);
-        const pushStrength = artifact.power / candidate.weight * 2;
-        newPos.x += direction.x * pushStrength;
-        newPos.y += direction.y * pushStrength;
-        success = await mutatePlace.place(P, candidate, hostWorld, newPos);
-        if (success) {
-            await mutateDynamics.push(P, artifact, candidate);
+    if (candidate) {
+        // console.log(`<${candidate.name}> is pushable? ${candidate.pushable}`)
+        if (candidate.pushable) {
+            const newPos = await artifactPos(P, candidate);
+            const pushStrength = artifact.power / candidate.weight * 2;
+            newPos.x += direction.x * pushStrength;
+            newPos.y += direction.y * pushStrength;
+            success = await mutatePlace.place(P, candidate, hostWorld, newPos);           
         }
+        await mutateDynamics.push(P, artifact, candidate);
     }
     return success
 }

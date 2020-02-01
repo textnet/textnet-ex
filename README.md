@@ -9,7 +9,7 @@ This is an Excalibur+Electron prototype of the TXTNET.
 ## Make installation package
     yarn dist
 
-# CONTROLS
+# BASIC CONTROLS
 + Movement: UP, DOWN, LEFT, RIGHT
 + Artifacts:
     + Enter:  CTRL  + (move)
@@ -23,6 +23,20 @@ This is an Excalibur+Electron prototype of the TXTNET.
     - Say: ENTER
 - Self:
     - Enter yourself: CTRL + ESCAPE
+
+
+
+# Messaging Across Network
++ everyone sits in one channel and gets a socket per each other node.
++ `register` = join swarm
++ `conn` = found another peer
+    - create RP and register it
++ `onMessage` get into cycle of sendMessageLocal
++ `sendMessage` find RP (or P) and write message
++ testing connection
+- load undefined is broken.
+
+------------------------------------------------------------------------
 
 # Messaging Across Network
 - Peer Discovery
@@ -149,7 +163,7 @@ This is an Excalibur+Electron prototype of the TXTNET.
 + Visiting other spaces
 - Messaging library
 - Expose world address
-- Portals to travel between words
++ Portals to travel between words
 
 # 5. Full support for events
 + Events
@@ -199,6 +213,28 @@ Then here are options:
 - add to `registry`
 - add to `echo`
 - extend `supportedEvents` in Written Word
+
+# How to write Written World commands
+- `written/library.ts`
+    - extend supported functions
+- `written/library/...`
+    - add file with command
+    - data validation, local checks to save from roundabouts
+    - prepare data structures required to call `mutate` if needed
+
+# How to write new mutations
+- `mutate` 
+    - call other mutate commands
+    - make necessary calculations or preparations
+    - call `mutate/local` for worlds and artifacts that require data updates
+- `mutate/local`
+    - use template to call `mutate/remote`
+    - save data to local persistence
+- `mutate: remote`
+    - add wrapper that calls
+- `remote/event_structures`
+    - create event structure that reflects `mutate` command
+- render: mostly don't needed
 
 
 ----

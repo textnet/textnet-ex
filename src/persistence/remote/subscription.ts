@@ -1,6 +1,6 @@
 
 import { Persistence } from "../persist"
-import { getRemotePersistenceFromId } from "./persistence"
+import { getRemotePersistenceById } from "./persistence"
 import { persistenceId } from "../identity"
 
 
@@ -26,13 +26,13 @@ export class RemoteSubscription {
             }
         }
         for (let artifactId in RPhash) {
-            const artifactRP = getRemotePersistenceFromId(artifactId);
+            const artifactRP = getRemotePersistenceById(artifactId);
             artifactRP.send(this.P, event, data);
         }
     }
 
     subscribe(hostWorldId: string, guestArtifactId: string, ) {
-        const artifactRP = getRemotePersistenceFromId(guestArtifactId);
+        const artifactRP = getRemotePersistenceById(guestArtifactId);
         if (artifactRP && artifactRP.id != this.P.account.id) {
             if (!this.subscriptions[hostWorldId]) {
                 this.subscriptions[hostWorldId] = [];
@@ -44,7 +44,7 @@ export class RemoteSubscription {
     }
 
     unsubscribe(hostWorldId: string, guestArtifactId: string, ) {
-        const artifactRP = getRemotePersistenceFromId(guestArtifactId);
+        const artifactRP = getRemotePersistenceById(guestArtifactId);
         if (artifactRP && artifactRP.id != this.P.account.id) {
             if (this.subscriptions[hostWorldId]) {
                 const i = this.subscriptions[hostWorldId].indexOf(guestArtifactId);

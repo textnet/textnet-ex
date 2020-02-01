@@ -8,6 +8,7 @@ import { update } from "./library/properties"
 import { move_to, move_by, place_at, fit_at, halt } from "./library/spatial"
 import { get_text, update_text, update_line, insert_line, delete_line } from "./library/text"
 import { event_on, event_off } from "./library/events"
+import { teleport } from "./library/teleport"
 
 /**
  * Map of all commands currently supported in Written Word.
@@ -23,7 +24,10 @@ export const supportedFunctions = {
     "update":        { signature: false,                   f: update        },
     "self":          { signature: false,                   f: update        },
 
+    "teleport":    { signature: ["artifact", "target", "target_id"    ], f: teleport    },
+
     "get_text":    { signature: ["artifact", "line", "anchor"         ], f: get_text    },
+    "get_line":    { signature: ["artifact", "line", "anchor"         ], f: get_text    },
     "update_text": { signature: ["artifact", "text",                  ], f: update_text },
     "update_line": { signature: ["artifact", "line", "anchor", "text" ], f: update_line },
     "insert_line": { signature: ["artifact", "line", "anchor", "text" ], f: insert_line },
