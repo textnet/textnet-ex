@@ -10,6 +10,7 @@ import { messagingChannelPrefix } from "../const"
 import { Persistence } from "../persistence/persist"
 
 import { Socket } from "net"
+import * as readline from "readline"
 
 
 const discoveryChannel = messagingChannelPrefix+"discovery";
@@ -21,34 +22,25 @@ export interface ConnectionInfo {
 }
 
 export function message(connectionInfo: ConnectionInfo, fullPayload) {
-    const data = JSON.stringify(fullPayload);
-    connectionInfo.socket.write(data);
-}
-
-
-function hexEncode(s: string) {
-    let result = "";
-    for (let i=0; i<s.length; i++) {
-        const hex = s.charCodeAt(i).toString(16);
-        result += ("000"+hex).slice(-4);
-    }
-    return result
+    let data = JSON.stringify(fullPayload);
+    connectionInfo.socket.write(data+"\n\n");
 }
 
 
 export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
-    const swarm = Swarm(defaults({
+    const swarm = new Swarm(defaults({
         id: Buffer.from(id, 'utf8')
     }))
     const port = await getPort()
     swarm.listen(port);
     console.log(`P2P: join "${discoveryChannel}" at port ${port}`);
     swarm.on("connection", (conn: Socket, info) => {
+        let connectionDataTail = "";
         const connectionInfo = { id: id, socket:conn, info:info }
-        console.log(`${id}: Connected: ${info.id}`)
+        console.log(`(p2p) start connection ${id}---${info.id}`)
         // keep alive ---------------------------------------
         if (info.initiator) {
-            console.log(`${id}: keep alive!`)
+            console.log(`(p2p) ${id} keep alive!`)
            try {
                conn.setKeepAlive(true, 600)
            } catch (exception) {
@@ -58,20 +50,35 @@ export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
         if (onConnect) onConnect(connectionInfo);
         // incoming -----------------------------------------
         conn.on('data', data => {
-            console.log('${id}: Received Message from peer ' + info.id,
+            console.log(`${id}: Tail -->`, connectionDataTail)
+            console.log(`${id}: Received Message from peer ` + info.id,
                         '----> ' + data.toString()
             )
-            const fullPayload = JSON.parse(data.toString())
-            if (onMessage) onMessage(connectionInfo, fullPayload);
+            const messages = (connectionDataTail+data.toString()).split("\n\n");
+            for (let i=0; i<messages.length-1; i++) {
+                const fullPayload = JSON.parse(messages[i])    
+                if (onMessage) onMessage(connectionInfo, fullPayload);
+            }
+            connectionDataTail = messages[messages.length-1]
         })
         // close --------------------------------------------
         conn.on('close', () => {
-            console.log(`${id}: Close connection with peer: ${info.id}`);
+            console.log(`(p2p) close connection ${id}-/-${info.id}`);
             if (onClose) onClose(connectionInfo)
         })
     })
     return new Promise((resolve, reject)=>{
-        swarm.join(discoveryChannel, {}, resolve);
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        rl.question('Press <ENTER>', (answer) => {
+            swarm.join(discoveryChannel, {}, function(){
+                console.log(id, "joined.")
+                resolve()
+            });
+            rl.close();
+        });
     })
 
 }

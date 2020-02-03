@@ -34,7 +34,8 @@ This is an Excalibur+Electron prototype of the TXTNET.
 + `onMessage` get into cycle of sendMessageLocal
 + `sendMessage` find RP (or P) and write message
 + testing connection
-- load undefined is broken.
++ BUG: load undefined is broken
++ BUG: race condition when connecting to swarm
 
 ------------------------------------------------------------------------
 

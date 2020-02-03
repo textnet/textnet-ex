@@ -15,7 +15,7 @@ export async function load(P: Persistence, prefix: string, id: string) {
 }
 
 export function getRemotePersistenceById(id: string) {
-    return messaging.getConnection(id);
+    return messaging.getConnection(persistenceId(id));
 }
 
 // Remote Persistence
@@ -29,7 +29,7 @@ export class RemotePersistence {
     }
 
     async load(senderP: Persistence, prefix:string, id: string) {
-        // console.log(`RP-Call:Load(${prefix}) => ${id}`)
+        console.log(`RP-Call:Load(${prefix}) => ${id}`)
         return await messaging.sendMessage(senderP, this, {
             event: "load",
             data: {
@@ -40,7 +40,7 @@ export class RemotePersistence {
     }
 
     async send(senderP: Persistence, event: string, data: RemoteEvent.RemoteEvent) {
-        // console.log(`RP-Call:Event(${event}) => ... Sender=${senderP.account.id}, receiver=${this.id}`)
+        console.log(`RP-Call:Event(${event}) => ... Sender=${senderP.account.id}, receiver=${this.id}`)
         return await messaging.sendMessage(senderP, this, {
             event: event,
             data: data,

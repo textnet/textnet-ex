@@ -13,6 +13,7 @@ import { Persistence } from "../persistence/persist"
 import { interopSetup } from "../persistence/interop/setup"
 
 import * as remoteTest from "../persistence/remote/test"
+import * as networkTest from "../network/test"
 
 /**
  * Persistence that contains all the account data for this instance of the game.
@@ -20,12 +21,14 @@ import * as remoteTest from "../persistence/remote/test"
 const localPersistence = new Persistence("app_");
 let testPersistence;
 
-
 /**
  * As soon as Electron is ready, we set up Persistence, open a window,
  * and load the `index.html` file generated from `gui.ts`.
  */
 function onReady() {
+
+    // return networkTest.test();
+
     remoteTest.init(localPersistence).then((testP) => { 
         testPersistence = testP;
 

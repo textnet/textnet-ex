@@ -42,8 +42,8 @@ export class Repository<T> {
     }
 
     async load(id: string)   { 
-        // console.log(`LOAD(${this.prefix})->`, id)
         if (!this.isLocal(id)) {
+            console.log(`REMOTE LOAD(${this.persistence.account.id}.${this.prefix})->`, id)
             const data = await remote.load(this.persistence, this.prefix, id);
             await this.save(data);
         }
