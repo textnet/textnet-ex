@@ -22,7 +22,7 @@ const RPregistry: Record<string, RemotePersistence[]> = {};
 export async function connect(P: Persistence) {
     function onMessage(connectionInfo: p2p.ConnectionInfo, data:FullPayload) {
         if (!data.isCallback) {
-            console.log("----- received p2p", data)
+            // console.log("----- received p2p", data)
             // send local message, collect result, send callback.
             const promise = localSendMessage(
                 data["senderId"].toString(), 
@@ -37,7 +37,7 @@ export async function connect(P: Persistence) {
                 p2p.message(connectionInfo, callbackPayload);
             }) 
         } else {
-            console.log("------ received p2p callback")
+            // console.log("------ received p2p callback")
             const callback = callbackRegistry[data.nonce];
             if (callback) {
                 callback(data.result);
@@ -46,7 +46,7 @@ export async function connect(P: Persistence) {
     }
     function onConnect(connectionInfo: p2p.ConnectionInfo) {
         // new peer connecting
-        console.log(`P(${P.account.id}) <- connected ${connectionInfo.info.id}`)
+        // console.log(`P(${P.account.id}) <- connected ${connectionInfo.info.id}`)
         const RP = new RemotePersistence(connectionInfo);
         const id = connectionInfo.info.id.toString()
         if (!RPregistry[id]) {
@@ -57,7 +57,7 @@ export async function connect(P: Persistence) {
     }
     function onClose(connectionInfo: p2p.ConnectionInfo) {
         // peer disconnecting
-        console.log(`P(${P.account.id}) // disconnected ${connectionInfo.info.id}`)
+        // console.log(`P(${P.account.id}) // disconnected ${connectionInfo.info.id}`)
         const id = connectionInfo.info.id.toString()
         if (RPregistry[id]) {
             const newList = [];
@@ -69,7 +69,7 @@ export async function connect(P: Persistence) {
             RPregistry[id] = newList;
         }
     }
-    console.log(`P(${P.account.id}) -> joining swarm`)
+    // console.log(`P(${P.account.id}) -> joining swarm`)
     await p2p.connect(P.account.id, onMessage, onConnect, onClose);
 }
 export function getConnection(persistenceId: string) {
@@ -92,7 +92,7 @@ export async function sendMessage(sender:   Persistence,
                                   receiver: RemotePersistence,
                                   payload:  any) {
     if (sender.account.id == receiver.id.toString()) {
-        console.log("local message!")
+        // console.log("local message!")
         return localSendMessage(sender.account.id, receiver.id.toString(), payload);
     } else {
         const fullPayload: FullPayload = {
@@ -102,12 +102,12 @@ export async function sendMessage(sender:   Persistence,
             isCallback: false,            
             nonce:   nonce(),
         }
-        console.log("full payload", fullPayload)
+        // console.log("full payload", fullPayload)
         const promise = new Promise((resolve, reject)=>{
             callbackRegistry[fullPayload.nonce] = function(result) {
                 resolve(result);
             }
-            console.log("sending p2p ^")
+            // console.log("sending p2p ^")
             p2p.message(receiver.conn, fullPayload)    
         })
         return promise;
@@ -117,8 +117,7 @@ export async function sendMessage(sender:   Persistence,
 async function localSendMessage(senderPersistenceId:   string,
                                 receiverPersistenceId: string,
                                 payload:  any) {
-    console.log(`local send message (${senderPersistenceId}->${receiverPersistenceId})`, 
-                payload)
+    // console.log(`local send message (${senderPersistenceId}->${receiverPersistenceId})`,payload)
     const channelString = channelToString();
     for (let l of listeners[channelString]) {
         if (receiverPersistenceId == l["id"]) {

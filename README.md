@@ -36,7 +36,10 @@ This is an Excalibur+Electron prototype of the TXTNET.
 + testing connection
 + BUG: load undefined is broken
 + BUG: race condition when connecting to swarm
-
++ reduce console.log
+- shortcut local (for testing)
+- BUG: teleport, TypeError: Cannot read property 'x' of undefined
+- BUG: TypeError: Cannot read property 'split' of null
 ------------------------------------------------------------------------
 
 - offline

@@ -33,14 +33,14 @@ export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
     }))
     const port = await getPort()
     swarm.listen(port);
-    console.log(`P2P: join "${discoveryChannel}" at port ${port}`);
+    // console.log(`P2P: join "${discoveryChannel}" at port ${port}`);
     swarm.on("connection", (conn: Socket, info) => {
         let connectionDataTail = "";
         const connectionInfo = { id: id, socket:conn, info:info }
-        console.log(`(p2p) start connection ${id}---${info.id}`)
+        // console.log(`(p2p) start connection ${id}---${info.id}`)
         // keep alive ---------------------------------------
         if (info.initiator) {
-            console.log(`(p2p) ${id} keep alive!`)
+            // console.log(`(p2p) ${id} keep alive!`)
            try {
                conn.setKeepAlive(true, 600)
            } catch (exception) {
@@ -50,10 +50,10 @@ export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
         if (onConnect) onConnect(connectionInfo);
         // incoming -----------------------------------------
         conn.on('data', data => {
-            console.log(`${id}: Tail -->`, connectionDataTail)
-            console.log(`${id}: Received Message from peer ` + info.id,
-                        '----> ' + data.toString()
-            )
+            // console.log(`${id}: Tail -->`, connectionDataTail)
+            // console.log(`${id}: Received Message from peer ` + info.id,
+            //             '----> ' + data.toString()
+            // )
             const messages = (connectionDataTail+data.toString()).split("\n\n");
             for (let i=0; i<messages.length-1; i++) {
                 const fullPayload = JSON.parse(messages[i])    
@@ -63,7 +63,7 @@ export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
         })
         // close --------------------------------------------
         conn.on('close', () => {
-            console.log(`(p2p) close connection ${id}-/-${info.id}`);
+            // console.log(`(p2p) close connection ${id}-/-${info.id}`);
             if (onClose) onClose(connectionInfo)
         })
     })
@@ -74,7 +74,7 @@ export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
         });
         rl.question('Press <ENTER>', (answer) => {
             swarm.join(discoveryChannel, {}, function(){
-                console.log(id, "joined.")
+                // console.log(id, "joined.")
                 resolve()
             });
             rl.close();
