@@ -17,7 +17,7 @@ import { PositionEvent             } from "./events"
  */
 export function positionArtifact(game: Game, event: PositionEvent) {
     var scene = game.gameScene();
-    console.log("reposition", event.artifactId, "in", event.worldId, "at", event.position)
+    // console.log("reposition", event.artifactId, "in", event.worldId, "at", event.position)
     if (scene.worldData.id == event.worldId) {
         for (let a of scene.actors) {
             const actor = a as BaseActor;

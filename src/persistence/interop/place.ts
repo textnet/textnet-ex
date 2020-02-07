@@ -12,7 +12,7 @@ export async function placeArtifact(P: Persistence, args: PositionEvent) {
     const position   = args["position"];
     const artifact   = await P.artifacts.load(artifactId);
 
-    console.log(`interop place to "${args.worldId}"`)
+    // console.log(`render->persist: place to "${args.worldId}"`, args)
 
     if (!artifact.hostId) return false;
     // const hostWorld = await P.worlds.load(artifact.hostId);
@@ -22,7 +22,7 @@ export async function placeArtifact(P: Persistence, args: PositionEvent) {
 
     if (oldPos && position.x == oldPos.x && position.y == oldPos.y) return false;  
 
-    console.log(`^^^^^^^^^^^^^^^^ "${args.worldId}"`)
+    // console.log(`^^^^^^^^^^^^^^^^ "${args.worldId}"`)
     const success = await mutatePlace.place(P, artifact, hostWorld, position);
 
 }

@@ -37,12 +37,13 @@ export async function sendProperties(P: Persistence, artifact: Artifact) {
     }
 }
 
-export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, position: Position) {
+export async function sendPlaceArtifact(P: Persistence, artifact: Artifact, world: World, 
+                                        position: Position) {
     // console.log(`(${P.account.id})INTEROP: position(placeArtifact)`, artifact.name, position)
     if (position) { // no position = no place
         const event: PositionEvent = {
             artifactId: artifact.id,
-            worldId:    artifact.hostId,
+            worldId:    world.id,
             position:   deepCopy(position)
         }
         if (P.window) P.window.webContents.send('position', event);        

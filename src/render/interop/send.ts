@@ -27,11 +27,18 @@ import { PositionEvent,
  * INTEROP-> Attempt to move an artifact to a new position.
  * @param {ArtifactActor} actor
  */
-export function updateArtifactPosition(actor: ArtifactActor) {
+export function updateArtifactPosition(actor: ArtifactActor, force?: boolean) {
     let dx,dy: number;
     dx = actor.pos.x - actor.artifact.position.x;
     dy = actor.pos.y - actor.artifact.position.y;
-    if (dx == 0 && dy == 0) return;
+    if (!force) {
+        if (dx == 0 && dy == 0) return;
+        if (actor._prevpos) { // do not send exactly same position twice.
+            if ((Math.abs(actor.pos.x - actor._prevpos.x) < 2) &&
+                (Math.abs(actor.pos.y - actor._prevpos.y) < 2)) return;
+        }        
+    }
+    actor._prevpos = { x: actor.pos.x, y: actor.pos.y };
     ipcRenderer.send("position", {
         artifactId: actor.artifact.id,
         worldId: (actor.scene as GameScene).worldData.id,
@@ -73,6 +80,7 @@ export function startMoving(actor: ArtifactActor) {
 }
 
 export function stopMoving(actor: ArtifactActor) {
+    updateArtifactPosition(actor, true) // forcible update
     ipcRenderer.send("stopMoving", {
         artifactId: actor.artifact.id,
     } as StopMovingEvent) 

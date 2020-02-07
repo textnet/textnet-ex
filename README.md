@@ -37,15 +37,16 @@ This is an Excalibur+Electron prototype of the TXTNET.
 + BUG: load undefined is broken
 + BUG: race condition when connecting to swarm
 + reduce console.log
-? shortcut for local testing
-- teleportation issues
-    - multiple Teleport messages (pushing after left)
-    - TypeError: Cannot read property 'x' of undefined
-    - TypeError: Cannot read property 'split' of null
-- enter/leave issues
-    - multiple leaves required after one enter
++ shortcut for local testing
++ update_line broken?
++ enter/leave issues
+    + multiple leaves required after one enter
+    + render seems to restore old coordinates
++ fix all bugs when one local persistence
++ fix all bugs when there is network    
+    + when teleporting on the run, mutate gets `cant read property x`
++ save/load when local only setup
 ------------------------------------------------------------------------
-
 - offline
     - send event = silent;
     - load
@@ -60,7 +61,12 @@ This is an Excalibur+Electron prototype of the TXTNET.
                 - ignore when loading artifacts for the world;
                 - ignore on all mutates;
     - end.
-
+- find a way to bring persistence online/offline to test it    
+-------
+- cut event receivers first when destroying stuff 
+- save/load when remote debug setup -> after offline?
+-------
+- make another distro for testing
 
 
 
@@ -79,7 +85,7 @@ This is an Excalibur+Electron prototype of the TXTNET.
 + `mutate` across network
 + `renderer` across network
 + `observer` across network
-- proper messaging across network
++ proper messaging across network
 - handle offline
 - move items between three worlds
 
@@ -103,9 +109,12 @@ This is an Excalibur+Electron prototype of the TXTNET.
 - animate entering the artifact
 - animate leaving the artifact
 - animate holding the artifact
+- animate kneeling
 - background & text colour overrides
 - beautiful sprites
 - good naming
+- animate push and make it long
+- storyline
 
 # Big Things I Don't Want To Do
 - massive load across network -> subscribe on changes

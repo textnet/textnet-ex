@@ -6,8 +6,6 @@ import { Artifact, World, Position } from "../../interfaces"
 import { Persistence } from "../persist"
 import { isPlaceable, isInBounds } from "./spatial"
 
-import { sendPlaceArtifact, sendInsertArtifact, sendRemoveArtifact } from "../interop/send"
-
 import { artifactRemoveFromWorld,
          artifactInsertIntoWorld  } from "./local/artifact";
 import { worldRemoveFromWorld,
@@ -20,7 +18,7 @@ import { worldRemoveFromWorld,
 // fit if there is space
 export async function place(P: Persistence,
                       artifact: Artifact, world: World, position: Position) {
-    console.log("mutate place", artifact.name, `(${artifact.id})`, position, `in ${world.id}`)
+    // console.log("mutate place", artifact.name, `(${artifact.id})`, position, `in ${world.id}`)
     if (await isPlaceable(P, artifact, world, position) 
             && isInBounds(position, artifact.body.size)) {
         await force(P, artifact, world, position);

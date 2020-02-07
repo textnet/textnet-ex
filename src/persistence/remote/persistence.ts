@@ -9,6 +9,9 @@ import * as messaging from "../../network/messaging"
 
 
 export async function load(P: Persistence, prefix: string, id: string) {
+    if (persistenceId(P.account.id) == persistenceId(id)) {
+        return await P[prefix].load(id);
+    }
     const idP = getRemotePersistenceById(id);
     const data = await idP.load(P, prefix, id);
     return data;

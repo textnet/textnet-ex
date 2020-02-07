@@ -56,7 +56,6 @@ export async function artifactRemoveFromWorld(P: Persistence, artifact: Artifact
         const fullArtifact = await P.artifacts.load(artifact.id);
         fullArtifact.hostId = null;
         fullArtifact.visits[ worldId ] = deepCopy(position)
-        console.log(`REMOVE--${worldId}`, position)
         await P.artifacts.save(fullArtifact);
     }
 }
@@ -68,7 +67,6 @@ export async function artifactInsertIntoWorld(P: Persistence, artifact: Artifact
         const fullArtifact = await P.artifacts.load(artifact.id);
         fullArtifact.hostId = worldId;
         fullArtifact.visits[ worldId ] = deepCopy(position)
-        console.log(`INSERT->${worldId}`, position)
         await P.artifacts.save(fullArtifact);
     }
 }

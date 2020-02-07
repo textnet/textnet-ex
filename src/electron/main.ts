@@ -21,13 +21,12 @@ import * as networkTest from "../network/test"
 const localPersistence = new Persistence("app_");
 let testPersistence;
 
+
 /**
  * As soon as Electron is ready, we set up Persistence, open a window,
  * and load the `index.html` file generated from `gui.ts`.
  */
 function onReady() {
-
-    // return networkTest.test();
 
     remoteTest.init(localPersistence).then((testP) => { 
         testPersistence = testP;

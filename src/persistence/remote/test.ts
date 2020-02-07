@@ -2,7 +2,8 @@
 import { existsSync } from "fs"
 import { app, BrowserWindow } from 'electron'
 
-import { DEBUG, worldWidth, visualBounds, mundaneWorldName } from "../../const"
+import { DEBUG, DEBUG_LOCAL, DEBUG_REMOTE,
+         worldWidth, visualBounds, mundaneWorldName } from "../../const"
 import { Persistence } from "../persist"
 import { Artifact, World } from "../../interfaces"
 import { deepCopy } from "../../utils"
@@ -11,7 +12,46 @@ import { artifactDefault } from "../startup"
 
 
 
+export async function usual(local: Persistence) {
+    await local.init();
+    return { free: function(){} }
+}
+
+export async function localInit(local: Persistence) {
+    await local.init();
+    // inject WW.
+    const playerArtifact = await local.artifacts.load(local.account.bodyId);
+    const playerWorld = await local.worlds.load(playerArtifact.worldIds[mundaneWorldName]);
+    playerWorld.text = ww["P1"];
+    await local.worlds.save(playerWorld);    
+    await local.observers[playerArtifact.id].attempt();
+    const artifactIds = await local.artifacts.local();
+    let portalTarget = "<none>"
+    for (let id in artifactIds) {
+        const artifact = await local.artifacts.load(id);
+        if (ww[artifact.name]) {
+            // console.log(`Custom WW for "${artifact.name}"`)
+            const artifactWorld = await local.worlds.load(artifact.worldIds[mundaneWorldName]);
+            artifactWorld.text = ww[artifact.name];
+            if (artifact.name == "Chair 1") {
+                portalTarget = artifact.id;
+            }
+            if (artifact.name == "Portal") {
+                artifactWorld.text = "#teleport/target "+portalTarget+"\n"+artifactWorld.text;
+            }
+            await local.worlds.save(artifactWorld);
+            await local.observers[id].attempt();
+        }
+    }
+    //    
+    return { free: function(){} }
+}
+
+
 export async function init(local: Persistence) {
+    if (DEBUG_LOCAL) return localInit(local);
+    if (!DEBUG_REMOTE) return usual(local);
+
     const P = new Persistence("test_");
     P.isSilent = true;
     await P.init();
@@ -104,7 +144,7 @@ const ww = {
 "Chair 1": `This is Chair No.1.
     local myself = get_myself{}
     local prefix = myself.name.." >"
-    update_line{ anchor="teleport/here", myself.id }
+    update_line{ anchor="teleport/here", text=myself.id }
 
 #teleport/here    
 `,

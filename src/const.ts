@@ -5,7 +5,8 @@ import { Dir, Position } from "./interfaces"
  */
 
 export const DEBUG = true;
-export const DEBUG_LOCAL = false; // no network connections whatsoever.
+export const DEBUG_LOCAL  = true;   // no network connections whatsoever.
+export const DEBUG_REMOTE = false;   // set up two persistences (local & test)
 export const version = "1";
 
 /**

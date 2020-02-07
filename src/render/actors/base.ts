@@ -9,6 +9,7 @@ import { Game              } from "../game"
 import { ArtifactSprite    } from "../sprite"
 import { ArtifactStructure } from "../data_structures"
 
+interface _Position { x:number, y:number }
 /**
  * Base class holds connection between an Excalibur actor and an artifact.
  */
@@ -17,6 +18,7 @@ export class BaseActor extends ex.Actor {
     sprite: ArtifactSprite;
     dir: Dir;
     speed: { x:number, y: number };
+    _prevpos: _Position;
 
     /**
      * Build an actor from the artifact.
@@ -35,7 +37,7 @@ export class BaseActor extends ex.Actor {
                 })
             })
         });
-        console.log(`Adding artifact ${artifactData.name} to scene`, artifactData);
+        // console.log(`Adding artifact ${artifactData.name} to scene`, artifactData);
         this.artifact = artifactData;
         this.sprite = sprite;
     }

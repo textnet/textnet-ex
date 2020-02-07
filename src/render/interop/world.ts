@@ -75,7 +75,7 @@ export function prepareWorld(game: Game, params) {
     // Go!
     game.start();
     askForPlayer();
-    console.log(`WORLD ${worldData.id} <${worldData.name}>`, worldData)
+    // console.log(`WORLD ${worldData.id} <${worldData.name}>`, worldData)
 }
 
 /**

@@ -16,6 +16,7 @@ export class Repository<T> {
     storage: Storage;
     cache: Record<string, T>;
     prefix: string;
+    freed: boolean;
 
     /**
      * Link to Persistence, differentiate with additional prefix.
@@ -31,7 +32,10 @@ export class Repository<T> {
         this.storage = new Storage(this.persistence.prefix+this.prefix)
         this.storage.init();
     }
-    free() { this.storage.free() }
+    free() { 
+        this.freed = true;
+        this.storage.free() 
+    }
 
     isLocal(id: string) {
         if (!this.persistence.account) {

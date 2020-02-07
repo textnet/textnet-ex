@@ -20,34 +20,28 @@ import { inventoryArtifact         } from "./inventory"
 export function enterArtifact(game: Game, event: EnterEvent) {
     var scene = game.gameScene();
     if (scene.worldData.id == event.worldId) {
-        console.log("ENTER", event.artifactStructure.id, scene.worldData.id, event.worldId)
+        // console.log("ENTER", event.artifactStructure.id, scene.worldData.id, event.worldId)
         event.artifactStructure.position = event.position;
         let existingActor: ArtifactActor;
         let cameraActor: ArtifactActor;
-        for (let a of scene.actors) {
-            const actor = a as BaseActor;
+        for (let i in scene.actors) {
+            const actor = scene.actors[i] as BaseActor;
             if (actor.artifact.id == event.artifactStructure.id) {
-                existingActor = actor as ArtifactActor;
+                scene.remove(actor)
                 break;
             }
         }
-        if (existingActor) {
-            existingActor.artifact = event.artifactStructure;
-            cameraActor = existingActor;
-        } else {
-            const actor: ArtifactActor = new ArtifactActor(event.artifactStructure);
-            scene.add(actor);
-            cameraActor = actor;
-            if (event.inventoryStructure) {
-                inventoryArtifact(game, { artifactId: actor.artifact.id, 
-                    inventoryStructure: event.inventoryStructure });
-            }
+        const actor: ArtifactActor = new ArtifactActor(event.artifactStructure);
+        scene.add(actor);
+        cameraActor = actor;
+        if (event.inventoryStructure) {
+            inventoryArtifact(game, { artifactId: actor.artifact.id, 
+                inventoryStructure: event.inventoryStructure });
         }
         // setup camera if it is a player;
         if (cameraActor.artifact.isPlayer) {
             repositionCamera(game, cameraActor);
         }
-    } else {
     }
 }
 

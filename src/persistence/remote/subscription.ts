@@ -32,6 +32,9 @@ export class RemoteSubscription {
     }
 
     subscribe(hostWorldId: string, guestArtifactId: string, ) {
+        if (persistenceId(guestArtifactId) == persistenceId(this.P.account.id)) {
+            return;
+        }
         const artifactRP = getRemotePersistenceById(guestArtifactId);
         if (artifactRP && artifactRP.id != this.P.account.id) {
             if (!this.subscriptions[hostWorldId]) {
@@ -44,6 +47,9 @@ export class RemoteSubscription {
     }
 
     unsubscribe(hostWorldId: string, guestArtifactId: string, ) {
+        if (persistenceId(guestArtifactId) == persistenceId(this.P.account.id)) {
+            return;
+        }
         const artifactRP = getRemotePersistenceById(guestArtifactId);
         if (artifactRP && artifactRP.id != this.P.account.id) {
             if (this.subscriptions[hostWorldId]) {

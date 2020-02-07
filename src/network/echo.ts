@@ -40,7 +40,8 @@ const _echo_ = {
     move: async function(P: Persistence, data: RemoteEvent.WorldUpdate) {
             async function _() {
                 const artifact = await P.artifacts.load(data.artifactId);
-                await interopSend.sendPlaceArtifact(P, artifact, data.pos)
+                const world = await P.worlds.load(data.worldId)
+                await interopSend.sendPlaceArtifact(P, artifact, world, data.pos)
             }
             if (data.artifactId == P.account.bodyId) {
                 clearTimeout(_echo_timeout);

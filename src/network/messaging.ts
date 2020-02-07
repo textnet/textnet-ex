@@ -75,7 +75,9 @@ export async function connect(P: Persistence) {
 }
 export function getConnection(persistenceId: string) {
     if (!RPregistry[persistenceId]) {
+        // that should only happen if persistence is empty
         console.log("EMPTY PERSISTENCE", persistenceId, RPregistry)
+        return;
     }
     for (let R of RPregistry[persistenceId]) {
         if (!R.conn.socket.destroyed) {

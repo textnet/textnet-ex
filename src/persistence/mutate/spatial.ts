@@ -59,6 +59,7 @@ export function isInBounds(pos: Position, body?: number[]) {
 export async function isNext(P: Persistence, a: Artifact, b: Artifact, dir: Dir) {
     let aBox = await artifactBox(P, a);
     let bBox = await artifactBox(P, b);
+    if (!aBox || !bBox) return false;
     // console.log("IsNext:", dir)
     // console.log("Box A:", a.name, aBox[0], aBox[1], aBox[2], aBox[3]);
     // console.log("Box B:", b.name, bBox[0], bBox[1], bBox[2], bBox[3]);
@@ -88,6 +89,7 @@ export async function isNext(P: Persistence, a: Artifact, b: Artifact, dir: Dir)
 export function sync_isNext(P: SyncWrittenPersistence, a: Artifact, b: Artifact, dir: Dir) {
     let aBox = sync_artifactBox(P, a);
     let bBox = sync_artifactBox(P, b);
+    if (!aBox || !bBox) return false;
     // console.log("IsNext:", dir)
     // console.log("Box A:", a.name, aBox[0], aBox[1], aBox[2], aBox[3]);
     // console.log("Box B:", b.name, bBox[0], bBox[1], bBox[2], bBox[3]);
@@ -130,6 +132,7 @@ export async function isPlaceable(P: Persistence, artifact: Artifact,
 export async function isOverlap(P: Persistence, a: Artifact, b: Artifact, pos?: Position) {
     let aBox = await artifactBox(P, a, pos);
     let bBox = await artifactBox(P, b);
+    if (!aBox || !bBox) return true;
     if (aBox[0] > bBox[0]) {
         let cBox = deepCopy(bBox);
         bBox = deepCopy(aBox);
@@ -147,6 +150,7 @@ export async function isOverlap(P: Persistence, a: Artifact, b: Artifact, pos?: 
 
 export async function artifactBox(P: Persistence, a: Artifact, position?: Position) {
     if (!position) position = await artifactPos(P, a)
+    if (!position) return;
     let aBox = [0,0,0,0]; // L-U-R-D
     aBox[0] = position.x - a.body.size[0]/2 + a.body.offset[0];
     aBox[1] = position.y - a.body.size[1]/2 + a.body.offset[1];
@@ -162,6 +166,7 @@ export async function artifactPos(P: Persistence, a: Artifact) {
 
 export function sync_artifactBox(P: SyncWrittenPersistence, a: Artifact, position?: Position) {
     if (!position) position = sync_artifactPos(P, a)
+    if (!position) return;
     let aBox = [0,0,0,0]; // L-U-R-D
     aBox[0] = position.x - a.body.size[0]/2 + a.body.offset[0];
     aBox[1] = position.y - a.body.size[1]/2 + a.body.offset[1];

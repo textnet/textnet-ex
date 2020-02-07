@@ -1,9 +1,13 @@
 import { getRemotePersistenceById } from "../../remote/persistence"
+import { persistenceId } from "../../identity"
 import { Persistence } from "../../persist"
 
 export async function wrapper(P: Persistence, event: string, id: string, data) {
+    if (persistenceId(P.account.id) == persistenceId(id)) {
+        return false;
+    }
     const RP = getRemotePersistenceById(id);
-    if (RP && RP.id != P.account.id) {
+    if (RP) {
         // if (event=="worldStartMoving") {
         //     console.log(`remote<${P.account.bodyId} => ${RP.id}>: moving start`)
         // }
