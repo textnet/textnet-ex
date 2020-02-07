@@ -13,7 +13,7 @@ export function teleport( O: PersistenceObserver,
     if (targetData) {
         targetId = targetData["id"];
     }
-    console.log("teleporting", artifactData["name"], targetId)
+    console.log(`(P${O.P.account.id}) teleporting`, artifactData["name"], targetId)
     if (targetId) {
         O.P.artifacts.load(targetId).then(function(data: Artifact) {
             if (data) {

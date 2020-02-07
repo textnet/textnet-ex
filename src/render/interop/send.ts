@@ -12,6 +12,7 @@
 import { ipcRenderer } from "electron";
 
 import { ArtifactActor } from "../actors/artifact";
+import { GameScene } from "../scene"
 import { Position, Dir } from "../../interfaces"
 import { PositionEvent, 
          PushEvent, 
@@ -33,6 +34,7 @@ export function updateArtifactPosition(actor: ArtifactActor) {
     if (dx == 0 && dy == 0) return;
     ipcRenderer.send("position", {
         artifactId: actor.artifact.id,
+        worldId: (actor.scene as GameScene).worldData.id,
         position: { x: actor.pos.x, y: actor.pos.y, dir: actor.dir }
     } as PositionEvent) 
 }

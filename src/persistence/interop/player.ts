@@ -53,6 +53,7 @@ export async function playerEnterWorld(P: Persistence) {
         console.log(`Player ${accountBody.id} enters world: ${accountBody.hostId} => ${world.id}`)
         await mutateEnter.enterWorld(P, accountBody, world)
     } else {
+        console.log(`Player ${accountBody.id} is there already!`) // I think the issue is here!
         const pos = world.artifactPositions[accountBody.id];
         sendInterop.sendPlaceArtifact(P, accountBody, pos);
     }

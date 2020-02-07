@@ -18,6 +18,7 @@ interface FullPayload {
     payload?: string;
 }
 
+const RPlocalRegistry: Record<string, RemotePersistence> = {};
 const RPregistry: Record<string, RemotePersistence[]> = {};
 export async function connect(P: Persistence) {
     function onMessage(connectionInfo: p2p.ConnectionInfo, data:FullPayload) {

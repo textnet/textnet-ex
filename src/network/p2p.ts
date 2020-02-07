@@ -11,23 +11,51 @@ import { Persistence } from "../persistence/persist"
 
 import { Socket } from "net"
 import * as readline from "readline"
+import { DEBUG_LOCAL } from "../const"
 
 
 const discoveryChannel = messagingChannelPrefix+"discovery";
 
 export interface ConnectionInfo {
     id: string,
-    socket: Socket,
+    socket?: Socket,
     info;
 }
 
 export function message(connectionInfo: ConnectionInfo, fullPayload) {
+    if (DEBUG_LOCAL) return local_message(connectionInfo, fullPayload);
+    //
     let data = JSON.stringify(fullPayload);
     connectionInfo.socket.write(data+"\n\n");
 }
 
 
+// NB: DEBUG_LOCAL functionality was never tested.
+const localConnections : Record<string,ConnectionInfo> = {};
+export async function local_message(connectionInfo: ConnectionInfo, fullPayload) {
+    return connectionInfo.info["onMessage"](connectionInfo, fullPayload);
+}
+export async function local_connect( id:string, onMessage?, onConnect?, onClose? ) {
+    const myConnectionInfo : ConnectionInfo = {
+        id: id,
+        info: {
+            id:id, 
+            onMessage: (ci, fullPayload)=>{onMessage(ci, fullPayload)},
+            onConnect: onConnect,
+        }
+    };
+    // connect with everybody instantaneously.
+    for (let id in localConnections) {
+        localConnections[id].info["onConnect"](myConnectionInfo);
+        onConnect(localConnections[id]);
+    }
+    return new Promise((resolve, reject)=>{ resolve() });
+}
+
+
 export async function connect( id:string, onMessage?, onConnect?, onClose? ) {
+    if (DEBUG_LOCAL) return local_connect(id, onMessage, onConnect, onClose);
+    //
     const swarm = new Swarm(defaults({
         id: Buffer.from(id, 'utf8')
     }))

@@ -20,7 +20,7 @@ import { worldRemoveFromWorld,
 // fit if there is space
 export async function place(P: Persistence,
                       artifact: Artifact, world: World, position: Position) {
-    // console.log("mutate place", artifact.name, `(${artifact.id    })`, position)
+    console.log("mutate place", artifact.name, `(${artifact.id})`, position, `in ${world.id}`)
     if (await isPlaceable(P, artifact, world, position) 
             && isInBounds(position, artifact.body.size)) {
         await force(P, artifact, world, position);

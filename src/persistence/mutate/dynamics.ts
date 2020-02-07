@@ -15,11 +15,15 @@ export async function push(P: Persistence,
 }
 
 export async function startMoving(P: Persistence, artifact: Artifact, subject: Artifact) {
-    const hostWorld = await P.worlds.load(artifact.hostId);
-    await worldStartMoving(P, hostWorld, artifact.id, subject.id);
+    if (artifact.hostId) {
+        const hostWorld = await P.worlds.load(artifact.hostId);
+        await worldStartMoving(P, hostWorld, artifact.id, subject.id);
+    }
 }
 
 export async function stopMoving(P: Persistence, artifact: Artifact, subject: Artifact) {
-    const hostWorld = await P.worlds.load(artifact.hostId);
-    await worldStopMoving(P, hostWorld, artifact.id, subject.id);
+    if (artifact.hostId) {
+        const hostWorld = await P.worlds.load(artifact.hostId);
+        await worldStopMoving(P, hostWorld, artifact.id, subject.id);       
+    }
 }

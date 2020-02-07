@@ -30,16 +30,20 @@ This is an Excalibur+Electron prototype of the TXTNET.
 + everyone sits in one channel and gets a socket per each other node.
 + `register` = join swarm
 + `conn` = found another peer
-    - create RP and register it
+    + create RP and register it
 + `onMessage` get into cycle of sendMessageLocal
 + `sendMessage` find RP (or P) and write message
 + testing connection
 + BUG: load undefined is broken
 + BUG: race condition when connecting to swarm
 + reduce console.log
-- shortcut local (for testing)
-- BUG: teleport, TypeError: Cannot read property 'x' of undefined
-- BUG: TypeError: Cannot read property 'split' of null
+? shortcut for local testing
+- teleportation issues
+    - multiple Teleport messages (pushing after left)
+    - TypeError: Cannot read property 'x' of undefined
+    - TypeError: Cannot read property 'split' of null
+- enter/leave issues
+    - multiple leaves required after one enter
 ------------------------------------------------------------------------
 
 - offline
